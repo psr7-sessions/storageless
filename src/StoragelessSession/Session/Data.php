@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace StoragelessSession\Session;
 
-class Data
+class Data implements \JsonSerializable
 {
     /**
      * @var array
@@ -28,6 +28,14 @@ class Data
     public static function fromTokenData(array $data, array $metadata): self
     {
         return new self($data, $metadata);
+    }
+
+    public static function fromJsonString(string $jsonString)
+    {
+        $decoded = json_decode($jsonString);
+
+        // @todo stronger validation here
+        return new self($decoded['data'], $decoded['metadata']);
     }
 
     public static function newEmptySession(): self
@@ -61,4 +69,14 @@ class Data
     }
 
     // @TODO ArrayAccess stuff? Or Containers? (probably better to just allow plain keys)
+    /**
+     * {@inheritDoc}
+     */
+    public function jsonSerialize()
+    {
+        return json_encode([
+            'data'     => $this->data,
+            'metadata' => $this->metadata,
+        ]);
+    }
 }
