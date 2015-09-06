@@ -53,3 +53,7 @@ is used to transmit the information.
 The token MUST be signed (and eventually encrypted) in the default
 implementation of the library.
 
+Encryption must be asymmetric and based on private/public key, where the
+private key is owned by the server creating the session. Client-side
+verification of the session is not necessary if TLS is used, but it can
+eventually be introduced.
