@@ -35,7 +35,7 @@ Most of the logic isn't finalized yet, and this is just a mockup of a
 ### Assumptions
 
  * your sessions are fairly small and contain only few identifiers and
-   some CSRF tokens.
+   some CSRF tokens. Small means `< 400` byes
  * data in your session is `JsonSerializable` or equivalent
  * data in your session is **freely available to the client** (we may 
    introduce encryption to change this in future)
@@ -47,8 +47,8 @@ session cookie.
 
 In order to guarantee that the session data is not modified, that the
 client can trust the information and that the expiration date is
-mutually agreed between server and client, a JWT token is used to 
-transmit the information.
+mutually agreed between server and client, a [JWT token](http://jwt.io/)
+is used to transmit the information.
  
 The token MUST be signed (and eventually encrypted) in the default
 implementation of the library.
