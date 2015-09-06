@@ -19,7 +19,7 @@ This is all fair and nice, except for:
  * having a lot of I/O due to storage
  * having serialized data cross different processes (PHP serializes and
    de-serializes `$_SESSION` for you, and there are security implications)
- * having to use a centralized storage for setups that scare horizontally
+ * having to use a centralized storage for setups that scale horizontally
  * having to use sticky sessions (with a "smart" load-balancer) when the
    storage is not centralized
 
