@@ -57,3 +57,17 @@ Encryption must be asymmetric and based on private/public key, where the
 private key is owned by the server creating the session. Client-side
 verification of the session is not necessary if TLS is used, but it can
 eventually be introduced.
+
+### Advantages
+
+ * no storage required
+ * no sticky sessions required (any server having a copy of the private or 
+   public keys can generate sessions or consume them)
+ * can transmit cleartext information to the client, allowing it to share
+   some information with the server (a standard example is about sharing the
+   "username" or "user-id" in a given session)
+ * can transmit encrypted information to the client, allowing server-only
+   consumption of the information
+ * not affected by PHP serialization RCE attacks
+ * not limited to PHP process scope: can have many sessions per process
+ * no reliance on global state
