@@ -1,0 +1,5 @@
+{
+    "require": {
+        "psr/http-message": "^1.0"
+    }
+}
