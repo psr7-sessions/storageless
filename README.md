@@ -47,7 +47,7 @@ session cookie.
 
 In order to guarantee that the session data is not modified, that the
 client can trust the information and that the expiration date is
-mutually agreed between server and client, a [JWT token](http://jwt.io/)
+mutually agreed between server and client, a [JWT token](https://tools.ietf.org/html/rfc7519)
 is used to transmit the information.
  
 The token MUST be signed (and eventually encrypted) in the default
