@@ -1,4 +1,13 @@
 {
+    "name":     "ocramius/storage-less-session",
+    "license":  "MIT",
+    "authors": [
+        {
+            "name":     "Marco Pivetta",
+            "email":    "ocramius@gmail.com",
+            "homepage": "http://ocramius.github.io/"
+        }
+    ],
     "require": {
         "psr/http-message": "^1.0"
     }
