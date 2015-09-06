@@ -31,3 +31,11 @@ issues listed above.
 Most of the logic isn't finalized yet, and this is just a mockup of a
 [PSR-7](http://www.php-fig.org/psr/psr-7/) middleware that injects a 
 `'session'` attribute (containing session data) into incoming requests.
+
+### Assumptions
+
+ * your sessions are fairly small and contain only few identifiers and
+   some CSRF tokens.
+ * data in your session is `JsonSerializable` or equivalent
+ * data in your session is **freely available to the client** (we may introduce
+   encryption to change this in future)
