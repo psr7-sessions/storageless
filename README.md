@@ -9,6 +9,7 @@ allows us to store server-side information by associating a certain
 identifier to a visiting user-agent.
 
 ### What is the problem with `ext/session`?
+
 This is all fair and nice, except for:
 
  * relying on the `$_SESSION` superglobal
@@ -22,6 +23,11 @@ This is all fair and nice, except for:
  * having to use sticky sessions (with a "smart" load-balancer) when the
    storage is not centralized
 
+### What does this project do?
+
 This project tries to implement storage-less sessions and to mitigate the
 issues listed above.
 
+Most of the logic isn't finalized yet, and this is just a mockup of a
+[PSR-7](http://www.php-fig.org/psr/psr-7/) middleware that injects a 
+`'session'` attribute (containing session data) into incoming requests.
