@@ -4,7 +4,7 @@ namespace StoragelessSession\Http;
 
 use Psr\Http\Message\RequestInterface;
 
-class HttpTokenStringValidator
+class TokenValidator
 {
     public function __invoke(string $token, RequestInterface $request): bool
     {
