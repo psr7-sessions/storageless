@@ -10,6 +10,11 @@ use StoragelessSession\Session\Data;
 class RequestSessionFactory
 {
     /**
+     * @var TokenSerializer
+     */
+    private $tokenSerializer;
+
+    /**
      * @var TokenValidator
      */
     private $tokenValidator;
@@ -20,14 +25,16 @@ class RequestSessionFactory
     private $sessionValidator;
 
     public function __construct(
+        TokenSerializer $tokenSerializer,
         TokenValidator $tokenValidator,
         SessionValidator $sessionValidator
     ) {
         $this->tokenValidator   = $tokenValidator;
         $this->sessionValidator = $sessionValidator;
+        $this->tokenSerializer = $tokenSerializer;
     }
 
-    public function getSessionForRequest(RequestInterface $request): Data
+    public function __invoke(RequestInterface $request): Data
     {
         $tokens = array_filter(
             array_map(
@@ -43,7 +50,7 @@ class RequestSessionFactory
         $token = reset($tokens);
 
         $session = $token
-            ? Data::fromTokenData($token->getClaims(), $token->getHeaders())
+            ? $this->tokenSerializer->deSerialize($token)
             : Data::newEmptySession();
 
         if (! $this->sessionValidator->__invoke($session, $request)) {

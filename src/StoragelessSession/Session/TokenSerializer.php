@@ -6,7 +6,7 @@ use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Token;
 use StoragelessSession\Session\Data;
 
-class SessionTokenSerializer
+class TokenSerializer
 {
     public function __construct()
     {
