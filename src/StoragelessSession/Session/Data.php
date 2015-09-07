@@ -56,6 +56,8 @@ class Data implements \JsonSerializable
         if (! $this->has($key)) {
             throw new \OutOfBoundsException(sprintf('Non-existing key "%s" requested', $key));
         }
+
+        return $this->data[$key];
     }
 
     public function remove(string $key)
