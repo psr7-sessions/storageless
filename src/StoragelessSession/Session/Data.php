@@ -33,6 +33,11 @@ class Data implements \JsonSerializable
     private $metadata;
 
     /**
+     * @var bool
+     */
+    private $dataWasChanged = false;
+
+    /**
      * @todo ensure serializable data?
      */
     private function __construct(array $data, array $metadata)
@@ -83,10 +88,13 @@ class Data implements \JsonSerializable
 
     /**
      * @todo ensure serializable data?
+     * @param string $key
+     * @param mixed  $value
      */
     public function set(string $key, $value)
     {
-        $this->data[$key] = $value;
+        $this->data[$key]     = $value;
+        $this->dataWasChanged = true;
     }
 
     public function get(string $key)
@@ -101,6 +109,7 @@ class Data implements \JsonSerializable
     public function remove(string $key)
     {
         unset($this->data[$key]);
+        $this->dataWasChanged = true;
     }
 
     public function has(string $key): bool
