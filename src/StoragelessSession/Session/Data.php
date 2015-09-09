@@ -20,22 +20,24 @@ declare(strict_types=1);
 
 namespace StoragelessSession\Session;
 
-class Data implements \JsonSerializable
+final class Data implements \JsonSerializable
 {
+    const SCOPE_EXPIRATION = 'EXPIRE_KEYS';
+
     /**
      * @var array
      */
     private $data;
 
     /**
+     * @var SessionScope[]
+     */
+    private $scopes = [];
+
+    /**
      * @var array
      */
     private $metadata;
-
-    /**
-     * @var bool
-     */
-    private $dataWasChanged = false;
 
     /**
      * @todo ensure serializable data?
@@ -44,6 +46,55 @@ class Data implements \JsonSerializable
     {
         $this->data     = $data;
         $this->metadata = $metadata;
+        $this->expireDataFromScopes();
+    }
+
+    /**
+     * @param string $scopeName
+     *
+     * @return SessionScope
+     */
+    public function getScope(string $scopeName)
+    {
+        if (isset($this->scopes[$scopeName])) {
+            return $this->scopes[$scopeName];
+        }
+
+        $scopeData = $this->data[$scopeName] ?? [];
+
+        return $this->scopes[$scopeName] = SessionScope::fromArrayAndExpiration(
+            is_array($scopeData) ? $scopeData : [$scopeName => $scopeData],
+            $this->getScopeExpiration($scopeName)
+        );
+    }
+
+    /**
+     * @param string $scopeName
+     *
+     * @return \DateTime|null
+     */
+    private function getScopeExpiration(string $scopeName)
+    {
+        if (! (
+            isset($this->metadata[$scopeName][self::SCOPE_EXPIRATION])
+            && is_int($this->metadata[$scopeName][self::SCOPE_EXPIRATION])
+        )
+        ) {
+            return null;
+        }
+
+        return new \DateTimeImmutable('@' . $this->metadata[$scopeName][self::SCOPE_EXPIRATION]);
+    }
+
+    private function expireDataFromScopes()
+    {
+        $requestTime = microtime(true);
+
+        foreach ($this->scopes as $key => $scope) {
+            if ($requestTime > $scope->getExpirationTime()) {
+                $scope->remove($key);
+            }
+        }
     }
 
     public static function fromDecodedTokenData(\stdClass $data)
@@ -86,40 +137,26 @@ class Data implements \JsonSerializable
         return new self([], []);
     }
 
-    /**
-     * @todo ensure serializable data?
-     * @param string $key
-     * @param mixed  $value
-     */
-    public function set(string $key, $value)
+    public function isEmpty() : bool
     {
-        $this->data[$key]     = $value;
-        $this->dataWasChanged = true;
-    }
-
-    public function get(string $key)
-    {
-        if (! $this->has($key)) {
-            throw new \OutOfBoundsException(sprintf('Non-existing key "%s" requested', $key));
+        foreach ($this->scopes as $scope) {
+            if (! $scope->isEmpty()) {
+                return false;
+            }
         }
 
-        return $this->data[$key];
+        return true;
     }
 
-    public function remove(string $key)
+    public function isModified() : bool
     {
-        unset($this->data[$key]);
-        $this->dataWasChanged = true;
-    }
+        foreach ($this->scopes as $scope) {
+            if ($scope->isModified()) {
+                return true;
+            }
+        }
 
-    public function has(string $key): bool
-    {
-        return array_key_exists($key, $this->data);
-    }
-
-    public function isEmpty()
-    {
-        return empty($this->data);
+        return false;
     }
 
     // @TODO ArrayAccess stuff? Or Containers? (probably better to just allow plain keys)
@@ -128,6 +165,6 @@ class Data implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        return $this->data;
+        return array_filter($this->scopes);
     }
 }

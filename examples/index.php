@@ -51,11 +51,13 @@ $sessionMiddleware = new SessionMiddleware(
 $myMiddleware = function (ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface {
     /* @var Data $container */
     $container = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
-    $container->set('counter', $container->has('counter') ? $container->get('counter') + 1 : 0);
+    $counter   = $container->getScope('counter');
+
+    $counter->set('counter', $counter->get('counter', 0) + 1);
 
     $response
         ->getBody()
-        ->write('Counter Value: ' . $container->get('counter'));
+        ->write('Counter Value: ' . $counter->get('counter'));
 
     return $response;
 };

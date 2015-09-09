@@ -36,8 +36,10 @@ has access to the `Psr\Http\Message\ServerRequestInterface` attributes:
 ```php
 $app->get('/get', function (ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface {
     /* @var \StoragelessSession\Session\Data $container */
-    $container = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
-    $container->set('counter', $container->has('counter') ? $container->get('counter') + 1 : 0);
+    $session   = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+    $container = $session->getScope('counter');
+
+    $container->set('counter', $container->get('counter', 0) + 1);
 
     $response
         ->getBody()
