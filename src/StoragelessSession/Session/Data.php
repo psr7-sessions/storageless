@@ -25,6 +25,28 @@ class Data implements \JsonSerializable
         $this->metadata = $metadata;
     }
 
+    public static function fromDecodedTokenData(\stdClass $data)
+    {
+        return self::fromTokenData(self::convertStdClassToUsableStuff($data), []);
+    }
+
+    private static function convertStdClassToUsableStuff(\stdClass $shit)
+    {
+        $arrayData = [];
+
+        foreach ($shit as $key => $property) {
+            if ($property instanceof \stdClass) {
+                $arrayData[$key] = self::convertStdClassToUsableStuff($property);
+
+                continue;
+            }
+
+            $arrayData[$key] = $property;
+        }
+
+        return $arrayData;
+    }
+
     public static function fromTokenData(array $data, array $metadata): self
     {
         return new self($data, $metadata);
@@ -68,6 +90,11 @@ class Data implements \JsonSerializable
     public function has(string $key): bool
     {
         return array_key_exists($key, $this->data);
+    }
+
+    public function isEmpty()
+    {
+
     }
 
     // @TODO ArrayAccess stuff? Or Containers? (probably better to just allow plain keys)
