@@ -7,11 +7,11 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\Signer;
-use Lcobucci\JWT\Signature;
 use Lcobucci\JWT\Builder;
 use StoragelessSession\Session\Data;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\ValidationData;
+use Lcobucci\JWT\Signer\Key;
 
 final class SessionMiddleware implements MiddlewareInterface
 {
@@ -29,12 +29,12 @@ final class SessionMiddleware implements MiddlewareInterface
     private $signer;
 
     /**
-     * @var Signature
+     * @var Key
      */
     private $signatureKey;
 
     /**
-     * @var Signature
+     * @var Key
      */
     private $verificationKey;
 
@@ -50,14 +50,14 @@ final class SessionMiddleware implements MiddlewareInterface
 
     /**
      * @param Signer $signer
-     * @param Signature $signatureKey
-     * @param Signature $verificationKey
+     * @param Key $signatureKey
+     * @param Key $verificationKey
      * @param Parser $tokenParser
      */
     public function __construct(
         Signer $signer,
-        Signature $signatureKey,
-        Signature $verificationKey,
+        Key $signatureKey,
+        Key $verificationKey,
         Parser $tokenParser
     ) {
         $this->signer = $signer;
@@ -69,7 +69,7 @@ final class SessionMiddleware implements MiddlewareInterface
     /**
      * {@inheritdoc}
      */
-    public function __invoke(Request $request, Response $response, $out = null)
+    public function __invoke(Request $request, Response $response, callable $out = null)
     {
         list($request, $sessionContainer) = $this->injectSession($request, $this->parseToken($request));
         $response = $out === null ? $response : $out($request, $response);
@@ -115,7 +115,7 @@ final class SessionMiddleware implements MiddlewareInterface
             return $response;
         }
 
-        return $response->withAddedHeader('Cookie', $this->getTokenCookie($sessionContainer));
+        return $response->withAddedHeader('Set-Cookie', $this->getTokenCookie($sessionContainer));
     }
 
     private function getTokenCookie(Data $sessionContainer):string
@@ -127,10 +127,9 @@ final class SessionMiddleware implements MiddlewareInterface
                                 ->getToken();
 
         return sprintf(
-            '%s=%s; Expires=%s; HttpOnly',
+            '%s=%s',
             urlencode($this->cookieName),
-            $token,
-            (new DateTime('@' . $token->getClaim('exp')))->format(DateTime::W3C)
+            $token
         );
 
         return sprintf(

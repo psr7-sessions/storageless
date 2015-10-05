@@ -94,7 +94,7 @@ class Data implements \JsonSerializable
 
     public function isEmpty()
     {
-
+        return empty($this->data);
     }
 
     // @TODO ArrayAccess stuff? Or Containers? (probably better to just allow plain keys)
@@ -103,9 +103,6 @@ class Data implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        return json_encode([
-            'data'     => $this->data,
-            'metadata' => $this->metadata,
-        ]);
+        return $this->data;
     }
 }
