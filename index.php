@@ -14,7 +14,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 $app = AppFactory::create();
 // $privateKey = new Key('file://private_key.pem');
 // $publicKey = new Key('file://public_key.pem');
-$privateKey = $publicKey = new Key('I do not care');
+$privateKey = $publicKey = 'I do not care';
 
 $app->pipe(new SessionMiddleware(new Sha256(), $privateKey, $publicKey, new Parser()));
 $app->pipe($api = AppFactory::create());

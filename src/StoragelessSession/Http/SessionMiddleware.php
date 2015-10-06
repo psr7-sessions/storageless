@@ -11,7 +11,6 @@ use Lcobucci\JWT\Builder;
 use StoragelessSession\Session\Data;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\ValidationData;
-use Lcobucci\JWT\Signer\Key;
 
 final class SessionMiddleware implements MiddlewareInterface
 {
@@ -29,12 +28,12 @@ final class SessionMiddleware implements MiddlewareInterface
     private $signer;
 
     /**
-     * @var Key
+     * @var string
      */
     private $signatureKey;
 
     /**
-     * @var Key
+     * @var string
      */
     private $verificationKey;
 
@@ -50,14 +49,14 @@ final class SessionMiddleware implements MiddlewareInterface
 
     /**
      * @param Signer $signer
-     * @param Key $signatureKey
-     * @param Key $verificationKey
+     * @param string $signatureKey
+     * @param string $verificationKey
      * @param Parser $tokenParser
      */
     public function __construct(
         Signer $signer,
-        Key $signatureKey,
-        Key $verificationKey,
+        $signatureKey,
+        $verificationKey,
         Parser $tokenParser
     ) {
         $this->signer = $signer;
@@ -137,7 +136,7 @@ final class SessionMiddleware implements MiddlewareInterface
             urlencode($this->cookieName),
             $token,
             'foo.com',
-            '/'
+            '/',
             (new DateTime('@' . $token->getClaim('exp')))->format(DateTime::W3C)
         );
     }
