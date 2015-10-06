@@ -67,6 +67,10 @@ final class SessionMiddleware implements MiddlewareInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \InvalidArgumentException
+     * @throws \OutOfBoundsException
+     * @throws \BadMethodCallException
      */
     public function __invoke(Request $request, Response $response, callable $out = null)
     {
@@ -76,6 +80,15 @@ final class SessionMiddleware implements MiddlewareInterface
         return $this->appendToken($sessionContainer, $response);
     }
 
+    /**
+     * Extract the token from the given request object
+     *
+     * @param Request $request
+     *
+     * @return Token|null
+     *
+     * @throws \BadMethodCallException
+     */
     private function parseToken(Request $request)
     {
         $cookieStrings = $request->getCookieParams();
@@ -97,7 +110,15 @@ final class SessionMiddleware implements MiddlewareInterface
         return $token;
     }
 
-    private function injectSession(Request $request, Token $token = null):array
+    /**
+     * @param Request    $request
+     * @param Token|null $token
+     *
+     * @return Request[]|Data[] (ordered tuple, with request first, response second)
+     *
+     * @throws \OutOfBoundsException
+     */
+    private function injectSession(Request $request, Token $token = null) : array
     {
         $container = $token
             ? Data::fromDecodedTokenData(
@@ -108,7 +129,15 @@ final class SessionMiddleware implements MiddlewareInterface
         return [$request->withAttribute(self::SESSION_ATTRIBUTE, $container), $container];
     }
 
-    private function appendToken(Data $sessionContainer, Response $response):Response
+    /**
+     * @param Data     $sessionContainer
+     * @param Response $response
+     *
+     * @return Response
+     *
+     * @throws \InvalidArgumentException
+     */
+    private function appendToken(Data $sessionContainer, Response $response) : Response
     {
         if ($sessionContainer->isEmpty()) {
             return $response;
@@ -117,27 +146,35 @@ final class SessionMiddleware implements MiddlewareInterface
         return $response->withAddedHeader('Set-Cookie', $this->getTokenCookie($sessionContainer));
     }
 
-    private function getTokenCookie(Data $sessionContainer):string
+    /**
+     * @param Data $sessionContainer
+     *
+     * @return string
+     *
+     * @throws \BadMethodCallException
+     */
+    private function getTokenCookie(Data $sessionContainer) : string
     {
-        $token = (new Builder())->setIssuedAt(time())
-                                ->setExpiration(time() + $this->expirationTime)
-                                ->set(self::SESSION_CLAIM, $sessionContainer)
-                                ->sign($this->signer, $this->signatureKey)
-                                ->getToken();
+        $token = (new Builder())
+            ->setIssuedAt(time())
+            ->setExpiration(time() + $this->expirationTime)
+            ->set(self::SESSION_CLAIM, $sessionContainer)
+            ->sign($this->signer, $this->signatureKey)
+            ->getToken();
 
         return sprintf(
             '%s=%s',
             urlencode($this->cookieName),
             $token
         );
-
-        return sprintf(
-            '%s=%s; Domain=%s; Path=%s; Expires=%s; Secure; HttpOnly',
-            urlencode($this->cookieName),
-            $token,
-            'foo.com',
-            '/',
-            (new DateTime('@' . $token->getClaim('exp')))->format(DateTime::W3C)
-        );
+//
+//        return sprintf(
+//            '%s=%s; Domain=%s; Path=%s; Expires=%s; Secure; HttpOnly',
+//            urlencode($this->cookieName),
+//            $token,
+//            'foo.com',
+//            '/',
+//            (new DateTime('@' . $token->getClaim('exp')))->format(DateTime::W3C)
+//        );
     }
 }
