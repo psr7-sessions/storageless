@@ -156,9 +156,11 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     private function getTokenCookie(Data $sessionContainer) : string
     {
+        $timestamp = (new \DateTime())->getTimestamp();
+
         $token = (new Builder())
-            ->setIssuedAt(time())
-            ->setExpiration(time() + $this->expirationTime)
+            ->setIssuedAt($timestamp)
+            ->setExpiration($timestamp + $this->expirationTime)
             ->set(self::SESSION_CLAIM, $sessionContainer)
             ->sign($this->signer, $this->signatureKey)
             ->getToken();
