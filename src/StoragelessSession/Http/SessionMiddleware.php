@@ -158,17 +158,15 @@ final class SessionMiddleware implements MiddlewareInterface
     {
         $timestamp = (new \DateTime())->getTimestamp();
 
-        $token = (new Builder())
-            ->setIssuedAt($timestamp)
-            ->setExpiration($timestamp + $this->expirationTime)
-            ->set(self::SESSION_CLAIM, $sessionContainer)
-            ->sign($this->signer, $this->signatureKey)
-            ->getToken();
-
         return sprintf(
             '%s=%s',
             urlencode($this->cookieName),
-            $token
+            (new Builder())
+                ->setIssuedAt($timestamp)
+                ->setExpiration($timestamp + $this->expirationTime)
+                ->set(self::SESSION_CLAIM, $sessionContainer)
+                ->sign($this->signer, $this->signatureKey)
+                ->getToken()
         );
 //
 //        return sprintf(
