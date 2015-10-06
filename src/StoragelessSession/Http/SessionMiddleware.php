@@ -136,6 +136,7 @@ final class SessionMiddleware implements MiddlewareInterface
      * @return Response
      *
      * @throws \InvalidArgumentException
+     * @throws \BadMethodCallException
      */
     private function appendToken(Data $sessionContainer, Response $response) : Response
     {
