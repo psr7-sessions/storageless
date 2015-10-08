@@ -35,7 +35,7 @@ Most of the logic isn't finalized yet, and this is just a mockup of a
 ### Assumptions
 
  * your sessions are fairly small and contain only few identifiers and
-   some CSRF tokens. Small means `< 400` byes
+   some CSRF tokens. Small means `< 400` bytes
  * data in your session is `JsonSerializable` or equivalent
  * data in your session is **freely available to the client** (we may 
    introduce encryption to change this in future)
