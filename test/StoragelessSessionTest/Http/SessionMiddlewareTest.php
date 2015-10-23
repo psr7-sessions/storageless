@@ -54,17 +54,11 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
      */
     public function testExtractsSessionContainerFromEmptyRequest(SessionMiddleware $middleware)
     {
-        $checkingMiddleware = $this->getMock(\stdClass::class, ['__invoke']);
+        $checkingMiddleware = $this->buildFakeMiddleware(function (ServerRequestInterface $request) {
+            self::assertInstanceOf(Data::class, $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE));
 
-        $checkingMiddleware
-            ->expects(self::once())
-            ->method('__invoke')
-            ->with(self::callback(function (ServerRequestInterface $request) {
-                self::assertInstanceOf(Data::class, $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE));
-
-                return true;
-            }))
-            ->willReturn(new Response());
+            return true;
+        });
 
         self::assertInstanceOf(
             ResponseInterface::class,
@@ -77,19 +71,14 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
      */
     public function testInjectsSessionInResponseCookies(SessionMiddleware $middleware)
     {
-        $checkingMiddleware = $this->getMock(\stdClass::class, ['__invoke']);
+        $checkingMiddleware = $this->buildFakeMiddleware(function (ServerRequestInterface $request) {
+            /* @var $data Data */
+            $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
 
-        $checkingMiddleware
-            ->expects(self::once())
-            ->method('__invoke')
-            ->willReturnCallback(function (ServerRequestInterface $request) {
-                /* @var $data Data */
-                $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+            $data->set('foo', 'bar');
 
-                $data->set('foo', 'bar');
-
-                return new Response();
-            });
+            return new Response();
+        });
 
         $response = $middleware(new ServerRequest(), new Response(), $checkingMiddleware);
 
@@ -105,35 +94,27 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
      */
     public function testSessionContainerCanBeReusedOverMultipleRequests(SessionMiddleware $middleware)
     {
-        $containerValue                = uniqid('', true);
-        $containerPopulationMiddleware = $this->getMock(\stdClass::class, ['__invoke']);
-        $containerCheckingMiddleware   = $this->getMock(\stdClass::class, ['__invoke']);
+        $containerValue = uniqid('', true);
 
-        $containerPopulationMiddleware
-            ->expects(self::once())
-            ->method('__invoke')
-            ->with(self::callback(function (ServerRequestInterface $request) use ($containerValue) {
+        $containerPopulationMiddleware = $this
+            ->buildFakeMiddleware(function (ServerRequestInterface $request) use ($containerValue) {
                 /* @var $data Data */
                 $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
 
                 $data->set('foo', $containerValue);
 
                 return true;
-            }))
-            ->willReturn(new Response());
+            });
 
-        $containerCheckingMiddleware
-            ->expects(self::once())
-            ->method('__invoke')
-            ->with(self::callback(function (ServerRequestInterface $request) use ($containerValue) {
+        $containerCheckingMiddleware = $this
+            ->buildFakeMiddleware(function (ServerRequestInterface $request) use ($containerValue) {
                 /* @var $data Data */
                 $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
 
                 self::assertSame($containerValue, $data->get('foo'));
 
                 return true;
-            }))
-            ->willReturn(new Response());
+            });
 
         $response = $middleware(new ServerRequest(), new Response(), $containerPopulationMiddleware);
 
@@ -161,34 +142,25 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             100
         );
 
-        $containerPopulationMiddleware = $this->getMock(\stdClass::class, ['__invoke']);
-        $containerCheckingMiddleware   = $this->getMock(\stdClass::class, ['__invoke']);
-
-        $containerPopulationMiddleware
-            ->expects(self::once())
-            ->method('__invoke')
-            ->with(self::callback(function (ServerRequestInterface $request) {
+        $containerPopulationMiddleware = $this
+            ->buildFakeMiddleware(function (ServerRequestInterface $request) {
                 /* @var $data Data */
                 $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
 
                 $data->set('someproperty', 'someValue');
 
                 return true;
-            }))
-            ->willReturn(new Response());
+            });
 
-        $containerCheckingMiddleware
-            ->expects(self::once())
-            ->method('__invoke')
-            ->with(self::callback(function (ServerRequestInterface $request) {
+        $containerCheckingMiddleware = $this
+            ->buildFakeMiddleware(function (ServerRequestInterface $request) {
                 /* @var $data Data */
                 $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
 
                 self::assertFalse($data->has('someValue'));
 
                 return true;
-            }))
-            ->willReturn(new Response());
+            });
 
         $response = $middleware(new ServerRequest(), new Response(), $containerPopulationMiddleware);
 
@@ -226,5 +198,24 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
                 200
             )],
         ];
+    }
+
+    /**
+     * @param callable               $callback
+     * @param ResponseInterface|null $returnedResponse
+     *
+     * @return \PHPUnit_Framework_MockObject_MockObject|callable
+     */
+    private function buildFakeMiddleware(callable $callback, ResponseInterface $returnedResponse = null)
+    {
+        $middleware = $this->getMock(\stdClass::class, ['__invoke']);
+
+        $middleware
+            ->expects(self::once())
+            ->method('__invoke')
+            ->with(self::callback($callback))
+            ->willReturn($returnedResponse ?? new Response());
+
+        return $middleware;
     }
 }
