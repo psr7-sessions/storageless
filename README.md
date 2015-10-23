@@ -18,16 +18,30 @@ application, this would look like following:
 ```php
 $app = \Zend\Expressive\AppFactory::create();
 
-$app
-    ->pipe(new \StoragelessSession\Http\SessionMiddleware(
-        new \Lcobucci\JWT\Signer\Hmac\Sha256(),
-        'a symmetric key',
-        'a symmetric key',
-        \Dflydev\FigCookies\SetCookie::create('the-session-cookie-name'),
-        new \Lcobucci\JWT\Parser(),
-        14400
-    ));
+$app->pipe(new \StoragelessSession\Http\SessionMiddleware(
+    new \Lcobucci\JWT\Signer\Hmac\Sha256(),
+    'a symmetric key',
+    'a symmetric key',
+    \Dflydev\FigCookies\SetCookie::create('the-session-cookie-name'),
+    new \Lcobucci\JWT\Parser(),
+    14400
+));
 ```
+
+After this, you can access the session data inside any middleware that
+has access to the `Psr\Http\Message\ServerRequestInterface` attributes:
+
+```php
+$app->get('/get', function ($request, ResponseInterface $response, $next) {
+    /* @var \StoragelessSession\Session\Data $container */
+    $container = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+    $container->set('hello', $container->has('hello') ? $container->get('hello') + 1 : 0);
+
+    return $response->write($container->get('hello'));
+});
+```
+
+You can do this also in asynchronous contexts and long running processes.
 
 ### WHY?
 
