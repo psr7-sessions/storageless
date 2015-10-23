@@ -1,9 +1,11 @@
 <?php
 namespace StoragelessSessionTest\Http;
 
+use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\SetCookie;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
+use Lcobucci\JWT\Token;
 use PHPUnit_Framework_TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -32,6 +34,31 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         self::assertInstanceOf(
             ResponseInterface::class,
             $this->defaultMiddleware()(new ServerRequest(), new Response(), $checkingMiddleware)
+        );
+    }
+
+    public function testInjectsSessionInResponseCookies()
+    {
+        $checkingMiddleware = $this->getMock(\stdClass::class, ['__invoke']);
+
+        $checkingMiddleware
+            ->expects(self::once())
+            ->method('__invoke')
+            ->willReturnCallback(function (ServerRequestInterface $request) {
+                /* @var $data Data */
+                $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+
+                $data->set('foo', 'bar');
+
+                return new Response();
+            });
+
+        $response = $this->defaultMiddleware()(new ServerRequest(), new Response(), $checkingMiddleware);
+
+        self::assertEmpty(FigResponseCookies::get($response, 'non-existing')->getValue());
+        self::assertInstanceOf(
+            Token::class,
+            (new Parser())->parse(FigResponseCookies::get($response, 'cookie-name')->getValue())
         );
     }
 
