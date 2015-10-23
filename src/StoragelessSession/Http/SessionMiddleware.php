@@ -8,7 +8,6 @@ use Dflydev\FigCookies\SetCookie;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
-use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\ValidationData;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -87,9 +86,33 @@ final class SessionMiddleware implements MiddlewareInterface
     public static function fromSymmetricKeyDefaults(string $symmetricKey, int $expirationTime)
     {
         return new self(
-            new Sha256(),
+            new Signer\Hmac\Sha256(),
             $symmetricKey,
             $symmetricKey,
+            SetCookie::create(self::DEFAULT_COOKIE)
+                ->withSecure(true)
+                ->withHttpOnly(true),
+            new Parser(),
+            $expirationTime
+        );
+    }
+
+    /**
+     * This constructor simplifies instantiation when using HTTPS (REQUIRED!) and asymmetric key encription
+     * based on RSA keys
+     *
+     * @param string $privateRsaKey
+     * @param string $publicRsaKey
+     * @param int    $expirationTime
+     *
+     * @return self
+     */
+    public static function fromAsymmetricKey(string $privateRsaKey, string $publicRsaKey, int $expirationTime)
+    {
+        return new self(
+            new Signer\Rsa\Sha256(),
+            $privateRsaKey,
+            $publicRsaKey,
             SetCookie::create(self::DEFAULT_COOKIE)
                 ->withSecure(true)
                 ->withHttpOnly(true),
