@@ -17,15 +17,6 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
 {
     public function testExtractsSessionContainerFromEmptyRequest()
     {
-        $middleware = new SessionMiddleware(
-            new Sha256(),
-            'foo',
-            'bar',
-            SetCookie::create('cookie-name'),
-            new Parser(),
-            100
-        );
-
         $checkingMiddleware = $this->getMock(\stdClass::class, ['__invoke']);
 
         $checkingMiddleware
@@ -40,7 +31,22 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
 
         self::assertInstanceOf(
             ResponseInterface::class,
-            $middleware(new ServerRequest(), new Response(), $checkingMiddleware)
+            $this->defaultMiddleware()(new ServerRequest(), new Response(), $checkingMiddleware)
+        );
+    }
+
+    /**
+     * @return SessionMiddleware
+     */
+    private function defaultMiddleware()
+    {
+        return new SessionMiddleware(
+            new Sha256(),
+            'foo',
+            'bar',
+            SetCookie::create('cookie-name'),
+            new Parser(),
+            100
         );
     }
 }
