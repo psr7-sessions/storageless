@@ -29,6 +29,11 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         self::markTestIncomplete();
     }
 
+    public function testRequiresTokenSignatureValidation()
+    {
+        self::markTestIncomplete();
+    }
+
     public function testExtractsSessionContainerFromEmptyRequest()
     {
         $checkingMiddleware = $this->getMock(\stdClass::class, ['__invoke']);
