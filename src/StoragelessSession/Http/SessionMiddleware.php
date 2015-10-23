@@ -8,6 +8,7 @@ use Dflydev\FigCookies\SetCookie;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
+use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\ValidationData;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -19,6 +20,7 @@ final class SessionMiddleware implements MiddlewareInterface
 {
     const SESSION_CLAIM     = 'session-data';
     const SESSION_ATTRIBUTE = 'session';
+    const DEFAULT_COOKIE    = 'slsession';
 
     /**
      * @var Signer
@@ -72,6 +74,26 @@ final class SessionMiddleware implements MiddlewareInterface
         $this->tokenParser     = $tokenParser;
         $this->defaultCookie   = clone $defaultCookie;
         $this->expirationTime  = $expirationTime;
+    }
+
+    /**
+     * @param string $symmetricKey
+     * @param int    $expirationTime
+     *
+     * @return self
+     */
+    public static function fromSymmetricKeyDefaults(string $symmetricKey, int $expirationTime)
+    {
+        return new self(
+            new Sha256(),
+            $symmetricKey,
+            $symmetricKey,
+            SetCookie::create(self::DEFAULT_COOKIE)
+                ->withSecure(true)
+                ->withHttpOnly(true),
+            new Parser(),
+            $expirationTime
+        );
     }
 
     /**
