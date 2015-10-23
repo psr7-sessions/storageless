@@ -38,7 +38,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             }))
             ->willReturn(new Response());
 
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             ResponseInterface::class,
             $middleware(new ServerRequest(), new Response(), $checkingMiddleware)
         );
