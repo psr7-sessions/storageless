@@ -49,7 +49,10 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         self::markTestIncomplete();
     }
 
-    public function testExtractsSessionContainerFromEmptyRequest()
+    /**
+     * @dataProvider validMiddlewaresProvider
+     */
+    public function testExtractsSessionContainerFromEmptyRequest(SessionMiddleware $middleware)
     {
         $checkingMiddleware = $this->getMock(\stdClass::class, ['__invoke']);
 
@@ -65,7 +68,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
 
         self::assertInstanceOf(
             ResponseInterface::class,
-            $this->defaultMiddleware()(new ServerRequest(), new Response(), $checkingMiddleware)
+            $middleware(new ServerRequest(), new Response(), $checkingMiddleware)
         );
     }
 
@@ -136,6 +139,22 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             new Response(),
             $containerCheckingMiddleware
         );
+    }
+
+    /**
+     * @return SessionMiddleware[][]
+     */
+    public function validMiddlewaresProvider()
+    {
+        return [
+            [$this->defaultMiddleware()],
+            [SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100)],
+            [SessionMiddleware::fromAsymmetricKey(
+                file_get_contents(__DIR__ . '/../../keys/private_key.pem'),
+                file_get_contents(__DIR__ . '/../../keys/public_key.pem'),
+                200
+            )],
+        ];
     }
 
     /**
