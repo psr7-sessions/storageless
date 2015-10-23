@@ -59,19 +59,22 @@ final class SessionMiddleware implements MiddlewareInterface
      * @param string    $verificationKey
      * @param SetCookie $defaultCookie
      * @param Parser    $tokenParser
+     * @param int       $expirationTime
      */
     public function __construct(
         Signer $signer,
         $signatureKey,
         $verificationKey,
         SetCookie $defaultCookie,
-        Parser $tokenParser
+        Parser $tokenParser,
+        int $expirationTime
     ) {
         $this->signer          = $signer;
         $this->signatureKey    = $signatureKey;
         $this->verificationKey = $verificationKey;
         $this->tokenParser     = $tokenParser;
         $this->defaultCookie   = clone $defaultCookie;
+        $this->expirationTime  = $expirationTime;
     }
 
     /**
