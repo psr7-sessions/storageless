@@ -19,6 +19,11 @@ use Zend\Diactoros\ServerRequest;
 
 final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
 {
+    public function testInjectsSessionDataEvenWithNoNextMiddleware()
+    {
+        self::markTestIncomplete();
+    }
+
     public function testExtractsSessionContainerFromEmptyRequest()
     {
         $checkingMiddleware = $this->getMock(\stdClass::class, ['__invoke']);
