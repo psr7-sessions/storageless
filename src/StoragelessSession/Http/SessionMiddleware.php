@@ -2,15 +2,16 @@
 namespace StoragelessSession\Http;
 
 use DateTime;
-use Zend\Stratigility\MiddlewareInterface;
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
-use Lcobucci\JWT\Token;
-use Lcobucci\JWT\Signer;
+use Dflydev\FigCookies\SetCookie;
 use Lcobucci\JWT\Builder;
-use StoragelessSession\Session\Data;
 use Lcobucci\JWT\Parser;
+use Lcobucci\JWT\Signer;
+use Lcobucci\JWT\Token;
 use Lcobucci\JWT\ValidationData;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use StoragelessSession\Session\Data;
+use Zend\Stratigility\MiddlewareInterface;
 
 final class SessionMiddleware implements MiddlewareInterface
 {
@@ -48,21 +49,29 @@ final class SessionMiddleware implements MiddlewareInterface
     private $tokenParser;
 
     /**
-     * @param Signer $signer
-     * @param string $signatureKey
-     * @param string $verificationKey
-     * @param Parser $tokenParser
+     * @var SetCookie
+     */
+    private $defaultCookie;
+
+    /**
+     * @param Signer    $signer
+     * @param string    $signatureKey
+     * @param string    $verificationKey
+     * @param SetCookie $defaultCookie
+     * @param Parser    $tokenParser
      */
     public function __construct(
         Signer $signer,
         $signatureKey,
         $verificationKey,
+        SetCookie $defaultCookie,
         Parser $tokenParser
     ) {
-        $this->signer = $signer;
-        $this->signatureKey = $signatureKey;
+        $this->signer          = $signer;
+        $this->signatureKey    = $signatureKey;
         $this->verificationKey = $verificationKey;
-        $this->tokenParser = $tokenParser;
+        $this->tokenParser     = $tokenParser;
+        $this->defaultCookie   = clone $defaultCookie;
     }
 
     /**
