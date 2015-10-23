@@ -1,0 +1,46 @@
+<?php
+namespace StoragelessSessionTest\Http;
+
+use Dflydev\FigCookies\SetCookie;
+use Lcobucci\JWT\Parser;
+use Lcobucci\JWT\Signer\Hmac\Sha256;
+use PHPUnit_Framework_TestCase;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use StoragelessSession\Http\SessionMiddleware;
+use StoragelessSession\Session\Data;
+use Zend\Diactoros\Request;
+use Zend\Diactoros\Response;
+use Zend\Diactoros\ServerRequest;
+
+final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
+{
+    public function testExtractsSessionContainerFromEmptyRequest()
+    {
+        $middleware = new SessionMiddleware(
+            new Sha256(),
+            'foo',
+            'bar',
+            SetCookie::create('cookie-name'),
+            new Parser(),
+            100
+        );
+
+        $checkingMiddleware = $this->getMock(\stdClass::class, ['__invoke']);
+
+        $checkingMiddleware
+            ->expects(self::once())
+            ->method('__invoke')
+            ->with(self::callback(function (ServerRequestInterface $request) {
+                self::assertInstanceOf(Data::class, $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE));
+
+                return true;
+            }))
+            ->willReturn(new Response());
+
+        $this->assertInstanceOf(
+            ResponseInterface::class,
+            $middleware(new ServerRequest(), new Response(), $checkingMiddleware)
+        );
+    }
+}
