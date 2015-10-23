@@ -19,9 +19,38 @@ use Zend\Diactoros\ServerRequest;
 
 final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
 {
-    public function testInjectsSessionDataEvenWithNoNextMiddleware()
+    /**
+     * @dataProvider validMiddlewaresProvider
+     */
+    public function testInjectsSessionDataEvenWithNoNextMiddleware(SessionMiddleware $middleware)
     {
-        self::markTestIncomplete();
+        $containerValue = uniqid('', true);
+
+        $containerPopulationMiddleware = $this
+            ->buildFakeMiddleware(function (ServerRequestInterface $request) use ($containerValue) {
+                /* @var $data Data */
+                $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+
+                $data->set('foo', $containerValue);
+
+                return true;
+            });
+
+        // populate the cookies
+        $firstResponse = $middleware(new ServerRequest(), new Response(), $containerPopulationMiddleware);
+
+        $response = $middleware(
+            FigRequestCookies::set(
+                new ServerRequest(),
+                Cookie::create(
+                    SessionMiddleware::DEFAULT_COOKIE,
+                    FigResponseCookies::get($firstResponse, SessionMiddleware::DEFAULT_COOKIE)->getValue()
+                )
+            ),
+            new Response()
+        );
+
+        self::assertNotEmpty(FigResponseCookies::get($response, SessionMiddleware::DEFAULT_COOKIE)->getValue());
     }
 
     public function testRequiresValidToken()
