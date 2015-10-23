@@ -60,8 +60,8 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     public function __construct(
         Signer $signer,
-        $signatureKey,
-        $verificationKey,
+        string $signatureKey,
+        string $verificationKey,
         SetCookie $defaultCookie,
         Parser $tokenParser,
         int $expirationTime
