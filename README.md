@@ -12,6 +12,23 @@ You can use the `StoragelessSession\Http\SessionMiddleware` in any
 [`zendframework/zend-stratigility`](https://github.com/zendframework/zend-stratigility)
 compatible [PSR-7](http://www.php-fig.org/psr/psr-7/) middleware.
 
+In a [`zendframework/zend-expressive`](https://github.com/zendframework/zend-expressive)
+application, this would look like following:
+
+```php
+$app = \Zend\Expressive\AppFactory::create();
+
+$app
+    ->pipe(new \StoragelessSession\Http\SessionMiddleware(
+        new \Lcobucci\JWT\Signer\Hmac\Sha256(),
+        'a symmetric key',
+        'a symmetric key',
+        \Dflydev\FigCookies\SetCookie::create('the-session-cookie-name'),
+        new \Lcobucci\JWT\Parser(),
+        14400
+    ));
+```
+
 ### WHY?
 
 In most PHP+HTTP related projects, `ext/session` serves its purpose and
