@@ -1,6 +1,10 @@
 # Storage-Less HTTP Sessions
 
-**WARNING: THIS REPOSITORY IS A MOCKUP! DO NOT ATTEMPT USING THIS YET!**
+### Installation
+
+```sh
+composer require ocramius/storage-less-session
+```
 
 ### WHY?
 
