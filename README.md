@@ -6,6 +6,12 @@
 composer require ocramius/storage-less-session
 ```
 
+### Usage
+
+You can use the `StoragelessSession\Http\SessionMiddleware` in any 
+[`zendframework/zend-stratigility`](https://github.com/zendframework/zend-stratigility)
+compatible [PSR-7](http://www.php-fig.org/psr/psr-7/) middleware.
+
 ### WHY?
 
 In most PHP+HTTP related projects, `ext/session` serves its purpose and
