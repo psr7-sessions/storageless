@@ -12,7 +12,7 @@
     syntaxCheck="true"
 >
     <testsuite name="StoragelessSession tests">
-        <directory>./tests/ProxyManagerTest</directory>
+        <directory>./test/StoragelessSessionTest</directory>
     </testsuite>
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">
