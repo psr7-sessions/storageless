@@ -21,11 +21,6 @@ final class SessionMiddleware implements MiddlewareInterface
     const SESSION_ATTRIBUTE = 'session';
 
     /**
-     * @var string
-     */
-    private $cookieName = 'yadda';
-
-    /**
      * @var Signer
      */
     private $signer;
