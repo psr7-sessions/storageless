@@ -150,6 +150,61 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function testRejectsTokensWithInvalidSignature()
+    {
+        $middleware = new SessionMiddleware(
+            new Sha256(),
+            'foo',
+            'bar', // wrong symmetric key (on purpose)
+            SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
+            new Parser(),
+            100
+        );
+
+        $containerPopulationMiddleware = $this->getMock(\stdClass::class, ['__invoke']);
+        $containerCheckingMiddleware   = $this->getMock(\stdClass::class, ['__invoke']);
+
+        $containerPopulationMiddleware
+            ->expects(self::once())
+            ->method('__invoke')
+            ->with(self::callback(function (ServerRequestInterface $request) {
+                /* @var $data Data */
+                $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+
+                $data->set('someproperty', 'someValue');
+
+                return true;
+            }))
+            ->willReturn(new Response());
+
+        $containerCheckingMiddleware
+            ->expects(self::once())
+            ->method('__invoke')
+            ->with(self::callback(function (ServerRequestInterface $request) {
+                /* @var $data Data */
+                $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+
+                self::assertFalse($data->has('someValue'));
+
+                return true;
+            }))
+            ->willReturn(new Response());
+
+        $response = $middleware(new ServerRequest(), new Response(), $containerPopulationMiddleware);
+
+        $middleware(
+            FigRequestCookies::set(
+                new ServerRequest(),
+                Cookie::create(
+                    SessionMiddleware::DEFAULT_COOKIE,
+                    FigResponseCookies::get($response, SessionMiddleware::DEFAULT_COOKIE)->getValue()
+                )
+            ),
+            new Response(),
+            $containerCheckingMiddleware
+        );
+    }
+
     /**
      * @return SessionMiddleware[][]
      */
