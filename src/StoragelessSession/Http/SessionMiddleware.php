@@ -2,6 +2,7 @@
 namespace StoragelessSession\Http;
 
 use DateTime;
+use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\SetCookie;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Parser;
@@ -156,38 +157,30 @@ final class SessionMiddleware implements MiddlewareInterface
             return $response;
         }
 
-        return $response->withAddedHeader('Set-Cookie', $this->getTokenCookie($sessionContainer));
+        return FigResponseCookies::set($response, $this->getTokenCookie($sessionContainer));
     }
 
     /**
      * @param Data $sessionContainer
      *
-     * @return string
+     * @return SetCookie
      *
      * @throws \BadMethodCallException
      */
-    private function getTokenCookie(Data $sessionContainer) : string
+    private function getTokenCookie(Data $sessionContainer) : SetCookie
     {
         $timestamp = (new \DateTime())->getTimestamp();
 
-        return sprintf(
-            '%s=%s',
-            urlencode($this->cookieName),
-            (new Builder())
-                ->setIssuedAt($timestamp)
-                ->setExpiration($timestamp + $this->expirationTime)
-                ->set(self::SESSION_CLAIM, $sessionContainer)
-                ->sign($this->signer, $this->signatureKey)
-                ->getToken()
-        );
-//
-//        return sprintf(
-//            '%s=%s; Domain=%s; Path=%s; Expires=%s; Secure; HttpOnly',
-//            urlencode($this->cookieName),
-//            $token,
-//            'foo.com',
-//            '/',
-//            (new DateTime('@' . $token->getClaim('exp')))->format(DateTime::W3C)
-//        );
+        return $this
+            ->defaultCookie
+            ->withValue(
+                (new Builder())
+                    ->setIssuedAt($timestamp)
+                    ->setExpiration($timestamp + $this->expirationTime)
+                    ->set(self::SESSION_CLAIM, $sessionContainer)
+                    ->sign($this->signer, $this->signatureKey)
+                    ->getToken()
+            )
+            ->withExpires($timestamp + $this->expirationTime);
     }
 }
