@@ -72,7 +72,10 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    public function testInjectsSessionInResponseCookies()
+    /**
+     * @dataProvider validMiddlewaresProvider
+     */
+    public function testInjectsSessionInResponseCookies(SessionMiddleware $middleware)
     {
         $checkingMiddleware = $this->getMock(\stdClass::class, ['__invoke']);
 
@@ -88,7 +91,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
                 return new Response();
             });
 
-        $response = $this->defaultMiddleware()(new ServerRequest(), new Response(), $checkingMiddleware);
+        $response = $middleware(new ServerRequest(), new Response(), $checkingMiddleware);
 
         self::assertEmpty(FigResponseCookies::get($response, 'non-existing')->getValue());
         self::assertInstanceOf(
@@ -97,7 +100,10 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    public function testSessionContainerCanBeReusedOverMultipleRequests()
+    /**
+     * @dataProvider validMiddlewaresProvider
+     */
+    public function testSessionContainerCanBeReusedOverMultipleRequests(SessionMiddleware $middleware)
     {
         $containerValue                = uniqid('', true);
         $containerPopulationMiddleware = $this->getMock(\stdClass::class, ['__invoke']);
@@ -129,9 +135,9 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             }))
             ->willReturn(new Response());
 
-        $response = $this->defaultMiddleware()(new ServerRequest(), new Response(), $containerPopulationMiddleware);
+        $response = $middleware(new ServerRequest(), new Response(), $containerPopulationMiddleware);
 
-        $this->defaultMiddleware()(
+        $middleware(
             FigRequestCookies::set(
                 new ServerRequest(),
                 Cookie::create('cookie-name', FigResponseCookies::get($response, 'cookie-name')->getValue())
@@ -147,7 +153,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     public function validMiddlewaresProvider()
     {
         return [
-            [$this->defaultMiddleware()],
+            [new SessionMiddleware(new Sha256(), 'foo', 'foo', SetCookie::create('cookie-name'), new Parser(), 100)],
             [SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100)],
             [SessionMiddleware::fromAsymmetricKey(
                 file_get_contents(__DIR__ . '/../../keys/private_key.pem'),
@@ -155,20 +161,5 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
                 200
             )],
         ];
-    }
-
-    /**
-     * @return SessionMiddleware
-     */
-    private function defaultMiddleware()
-    {
-        return new SessionMiddleware(
-            new Sha256(),
-            'foo',
-            'foo',
-            SetCookie::create('cookie-name'),
-            new Parser(),
-            100
-        );
     }
 }
