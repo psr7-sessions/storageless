@@ -96,7 +96,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         self::assertEmpty(FigResponseCookies::get($response, 'non-existing')->getValue());
         self::assertInstanceOf(
             Token::class,
-            (new Parser())->parse(FigResponseCookies::get($response, 'cookie-name')->getValue())
+            (new Parser())->parse(FigResponseCookies::get($response, SessionMiddleware::DEFAULT_COOKIE)->getValue())
         );
     }
 
@@ -140,7 +140,10 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         $middleware(
             FigRequestCookies::set(
                 new ServerRequest(),
-                Cookie::create('cookie-name', FigResponseCookies::get($response, 'cookie-name')->getValue())
+                Cookie::create(
+                    SessionMiddleware::DEFAULT_COOKIE,
+                    FigResponseCookies::get($response, SessionMiddleware::DEFAULT_COOKIE)->getValue()
+                )
             ),
             new Response(),
             $containerCheckingMiddleware
@@ -153,7 +156,14 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     public function validMiddlewaresProvider()
     {
         return [
-            [new SessionMiddleware(new Sha256(), 'foo', 'foo', SetCookie::create('cookie-name'), new Parser(), 100)],
+            [new SessionMiddleware(
+                new Sha256(),
+                'foo',
+                'foo',
+                SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
+                new Parser(),
+                100
+            )],
             [SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100)],
             [SessionMiddleware::fromAsymmetricKey(
                 file_get_contents(__DIR__ . '/../../keys/private_key.pem'),
