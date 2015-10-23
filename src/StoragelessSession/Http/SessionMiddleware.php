@@ -38,7 +38,7 @@ final class SessionMiddleware implements MiddlewareInterface
     /**
      * @var int
      */
-    private $expirationTime = 14600;
+    private $expirationTime;
 
     /**
      * @var Parser
