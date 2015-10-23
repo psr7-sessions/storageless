@@ -44,6 +44,11 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         self::markTestIncomplete();
     }
 
+    public function testRemovesSessionCookieOnEmptySessionContainer()
+    {
+        self::markTestIncomplete();
+    }
+
     public function testExtractsSessionContainerFromEmptyRequest()
     {
         $checkingMiddleware = $this->getMock(\stdClass::class, ['__invoke']);
