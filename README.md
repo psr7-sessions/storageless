@@ -48,6 +48,17 @@ Note that you can also use asymmetric keys by using either the
 `StoragelessSession\Http\SessionMiddleware` constructor or the named
 constructor `StoragelessSession\Http\SessionMiddleware::fromSymmetricKeyDefaults()``
 
+### Examples
+
+Simply browse to the `examples` directory in your console, then run
+
+```sh
+php -S localhost:9999 index.php
+```
+
+Then try accessing `http://localhost:9999`: you should see a counter
+that increases at every page refresh
+
 ### WHY?
 
 In most PHP+HTTP related projects, `ext/session` serves its purpose and
