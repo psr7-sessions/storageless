@@ -1,5 +1,11 @@
 # Storage-Less HTTP Sessions
 
+[![Build Status](https://travis-ci.org/Ocramius/StorageLessSession.svg)](https://travis-ci.org/Ocramius/StorageLessSession)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Ocramius/StorageLessSession/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Ocramius/StorageLessSession/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/Ocramius/StorageLessSession/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Ocramius/StorageLessSession/?branch=master)
+[![Packagist](https://img.shields.io/packagist/v/ocramius/storage-less-session.svg)](https://packagist.org/packages/ocramius/storage-less-session)
+[![Packagist](https://img.shields.io/packagist/vpre/ocramius/storage-less-session.svg)](https://packagist.org/packages/ocramius/storage-less-session)
+
 ### Installation
 
 ```sh
