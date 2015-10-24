@@ -147,7 +147,6 @@ final class SessionMiddleware implements MiddlewareInterface
      *
      * @throws \InvalidArgumentException
      * @throws \OutOfBoundsException
-     * @throws \BadMethodCallException
      */
     public function __invoke(Request $request, Response $response, callable $out = null) : Response
     {
@@ -166,8 +165,6 @@ final class SessionMiddleware implements MiddlewareInterface
      * @param Request $request
      *
      * @return Token|null
-     *
-     * @throws \BadMethodCallException
      */
     private function parseToken(Request $request)
     {
@@ -224,7 +221,6 @@ final class SessionMiddleware implements MiddlewareInterface
      * @return Response
      *
      * @throws \InvalidArgumentException
-     * @throws \BadMethodCallException
      */
     private function appendToken(Data $sessionContainer, Response $response) : Response
     {
@@ -239,8 +235,6 @@ final class SessionMiddleware implements MiddlewareInterface
      * @param Data $sessionContainer
      *
      * @return SetCookie
-     *
-     * @throws \BadMethodCallException
      */
     private function getTokenCookie(Data $sessionContainer) : SetCookie
     {
