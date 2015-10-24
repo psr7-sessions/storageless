@@ -18,6 +18,9 @@
 
 declare(strict_types=1);
 
+use Dflydev\FigCookies\SetCookie;
+use Lcobucci\JWT\Parser;
+use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Diactoros\Response;
 use StoragelessSession\Http\SessionMiddleware;
@@ -35,8 +38,14 @@ require_once __DIR__ . '/../vendor/autoload.php';
 // simply run `php -S localhost:8888 index.php`
 // then point your browser at `http://localhost:8888/get`
 
-$sessionMiddleware = SessionMiddleware::fromSymmetricKeyDefaults(
+$sessionMiddleware = new SessionMiddleware(
+    new Sha256(),
     'a very complex symmetric key',
+    'a very complex symmetric key',
+    SetCookie::create('an-example-cookie-name')
+        ->withSecure(false) // false on purpose, unless you have https locally
+        ->withHttpOnly(true),
+    new Parser(),
     14400
 );
 $myMiddleware = function (ServerRequestInterface $request, ResponseInterface $response) {
