@@ -145,7 +145,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
 
     public function testRemovesSessionCookieOnEmptySessionContainer()
     {
-        self::markTestIncomplete();
+        self::markTestIncomplete('This feature is yet to be implemented, and we may do so in a different middleware');
     }
 
     /**
