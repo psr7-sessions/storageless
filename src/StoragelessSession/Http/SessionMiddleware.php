@@ -150,7 +150,10 @@ final class SessionMiddleware implements MiddlewareInterface
     public function __invoke(Request $request, Response $response, callable $out = null)
     {
         list($request, $sessionContainer) = $this->injectSession($request, $this->parseToken($request));
-        $response = $out === null ? $response : $out($request, $response);
+
+        if (null !== $out) {
+            $response = $out($request, $response);
+        }
 
         return $this->appendToken($sessionContainer, $response);
     }
