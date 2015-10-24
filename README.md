@@ -18,13 +18,9 @@ application, this would look like following:
 ```php
 $app = \Zend\Expressive\AppFactory::create();
 
-$app->pipe(new \StoragelessSession\Http\SessionMiddleware(
-    new \Lcobucci\JWT\Signer\Hmac\Sha256(),
+$app->pipe(new \StoragelessSession\Http\SessionMiddleware::fromSymmetricKeyDefaults(
     'a symmetric key',
-    'a symmetric key',
-    \Dflydev\FigCookies\SetCookie::create('the-session-cookie-name'),
-    new \Lcobucci\JWT\Parser(),
-    14400
+    14400 // 20 minutes
 ));
 ```
 
