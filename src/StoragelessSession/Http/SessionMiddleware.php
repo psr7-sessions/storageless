@@ -213,25 +213,6 @@ final class SessionMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @param Request    $request
-     * @param Token|null $token
-     *
-     * @return Request[]|Data[] (ordered tuple, with request first, response second)
-     *
-     * @throws \OutOfBoundsException
-     */
-    private function injectSession(Request $request, Token $token = null) : array
-    {
-        $container = $token
-            ? Data::fromDecodedTokenData(
-                $token->getClaim(self::SESSION_CLAIM) ?? new \stdClass()
-            )
-            : Data::newEmptySession();
-
-        return [$request->withAttribute(self::SESSION_ATTRIBUTE, $container), $container];
-    }
-
-    /**
      * @param Data     $sessionContainer
      * @param Response $response
      *
