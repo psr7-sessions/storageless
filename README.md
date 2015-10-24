@@ -28,7 +28,7 @@ After this, you can access the session data inside any middleware that
 has access to the `Psr\Http\Message\ServerRequestInterface` attributes:
 
 ```php
-$app->get('/get', function ($request, ResponseInterface $response, $next) {
+$app->get('/get', function (ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface {
     /* @var \StoragelessSession\Session\Data $container */
     $container = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
     $container->set('counter', $container->has('counter') ? $container->get('counter') + 1 : 0);
