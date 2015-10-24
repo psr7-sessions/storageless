@@ -31,9 +31,13 @@ has access to the `Psr\Http\Message\ServerRequestInterface` attributes:
 $app->get('/get', function ($request, ResponseInterface $response, $next) {
     /* @var \StoragelessSession\Session\Data $container */
     $container = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
-    $container->set('hello', $container->has('hello') ? $container->get('hello') + 1 : 0);
+    $container->set('counter', $container->has('counter') ? $container->get('counter') + 1 : 0);
 
-    return $response->write($container->get('hello'));
+    $response
+        ->getBody()
+        ->write('Counter Value: ' . $container->get('counter'));
+
+    return $response;
 });
 ```
 
