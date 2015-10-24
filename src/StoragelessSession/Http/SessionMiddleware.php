@@ -101,7 +101,7 @@ final class SessionMiddleware implements MiddlewareInterface
      *
      * @return self
      */
-    public static function fromSymmetricKeyDefaults(string $symmetricKey, int $expirationTime)
+    public static function fromSymmetricKeyDefaults(string $symmetricKey, int $expirationTime) : SessionMiddleware
     {
         return new self(
             new Signer\Hmac\Sha256(),
@@ -125,8 +125,11 @@ final class SessionMiddleware implements MiddlewareInterface
      *
      * @return self
      */
-    public static function fromAsymmetricKeyDefaults(string $privateRsaKey, string $publicRsaKey, int $expirationTime)
-    {
+    public static function fromAsymmetricKeyDefaults(
+        string $privateRsaKey,
+        string $publicRsaKey,
+        int $expirationTime
+    ) : SessionMiddleware {
         return new self(
             new Signer\Rsa\Sha256(),
             $privateRsaKey,
