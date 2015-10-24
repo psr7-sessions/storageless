@@ -58,11 +58,6 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         self::markTestIncomplete();
     }
 
-    public function testRequiresTokenSignatureValidation()
-    {
-        self::markTestIncomplete();
-    }
-
     public function testRequiresTokenExpirationValidation()
     {
         self::markTestIncomplete();
