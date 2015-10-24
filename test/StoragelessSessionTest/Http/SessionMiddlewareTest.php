@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace StoragelessSessionTest\Http;
 
 use Dflydev\FigCookies\Cookie;
