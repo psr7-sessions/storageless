@@ -149,7 +149,7 @@ final class SessionMiddleware implements MiddlewareInterface
      * @throws \OutOfBoundsException
      * @throws \BadMethodCallException
      */
-    public function __invoke(Request $request, Response $response, callable $out = null)
+    public function __invoke(Request $request, Response $response, callable $out = null) : Response
     {
         $sessionContainer = $this->extractSessionContainer($this->parseToken($request));
 
