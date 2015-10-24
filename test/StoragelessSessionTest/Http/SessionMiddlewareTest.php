@@ -140,7 +140,43 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
 
     public function testAllowsModifyingHeaderDetails()
     {
-        self::markTestIncomplete();
+        $middleware = new SessionMiddleware(
+            new Sha256(),
+            'foo',
+            'foo',
+            SetCookie::create('a-different-cookie-name')
+                ->withDomain('foo.bar')
+                ->withPath('/yadda')
+                ->withHttpOnly(false)
+                ->withMaxAge(123123)
+                ->withValue('a-random-value'),
+            new Parser(),
+            123456
+        );
+
+        $containerPopulationMiddleware = $this
+            ->buildFakeMiddleware(function (ServerRequestInterface $request) {
+                /* @var $data Data */
+                $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+
+                $data->set('foo', 'bar');
+
+                return true;
+            });
+
+        $response = $middleware(new ServerRequest(), new Response(), $containerPopulationMiddleware);
+
+        self::assertNull(FigResponseCookies::get($response, SessionMiddleware::DEFAULT_COOKIE)->getValue());
+
+        $tokenCookie = FigResponseCookies::get($response, 'a-different-cookie-name');
+
+        self::assertNotEmpty($tokenCookie->getValue());
+        self::assertNotSame('a-random-value', $tokenCookie->getValue());
+        self::assertSame('foo.bar', $tokenCookie->getDomain());
+        self::assertSame('/yadda', $tokenCookie->getPath());
+        self::assertFalse($tokenCookie->getHttpOnly());
+        self::assertEquals(123123, $tokenCookie->getMaxAge());
+        self::assertEquals(time() + 123456, $tokenCookie->getExpires(), '', 2);
     }
 
     public function testRemovesSessionCookieOnEmptySessionContainer()
