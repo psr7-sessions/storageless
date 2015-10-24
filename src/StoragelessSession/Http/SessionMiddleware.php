@@ -21,7 +21,6 @@ declare(strict_types=1);
 namespace StoragelessSession\Http;
 
 use DateTime;
-use Dflydev\FigCookies\FigRequestCookies;
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\SetCookie;
 use Lcobucci\JWT\Builder;
@@ -169,12 +168,15 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     private function parseToken(Request $request)
     {
-        if (! $content = FigRequestCookies::get($request, $this->defaultCookie->getName())->getValue()) {
+        $cookies   = $request->getCookieParams();
+        $cookieName = $this->defaultCookie->getName();
+
+        if (! isset($cookies[$cookieName])) {
             return null;
         }
 
         try {
-            $token = $this->tokenParser->parse($content);
+            $token = $this->tokenParser->parse($cookies[$cookieName]);
         } catch (\InvalidArgumentException $invalidToken) {
             return null;
         }
