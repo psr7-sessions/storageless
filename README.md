@@ -46,7 +46,7 @@ since no super-globals nor I/O are involved.
 
 Note that you can also use asymmetric keys by using either the
 `StoragelessSession\Http\SessionMiddleware` constructor or the named
-constructor `StoragelessSession\Http\SessionMiddleware::fromSymmetricKeyDefaults()``
+constructor `StoragelessSession\Http\SessionMiddleware::fromAsymmetricKeyDefaults()`
 
 ### Examples
 
