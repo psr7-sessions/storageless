@@ -149,10 +149,10 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     public function __invoke(Request $request, Response $response, callable $out = null)
     {
-        list($request, $sessionContainer) = $this->injectSession($request, $this->parseToken($request));
+        $sessionContainer = $this->extractSessionContainer($this->parseToken($request));
 
         if (null !== $out) {
-            $response = $out($request, $response);
+            $response = $out($request->withAttribute(self::SESSION_ATTRIBUTE, $sessionContainer), $response);
         }
 
         return $this->appendToken($sessionContainer, $response);
@@ -198,6 +198,18 @@ final class SessionMiddleware implements MiddlewareInterface
         } catch (\BadMethodCallException $invalidToken) {
             return false;
         }
+    }
+
+    /**
+     * @param Token|null $token
+     *
+     * @return Data
+     */
+    public function extractSessionContainer(Token $token = null) : Data
+    {
+        return $token
+            ? Data::fromDecodedTokenData($token->getClaim(self::SESSION_CLAIM) ?? new \stdClass())
+            : Data::newEmptySession();
     }
 
     /**
