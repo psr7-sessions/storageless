@@ -16,18 +16,17 @@
  * and is licensed under the MIT license.
  */
 
-use Zend\Expressive\AppFactory;
+declare(strict_types=1);
+
+use Psr\Http\Message\ServerRequestInterface;
+use Zend\Diactoros\Response;
 use StoragelessSession\Http\SessionMiddleware;
-use Lcobucci\JWT\Signer\Hmac\Sha256;
-use Lcobucci\JWT\Parser;
 use StoragelessSession\Session\Data;
 use Psr\Http\Message\ResponseInterface;
+use Zend\Diactoros\Response\SapiEmitter;
+use Zend\Diactoros\ServerRequestFactory;
 
 require_once __DIR__ . '/../vendor/autoload.php';
-
-// To run this example, you will need to run (in the project directory)
-// `composer require zendframework/zend-expressive`
-// `composer require zendframework/zend-servicemanager`
 
 // the example uses a symmetric key, but asymmetric keys can also be used.
 // $privateKey = new Key('file://private_key.pem');
@@ -36,20 +35,21 @@ require_once __DIR__ . '/../vendor/autoload.php';
 // simply run `php -S localhost:8888 index.php`
 // then point your browser at `http://localhost:8888/get`
 
-$app = AppFactory::create();
+$sessionMiddleware = SessionMiddleware::fromSymmetricKeyDefaults(
+    'a very complex symmetric key',
+    14400
+);
+$myMiddleware = function (ServerRequestInterface $request, ResponseInterface $response) {
+    /* @var Data $container */
+    $container = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+    $container->set('counter', $container->has('counter') ? $container->get('counter') + 1 : 0);
 
-$app
-    ->pipe(SessionMiddleware::fromSymmetricKeyDefaults(
-        'a very complex symmetric key',
-        14400
-    ))
-    ->pipe($api = AppFactory::create())
-    ->get('/get', function ($request, ResponseInterface $response, $next) {
-        /* @var Data $container */
-        $container = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
-        $container->set('hello', $container->has('hello') ? $container->get('hello') + 1 : 0);
+    $response
+        ->getBody()
+        ->write('Counter Value: ' . $container->get('counter'));
 
-        return $response->write($container->get('hello'));
-    });
+    return $response;
+};
 
-$app->run();
+(new SapiEmitter())
+    ->emit($sessionMiddleware(ServerRequestFactory::fromGlobals(), new Response(), $myMiddleware));
