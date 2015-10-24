@@ -46,7 +46,7 @@ $sessionMiddleware = new SessionMiddleware(
         ->withSecure(false) // false on purpose, unless you have https locally
         ->withHttpOnly(true),
     new Parser(),
-    14400
+    1200 // 20 minutes
 );
 $myMiddleware = function (ServerRequestInterface $request, ResponseInterface $response) {
     /* @var Data $container */

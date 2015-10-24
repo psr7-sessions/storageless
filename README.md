@@ -20,7 +20,7 @@ $app = \Zend\Expressive\AppFactory::create();
 
 $app->pipe(new \StoragelessSession\Http\SessionMiddleware::fromSymmetricKeyDefaults(
     'a symmetric key',
-    14400 // 20 minutes
+    1200 // 20 minutes
 ));
 ```
 
