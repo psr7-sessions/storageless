@@ -86,6 +86,36 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         $middleware($expiredTokenRequest, new Response(), $checkingMiddleware);
     }
 
+    /**
+     * @dataProvider validMiddlewaresProvider
+     */
+    public function testWillIgnoreUnSignedTokens(SessionMiddleware $middleware)
+    {
+        // may the gods forgive me
+        $expiredTokenRequest = FigRequestCookies::set(
+            new ServerRequest(),
+            Cookie::create(
+                SessionMiddleware::DEFAULT_COOKIE,
+                (string) (new Builder())
+                    ->setIssuedAt((new \DateTime())->getTimestamp())
+                    ->setExpiration((new \DateTime())->getTimestamp())
+                    ->set(SessionMiddleware::SESSION_CLAIM, Data::fromTokenData(['foo' => 'bar'], []))
+                    ->getToken()
+            )
+        );
+
+        $checkingMiddleware = $this->buildFakeMiddleware(function (ServerRequestInterface $request) {
+            /* @var $data Data */
+            $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+
+            self::assertTrue($data->isEmpty());
+
+            return true;
+        });
+
+        $middleware($expiredTokenRequest, new Response(), $checkingMiddleware);
+    }
+
     public function testRequiresTokenExpirationValidation()
     {
         self::markTestIncomplete();
