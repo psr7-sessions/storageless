@@ -35,17 +35,12 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 // simply run `php -S localhost:8888 index.php`
 // then point your browser at `http://localhost:8888/get`
-$privateKey = $publicKey = 'I do not care';
 
 $app = AppFactory::create();
 
 $app
-    ->pipe(new SessionMiddleware(
-        new Sha256(),
-        $privateKey,
-        $publicKey,
-        \Dflydev\FigCookies\SetCookie::create('foo'),
-        new Parser(),
+    ->pipe(SessionMiddleware::fromSymmetricKeyDefaults(
+        'a very complex symmetric key',
         14400
     ))
     ->pipe($api = AppFactory::create())
