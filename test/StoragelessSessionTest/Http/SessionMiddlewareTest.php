@@ -61,13 +61,11 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         $firstResponse = $middleware(new ServerRequest(), new Response(), $containerPopulationMiddleware);
 
         $response = $middleware(
-            FigRequestCookies::set(
-                new ServerRequest(),
-                Cookie::create(
-                    SessionMiddleware::DEFAULT_COOKIE,
-                    FigResponseCookies::get($firstResponse, SessionMiddleware::DEFAULT_COOKIE)->getValue()
-                )
-            ),
+            (new ServerRequest())
+                ->withCookieParams([
+                    SessionMiddleware::DEFAULT_COOKIE
+                        => FigResponseCookies::get($firstResponse, SessionMiddleware::DEFAULT_COOKIE)->getValue()
+                ]),
             new Response()
         );
 
