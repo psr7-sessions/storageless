@@ -157,7 +157,11 @@ final class SessionMiddleware implements MiddlewareInterface
             return null;
         }
 
-        if (! ($token->verify($this->signer, $this->verificationKey) && $token->validate(new ValidationData()))) {
+        try {
+            if (! ($token->verify($this->signer, $this->verificationKey) && $token->validate(new ValidationData()))) {
+                return null;
+            }
+        } catch (\BadMethodCallException $invalidToken) {
             return null;
         }
 
