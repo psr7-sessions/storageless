@@ -48,7 +48,7 @@ $sessionMiddleware = new SessionMiddleware(
     new Parser(),
     1200 // 20 minutes
 );
-$myMiddleware = function (ServerRequestInterface $request, ResponseInterface $response) {
+$myMiddleware = function (ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface {
     /* @var Data $container */
     $container = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
     $container->set('counter', $container->has('counter') ? $container->get('counter') + 1 : 0);
