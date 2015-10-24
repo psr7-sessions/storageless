@@ -77,18 +77,15 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
      */
     public function testWillIgnoreRequestsWithExpiredTokens(SessionMiddleware $middleware)
     {
-        $expiredTokenRequest = FigRequestCookies::set(
-            new ServerRequest(),
-            Cookie::create(
-                SessionMiddleware::DEFAULT_COOKIE,
-                (string) (new Builder())
+        $expiredTokenRequest = (new ServerRequest())
+            ->withCookieParams([
+                SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
                     ->setIssuedAt((new \DateTime('-1 day'))->getTimestamp())
                     ->setExpiration((new \DateTime('-2 day'))->getTimestamp())
                     ->set(SessionMiddleware::SESSION_CLAIM, Data::fromTokenData(['foo' => 'bar'], []))
                     ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
                     ->getToken()
-            )
-        );
+            ]);
 
         $checkingMiddleware = $this->buildFakeMiddleware(function (ServerRequestInterface $request) {
             /* @var $data Data */
@@ -107,17 +104,14 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
      */
     public function testWillIgnoreUnSignedTokens(SessionMiddleware $middleware)
     {
-        $unsignedToken = FigRequestCookies::set(
-            new ServerRequest(),
-            Cookie::create(
-                SessionMiddleware::DEFAULT_COOKIE,
-                (string) (new Builder())
+        $unsignedToken = (new ServerRequest())
+            ->withCookieParams([
+                SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
                     ->setIssuedAt((new \DateTime())->getTimestamp())
                     ->setExpiration((new \DateTime())->getTimestamp())
                     ->set(SessionMiddleware::SESSION_CLAIM, Data::fromTokenData(['foo' => 'bar'], []))
                     ->getToken()
-            )
-        );
+            ]);
 
         $checkingMiddleware = $this->buildFakeMiddleware(function (ServerRequestInterface $request) {
             /* @var $data Data */
@@ -146,10 +140,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         });
 
         $middleware(
-            FigRequestCookies::set(
-                new ServerRequest(),
-                Cookie::create(SessionMiddleware::DEFAULT_COOKIE, 'malformed content')
-            ),
+            (new ServerRequest())->withCookieParams([SessionMiddleware::DEFAULT_COOKIE => 'malformed content']),
             new Response(),
             $checkingMiddleware
         );
@@ -325,13 +316,11 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         $response = $middleware(new ServerRequest(), new Response(), $containerPopulationMiddleware);
 
         $middleware(
-            FigRequestCookies::set(
-                new ServerRequest(),
-                Cookie::create(
-                    SessionMiddleware::DEFAULT_COOKIE,
-                    FigResponseCookies::get($response, SessionMiddleware::DEFAULT_COOKIE)->getValue()
-                )
-            ),
+            (new ServerRequest())
+                ->withCookieParams([
+                    SessionMiddleware::DEFAULT_COOKIE
+                        => FigResponseCookies::get($response, SessionMiddleware::DEFAULT_COOKIE)->getValue()
+                ]),
             new Response(),
             $containerCheckingMiddleware
         );
