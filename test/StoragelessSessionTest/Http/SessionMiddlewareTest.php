@@ -60,7 +60,6 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
      */
     public function testWillIgnoreRequestsWithExpiredTokens(SessionMiddleware $middleware)
     {
-        // may the gods forgive me
         $expiredTokenRequest = FigRequestCookies::set(
             new ServerRequest(),
             Cookie::create(
@@ -91,8 +90,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
      */
     public function testWillIgnoreUnSignedTokens(SessionMiddleware $middleware)
     {
-        // may the gods forgive me
-        $expiredTokenRequest = FigRequestCookies::set(
+        $unsignedToken = FigRequestCookies::set(
             new ServerRequest(),
             Cookie::create(
                 SessionMiddleware::DEFAULT_COOKIE,
@@ -113,7 +111,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             return true;
         });
 
-        $middleware($expiredTokenRequest, new Response(), $checkingMiddleware);
+        $middleware($unsignedToken, new Response(), $checkingMiddleware);
     }
 
     public function testRequiresTokenExpirationValidation()
