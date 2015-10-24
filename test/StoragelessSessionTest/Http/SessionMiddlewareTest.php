@@ -356,7 +356,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
                 100
             )],
             [SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100)],
-            [SessionMiddleware::fromAsymmetricKey(
+            [SessionMiddleware::fromAsymmetricKeyDefaults(
                 file_get_contents(__DIR__ . '/../../keys/private_key.pem'),
                 file_get_contents(__DIR__ . '/../../keys/public_key.pem'),
                 200

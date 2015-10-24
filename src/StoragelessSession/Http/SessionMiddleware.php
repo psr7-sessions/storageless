@@ -125,7 +125,7 @@ final class SessionMiddleware implements MiddlewareInterface
      *
      * @return self
      */
-    public static function fromAsymmetricKey(string $privateRsaKey, string $publicRsaKey, int $expirationTime)
+    public static function fromAsymmetricKeyDefaults(string $privateRsaKey, string $publicRsaKey, int $expirationTime)
     {
         return new self(
             new Signer\Rsa\Sha256(),
