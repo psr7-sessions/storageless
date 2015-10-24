@@ -37,7 +37,8 @@ $app->get('/get', function ($request, ResponseInterface $response, $next) {
 });
 ```
 
-You can do this also in asynchronous contexts and long running processes.
+You can do this also in asynchronous contexts and long running processes,
+since no super-globals nor I/O are involved.
 
 ### WHY?
 
