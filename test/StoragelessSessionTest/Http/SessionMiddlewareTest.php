@@ -198,6 +198,16 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         self::assertEquals(time() + 123456, $tokenCookie->getExpires(), '', 2);
     }
 
+    /**
+     * @dataProvider validMiddlewaresProvider
+     */
+    public function testSkipsInjectingSessionCookieOnEmptyContainer(SessionMiddleware $middleware)
+    {
+        $response = $middleware(new ServerRequest(), new Response());
+
+        self::assertNull(FigResponseCookies::get($response, SessionMiddleware::DEFAULT_COOKIE)->getValue());
+    }
+
     public function testRemovesSessionCookieOnEmptySessionContainer()
     {
         self::markTestIncomplete('This feature is yet to be implemented, and we may do so in a different middleware');
