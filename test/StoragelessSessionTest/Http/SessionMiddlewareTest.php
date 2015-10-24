@@ -114,6 +114,30 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         $middleware($unsignedToken, new Response(), $checkingMiddleware);
     }
 
+    /**
+     * @dataProvider validMiddlewaresProvider
+     */
+    public function testWillIgnoreMalformedTokens(SessionMiddleware $middleware)
+    {
+        $checkingMiddleware = $this->buildFakeMiddleware(function (ServerRequestInterface $request) {
+            /* @var $data Data */
+            $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+
+            self::assertTrue($data->isEmpty());
+
+            return true;
+        });
+
+        $middleware(
+            FigRequestCookies::set(
+                new ServerRequest(),
+                Cookie::create(SessionMiddleware::DEFAULT_COOKIE, 'malformed content')
+            ),
+            new Response(),
+            $checkingMiddleware
+        );
+    }
+
     public function testRequiresTokenExpirationValidation()
     {
         self::markTestIncomplete();
