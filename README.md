@@ -40,6 +40,10 @@ $app->get('/get', function ($request, ResponseInterface $response, $next) {
 You can do this also in asynchronous contexts and long running processes,
 since no super-globals nor I/O are involved.
 
+Note that you can also use asymmetric keys by using either the
+`StoragelessSession\Http\SessionMiddleware` constructor or the named
+constructor `StoragelessSession\Http\SessionMiddleware::fromSymmetricKeyDefaults()``
+
 ### WHY?
 
 In most PHP+HTTP related projects, `ext/session` serves its purpose and
