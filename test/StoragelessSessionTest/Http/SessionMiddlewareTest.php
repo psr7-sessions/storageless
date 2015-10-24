@@ -5,7 +5,9 @@ use Dflydev\FigCookies\Cookie;
 use Dflydev\FigCookies\FigRequestCookies;
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\SetCookie;
+use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Parser;
+use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Token;
 use PHPUnit_Framework_TestCase;
@@ -53,9 +55,35 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         self::assertNotEmpty(FigResponseCookies::get($response, SessionMiddleware::DEFAULT_COOKIE)->getValue());
     }
 
-    public function testRequiresValidToken()
+    /**
+     * @dataProvider validMiddlewaresProvider
+     */
+    public function testWillIgnoreRequestsWithExpiredTokens(SessionMiddleware $middleware)
     {
-        self::markTestIncomplete();
+        // may the gods forgive me
+        $expiredTokenRequest = FigRequestCookies::set(
+            new ServerRequest(),
+            Cookie::create(
+                SessionMiddleware::DEFAULT_COOKIE,
+                (string) (new Builder())
+                    ->setIssuedAt((new \DateTime('-1 day'))->getTimestamp())
+                    ->setExpiration((new \DateTime('-2 day'))->getTimestamp())
+                    ->set(SessionMiddleware::SESSION_CLAIM, Data::fromTokenData(['foo' => 'bar'], []))
+                    ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
+                    ->getToken()
+            )
+        );
+
+        $checkingMiddleware = $this->buildFakeMiddleware(function (ServerRequestInterface $request) {
+            /* @var $data Data */
+            $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+
+            self::assertTrue($data->isEmpty());
+
+            return true;
+        });
+
+        $middleware($expiredTokenRequest, new Response(), $checkingMiddleware);
     }
 
     public function testRequiresTokenExpirationValidation()
@@ -241,5 +269,33 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             ->willReturn($returnedResponse ?? new Response());
 
         return $middleware;
+    }
+
+    /**
+     * @param SessionMiddleware $middleware
+     *
+     * @return Signer
+     */
+    private function getSigner(SessionMiddleware $middleware)
+    {
+        $signerReflection = new \ReflectionProperty(SessionMiddleware::class, 'signer');
+
+        $signerReflection->setAccessible(true);
+
+        return $signerReflection->getValue($middleware);
+    }
+
+    /**
+     * @param SessionMiddleware $middleware
+     *
+     * @return string
+     */
+    private function getSignatureKey(SessionMiddleware $middleware)
+    {
+        $signatureKeyReflection = new \ReflectionProperty(SessionMiddleware::class, 'signatureKey');
+
+        $signatureKeyReflection->setAccessible(true);
+
+        return $signatureKeyReflection->getValue($middleware);
     }
 }
