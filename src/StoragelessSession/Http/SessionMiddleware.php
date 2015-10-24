@@ -1,27 +1,43 @@
 <?php
+/*
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the MIT license.
+ */
+
+declare(strict_types=1);
+
 namespace StoragelessSession\Http;
 
 use DateTime;
-use Zend\Stratigility\MiddlewareInterface;
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
-use Lcobucci\JWT\Token;
-use Lcobucci\JWT\Signer;
+use Dflydev\FigCookies\FigResponseCookies;
+use Dflydev\FigCookies\SetCookie;
 use Lcobucci\JWT\Builder;
-use StoragelessSession\Session\Data;
 use Lcobucci\JWT\Parser;
+use Lcobucci\JWT\Signer;
+use Lcobucci\JWT\Token;
 use Lcobucci\JWT\ValidationData;
-use Lcobucci\JWT\Signer\Key;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use StoragelessSession\Session\Data;
+use Zend\Stratigility\MiddlewareInterface;
 
 final class SessionMiddleware implements MiddlewareInterface
 {
     const SESSION_CLAIM     = 'session-data';
     const SESSION_ATTRIBUTE = 'session';
-
-    /**
-     * @var string
-     */
-    private $cookieName = 'yadda';
+    const DEFAULT_COOKIE    = 'slsession';
 
     /**
      * @var Signer
@@ -29,19 +45,19 @@ final class SessionMiddleware implements MiddlewareInterface
     private $signer;
 
     /**
-     * @var Key
+     * @var string
      */
     private $signatureKey;
 
     /**
-     * @var Key
+     * @var string
      */
     private $verificationKey;
 
     /**
      * @var int
      */
-    private $expirationTime = 14600;
+    private $expirationTime;
 
     /**
      * @var Parser
@@ -49,96 +65,191 @@ final class SessionMiddleware implements MiddlewareInterface
     private $tokenParser;
 
     /**
-     * @param Signer $signer
-     * @param Key $signatureKey
-     * @param Key $verificationKey
-     * @param Parser $tokenParser
+     * @var SetCookie
+     */
+    private $defaultCookie;
+
+    /**
+     * @param Signer    $signer
+     * @param string    $signatureKey
+     * @param string    $verificationKey
+     * @param SetCookie $defaultCookie
+     * @param Parser    $tokenParser
+     * @param int       $expirationTime
      */
     public function __construct(
         Signer $signer,
-        Key $signatureKey,
-        Key $verificationKey,
-        Parser $tokenParser
+        string $signatureKey,
+        string $verificationKey,
+        SetCookie $defaultCookie,
+        Parser $tokenParser,
+        int $expirationTime
     ) {
-        $this->signer = $signer;
-        $this->signatureKey = $signatureKey;
+        $this->signer          = $signer;
+        $this->signatureKey    = $signatureKey;
         $this->verificationKey = $verificationKey;
-        $this->tokenParser = $tokenParser;
+        $this->tokenParser     = $tokenParser;
+        $this->defaultCookie   = clone $defaultCookie;
+        $this->expirationTime  = $expirationTime;
+    }
+
+    /**
+     * This constructor simplifies instantiation when using HTTPS (REQUIRED!) and symmetric key encription
+     *
+     * @param string $symmetricKey
+     * @param int    $expirationTime
+     *
+     * @return self
+     */
+    public static function fromSymmetricKeyDefaults(string $symmetricKey, int $expirationTime) : SessionMiddleware
+    {
+        return new self(
+            new Signer\Hmac\Sha256(),
+            $symmetricKey,
+            $symmetricKey,
+            SetCookie::create(self::DEFAULT_COOKIE)
+                ->withSecure(true)
+                ->withHttpOnly(true),
+            new Parser(),
+            $expirationTime
+        );
+    }
+
+    /**
+     * This constructor simplifies instantiation when using HTTPS (REQUIRED!) and asymmetric key encription
+     * based on RSA keys
+     *
+     * @param string $privateRsaKey
+     * @param string $publicRsaKey
+     * @param int    $expirationTime
+     *
+     * @return self
+     */
+    public static function fromAsymmetricKeyDefaults(
+        string $privateRsaKey,
+        string $publicRsaKey,
+        int $expirationTime
+    ) : SessionMiddleware {
+        return new self(
+            new Signer\Rsa\Sha256(),
+            $privateRsaKey,
+            $publicRsaKey,
+            SetCookie::create(self::DEFAULT_COOKIE)
+                ->withSecure(true)
+                ->withHttpOnly(true),
+            new Parser(),
+            $expirationTime
+        );
     }
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \InvalidArgumentException
+     * @throws \OutOfBoundsException
      */
-    public function __invoke(Request $request, Response $response, callable $out = null)
+    public function __invoke(Request $request, Response $response, callable $out = null) : Response
     {
-        list($request, $sessionContainer) = $this->injectSession($request, $this->parseToken($request));
-        $response = $out === null ? $response : $out($request, $response);
+        $sessionContainer = $this->extractSessionContainer($this->parseToken($request));
+
+        if (null !== $out) {
+            $response = $out($request->withAttribute(self::SESSION_ATTRIBUTE, $sessionContainer), $response);
+        }
 
         return $this->appendToken($sessionContainer, $response);
     }
 
+    /**
+     * Extract the token from the given request object
+     *
+     * @param Request $request
+     *
+     * @return Token|null
+     */
     private function parseToken(Request $request)
     {
-        $cookieStrings = $request->getCookieParams();
+        $cookies   = $request->getCookieParams();
+        $cookieName = $this->defaultCookie->getName();
 
-        if (! isset($cookieStrings[$this->cookieName])) {
+        if (! isset($cookies[$cookieName])) {
             return null;
         }
 
         try {
-            $token = $this->tokenParser->parse($cookieStrings[$this->cookieName]);
+            $token = $this->tokenParser->parse($cookies[$cookieName]);
         } catch (\InvalidArgumentException $invalidToken) {
             return null;
         }
 
-        if (! ($token->verify($this->signer, $this->verificationKey) && $token->validate(new ValidationData()))) {
+        if (! $this->validateToken($token)) {
             return null;
         }
 
         return $token;
     }
 
-    private function injectSession(Request $request, Token $token = null):array
+    /**
+     * @param Token $token
+     *
+     * @return bool
+     */
+    private function validateToken(Token $token) : bool
     {
-        $container = $token
-            ? Data::fromDecodedTokenData(
-                $token->getClaim(self::SESSION_CLAIM) ?? new \stdClass()
-            )
-            : Data::newEmptySession();
-
-        return [$request->withAttribute(self::SESSION_ATTRIBUTE, $container), $container];
+        try {
+            return $token->verify($this->signer, $this->verificationKey) && $token->validate(new ValidationData());
+        } catch (\BadMethodCallException $invalidToken) {
+            return false;
+        }
     }
 
-    private function appendToken(Data $sessionContainer, Response $response):Response
+    /**
+     * @param Token|null $token
+     *
+     * @return Data
+     */
+    public function extractSessionContainer(Token $token = null) : Data
+    {
+        return $token
+            ? Data::fromDecodedTokenData($token->getClaim(self::SESSION_CLAIM) ?? new \stdClass())
+            : Data::newEmptySession();
+    }
+
+    /**
+     * @param Data     $sessionContainer
+     * @param Response $response
+     *
+     * @return Response
+     *
+     * @throws \InvalidArgumentException
+     */
+    private function appendToken(Data $sessionContainer, Response $response) : Response
     {
         if ($sessionContainer->isEmpty()) {
             return $response;
         }
 
-        return $response->withAddedHeader('Set-Cookie', $this->getTokenCookie($sessionContainer));
+        return FigResponseCookies::set($response, $this->getTokenCookie($sessionContainer));
     }
 
-    private function getTokenCookie(Data $sessionContainer):string
+    /**
+     * @param Data $sessionContainer
+     *
+     * @return SetCookie
+     */
+    private function getTokenCookie(Data $sessionContainer) : SetCookie
     {
-        $token = (new Builder())->setIssuedAt(time())
-                                ->setExpiration(time() + $this->expirationTime)
-                                ->set(self::SESSION_CLAIM, $sessionContainer)
-                                ->sign($this->signer, $this->signatureKey)
-                                ->getToken();
+        $timestamp = (new \DateTime())->getTimestamp();
 
-        return sprintf(
-            '%s=%s',
-            urlencode($this->cookieName),
-            $token
-        );
-
-        return sprintf(
-            '%s=%s; Domain=%s; Path=%s; Expires=%s; Secure; HttpOnly',
-            urlencode($this->cookieName),
-            $token,
-            'foo.com',
-            '/'
-            (new DateTime('@' . $token->getClaim('exp')))->format(DateTime::W3C)
-        );
+        return $this
+            ->defaultCookie
+            ->withValue(
+                (new Builder())
+                    ->setIssuedAt($timestamp)
+                    ->setExpiration($timestamp + $this->expirationTime)
+                    ->set(self::SESSION_CLAIM, $sessionContainer)
+                    ->sign($this->signer, $this->signatureKey)
+                    ->getToken()
+            )
+            ->withExpires($timestamp + $this->expirationTime);
     }
 }
