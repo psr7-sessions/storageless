@@ -1,6 +1,69 @@
 # Storage-Less HTTP Sessions
 
-**WARNING: THIS REPOSITORY IS A MOCKUP! DO NOT ATTEMPT USING THIS YET!**
+[![Build Status](https://travis-ci.org/Ocramius/StorageLessSession.svg)](https://travis-ci.org/Ocramius/StorageLessSession)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Ocramius/StorageLessSession/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Ocramius/StorageLessSession/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/Ocramius/StorageLessSession/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Ocramius/StorageLessSession/?branch=master)
+[![Packagist](https://img.shields.io/packagist/v/ocramius/storage-less-session.svg)](https://packagist.org/packages/ocramius/storage-less-session)
+[![Packagist](https://img.shields.io/packagist/vpre/ocramius/storage-less-session.svg)](https://packagist.org/packages/ocramius/storage-less-session)
+
+### Installation
+
+```sh
+composer require ocramius/storage-less-session
+```
+
+### Usage
+
+You can use the `StoragelessSession\Http\SessionMiddleware` in any 
+[`zendframework/zend-stratigility`](https://github.com/zendframework/zend-stratigility)
+compatible [PSR-7](http://www.php-fig.org/psr/psr-7/) middleware.
+
+In a [`zendframework/zend-expressive`](https://github.com/zendframework/zend-expressive)
+application, this would look like following:
+
+```php
+$app = \Zend\Expressive\AppFactory::create();
+
+$app->pipe(new \StoragelessSession\Http\SessionMiddleware::fromSymmetricKeyDefaults(
+    'a symmetric key',
+    1200 // 20 minutes
+));
+```
+
+After this, you can access the session data inside any middleware that
+has access to the `Psr\Http\Message\ServerRequestInterface` attributes:
+
+```php
+$app->get('/get', function (ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface {
+    /* @var \StoragelessSession\Session\Data $container */
+    $container = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+    $container->set('counter', $container->has('counter') ? $container->get('counter') + 1 : 0);
+
+    $response
+        ->getBody()
+        ->write('Counter Value: ' . $container->get('counter'));
+
+    return $response;
+});
+```
+
+You can do this also in asynchronous contexts and long running processes,
+since no super-globals nor I/O are involved.
+
+Note that you can also use asymmetric keys by using either the
+`StoragelessSession\Http\SessionMiddleware` constructor or the named
+constructor `StoragelessSession\Http\SessionMiddleware::fromAsymmetricKeyDefaults()`
+
+### Examples
+
+Simply browse to the `examples` directory in your console, then run
+
+```sh
+php -S localhost:9999 index.php
+```
+
+Then try accessing `http://localhost:9999`: you should see a counter
+that increases at every page refresh
 
 ### WHY?
 
