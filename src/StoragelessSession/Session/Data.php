@@ -165,6 +165,11 @@ final class Data implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        return array_filter($this->scopes);
+        return array_map(
+            function (SessionScope $scope) {
+                return $scope->jsonSerialize();
+            },
+            $this->scopes
+        );
     }
 }

@@ -47,9 +47,14 @@ final class DataTest extends PHPUnit_Framework_TestCase
 
         $scope = $data->getScope('foo');
 
-        self::assertAttributeEquals($data->jsonSerialize(), 'scopes', $data);
+        self::assertAttributeEquals(
+            [
+                'foo' => $scope,
+            ],
+            'scopes',
+            $data
+        );
         self::assertAttributeCount(1, 'scopes', $data);
-
         self::assertAttributeEmpty('data', $scope);
     }
 

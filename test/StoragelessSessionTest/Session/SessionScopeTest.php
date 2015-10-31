@@ -75,7 +75,7 @@ final class SessionScopeTest extends PHPUnit_Framework_TestCase
     {
         return [
             ['foo', 'string'],
-            ['foo' => 'string'],
+            ['foo', ['foo' => 'string']],
             ['foo#!@', new \stdClass()],
             ['foo123', []],
             ['foo bar', ''],
