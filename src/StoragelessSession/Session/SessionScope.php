@@ -45,6 +45,7 @@ final class SessionScope implements \JsonSerializable
     {
         $this->data           = $value;
         $this->expirationTime = $expirationTime;
+        $this->resetIfPastExpiration();
     }
 
     /**
@@ -66,6 +67,8 @@ final class SessionScope implements \JsonSerializable
 
     public function get(string $key, $default = null)
     {
+        $this->resetIfPastExpiration();
+
         return $this->data[$key] ?? $default;
     }
 
@@ -85,9 +88,16 @@ final class SessionScope implements \JsonSerializable
         return empty($this->data);
     }
 
-    public function getExpirationTime()
+    private function resetIfPastExpiration()
     {
-        return $this->expirationTime->format('U');
+        if (null === $this->expirationTime) {
+            return;
+        }
+
+        if (microtime(true) > $this->expirationTime->format('U')) {
+            $this->data           = [];
+            $this->expirationTime = new \DateTimeImmutable();
+        }
     }
 
     /**
