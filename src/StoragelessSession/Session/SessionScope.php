@@ -45,7 +45,6 @@ final class SessionScope implements \JsonSerializable
     {
         $this->data           = $value;
         $this->expirationTime = $expirationTime;
-        $this->resetIfPastExpiration();
     }
 
     /**
@@ -61,8 +60,11 @@ final class SessionScope implements \JsonSerializable
 
     public function set(string $key, $value)
     {
+        if ($this->dataValueIsNotEquals($value, $key) || $this->isNewDataEntry($key)) {
+            $this->isModified = true;
+        }
+
         $this->data[$key] = $value;
-        $this->isModified = true;
     }
 
     public function get(string $key, $default = null)
@@ -74,17 +76,25 @@ final class SessionScope implements \JsonSerializable
 
     public function remove(string $key)
     {
-        unset($this->data[$key]);
-        $this->isModified = true;
+        if (isset($this->data[$key])) {
+            unset($this->data[$key]);
+            $this->isModified = true;
+        }
+
+        $this->resetIfPastExpiration();
     }
 
     public function isModified() : bool
     {
+        $this->resetIfPastExpiration();
+
         return $this->isModified;
     }
 
     public function isEmpty() : bool
     {
+        $this->resetIfPastExpiration();
+
         return empty($this->data);
     }
 
@@ -96,7 +106,7 @@ final class SessionScope implements \JsonSerializable
 
         if (microtime(true) > $this->expirationTime->format('U')) {
             $this->data           = [];
-            $this->expirationTime = new \DateTimeImmutable();
+            $this->expirationTime = null;
         }
     }
 
@@ -105,6 +115,18 @@ final class SessionScope implements \JsonSerializable
      */
     public function jsonSerialize()
     {
+        $this->resetIfPastExpiration();
+
         return $this->data;
+    }
+
+    private function dataValueIsNotEquals($value, $key)
+    {
+        return isset($this->data[$key]) && $this->data[$key] != $value;
+    }
+
+    private function isNewDataEntry($key)
+    {
+        return ! isset($this->data[$key]);
     }
 }
