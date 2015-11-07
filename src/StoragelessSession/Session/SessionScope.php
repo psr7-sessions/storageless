@@ -60,6 +60,10 @@ final class SessionScope implements \JsonSerializable
 
     public function set(string $key, $value)
     {
+        if (is_object($value)) {
+            throw new \InvalidArgumentException('Cannot store objects on scope.');
+        }
+
         if ($this->dataValueIsNotEquals($value, $key) || $this->isNewDataEntry($key)) {
             $this->isModified = true;
         }

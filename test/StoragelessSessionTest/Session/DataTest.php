@@ -58,6 +58,15 @@ final class DataTest extends PHPUnit_Framework_TestCase
         self::assertAttributeEmpty('data', $scope);
     }
 
+    public function testCannotStoreAnObjectOnScope()
+    {
+        $container = Data::newEmptySession();
+        $scope     = $container->getScope('name');
+
+        self::setExpectedException(\InvalidArgumentException::class);
+        $scope->set('foo', new \stdClass());
+    }
+
     /**
      * @dataProvider getDataWithInvalidScopeDataType
      *
@@ -152,11 +161,6 @@ final class DataTest extends PHPUnit_Framework_TestCase
             [
                 [
                     'foo' => 124,
-                ],
-            ],
-            [
-                [
-                    'foo' => new \stdClass(),
                 ],
             ],
             [

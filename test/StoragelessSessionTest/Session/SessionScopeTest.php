@@ -43,6 +43,14 @@ final class SessionScopeTest extends PHPUnit_Framework_TestCase
         self::assertSame($expected, $session->get($key));
     }
 
+    public function testCannotStoreObjectsOnSessionScope()
+    {
+        $session = SessionScope::fromArrayAndExpiration([]);
+
+        self::setExpectedException(\InvalidArgumentException::class);
+        $session->set('foo', new \stdClass());
+    }
+
     public function testStateIsChangedWhenSetANewDataToScope()
     {
         $session = SessionScope::fromArrayAndExpiration(['foo' => '123']);
@@ -76,7 +84,6 @@ final class SessionScopeTest extends PHPUnit_Framework_TestCase
         return [
             ['foo', 'string'],
             ['foo', ['foo' => 'string']],
-            ['foo#!@', new \stdClass()],
             ['foo123', []],
             ['foo bar', ''],
             ['foo-bar', null],
