@@ -210,7 +210,7 @@ final class SessionMiddleware implements MiddlewareInterface
     public function extractSessionContainer(Token $token = null) : Data
     {
         return $token
-            ? Data::fromDecodedTokenData($token->getClaim(self::SESSION_CLAIM) ?? new \stdClass())
+            ? Data::fromDecodedTokenData((object) $token->getClaim(self::SESSION_CLAIM) ?? new \stdClass())
             : Data::newEmptySession();
     }
 

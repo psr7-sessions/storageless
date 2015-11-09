@@ -20,8 +20,6 @@ declare(strict_types=1);
 
 namespace StoragelessSessionTest\Http;
 
-use Dflydev\FigCookies\Cookie;
-use Dflydev\FigCookies\FigRequestCookies;
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\SetCookie;
 use Lcobucci\JWT\Builder;
@@ -52,7 +50,8 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
                 /* @var $data Data */
                 $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
 
-                $data->set('foo', $containerValue);
+                $scope = $data->getScope('foo');
+                $scope->set('foo', $containerValue);
 
                 return true;
             });
@@ -64,9 +63,9 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             (new ServerRequest())
                 ->withCookieParams([
                     SessionMiddleware::DEFAULT_COOKIE
-                        => FigResponseCookies::get($firstResponse, SessionMiddleware::DEFAULT_COOKIE)->getValue()
+                        => FigResponseCookies::get($firstResponse, SessionMiddleware::DEFAULT_COOKIE)->getValue(),
                 ]),
-            new Response()
+            $firstResponse
         );
 
         self::assertNotEmpty(FigResponseCookies::get($response, SessionMiddleware::DEFAULT_COOKIE)->getValue());
@@ -110,7 +109,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
                     ->setIssuedAt((new \DateTime())->getTimestamp())
                     ->setExpiration((new \DateTime())->getTimestamp())
                     ->set(SessionMiddleware::SESSION_CLAIM, Data::fromTokenData(['foo' => 'bar'], []))
-                    ->getToken()
+                    ->getToken(),
             ]);
 
         $checkingMiddleware = $this->buildFakeMiddleware(function (ServerRequestInterface $request) {
@@ -132,9 +131,10 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     {
         $checkingMiddleware = $this->buildFakeMiddleware(function (ServerRequestInterface $request) {
             /* @var $data Data */
-            $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+            $data  = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+            $scope = $data->getScope('foo');
 
-            self::assertTrue($data->isEmpty());
+            self::assertTrue($scope->isEmpty());
 
             return true;
         });
@@ -167,7 +167,8 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
                 /* @var $data Data */
                 $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
 
-                $data->set('foo', 'bar');
+                $scope = $data->getScope('foo');
+                $scope->set('foo', 'bar');
 
                 return true;
             });
@@ -226,9 +227,10 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     {
         $checkingMiddleware = $this->buildFakeMiddleware(function (ServerRequestInterface $request) {
             /* @var $data Data */
-            $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+            $data  = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+            $scope = $data->getScope('foo');
 
-            $data->set('foo', 'bar');
+            $scope->set('foo', 'bar');
 
             return new Response();
         });
@@ -252,9 +254,10 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         $containerPopulationMiddleware = $this
             ->buildFakeMiddleware(function (ServerRequestInterface $request) use ($containerValue) {
                 /* @var $data Data */
-                $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                $data  = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                $scope = $data->getScope('foo');
 
-                $data->set('foo', $containerValue);
+                $scope->set('foo', $containerValue);
 
                 return true;
             });
@@ -263,8 +266,9 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             ->buildFakeMiddleware(function (ServerRequestInterface $request) use ($containerValue) {
                 /* @var $data Data */
                 $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                $scope = $data->getScope('foo');
 
-                self::assertSame($containerValue, $data->get('foo'));
+                self::assertSame($containerValue, $scope->get('foo'));
 
                 return true;
             });
@@ -275,7 +279,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             (new ServerRequest())
                 ->withCookieParams([
                     SessionMiddleware::DEFAULT_COOKIE
-                        => FigResponseCookies::get($response, SessionMiddleware::DEFAULT_COOKIE)->getValue()
+                        => FigResponseCookies::get($response, SessionMiddleware::DEFAULT_COOKIE)->getValue(),
                 ]),
             new Response(),
             $containerCheckingMiddleware
@@ -296,9 +300,10 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         $containerPopulationMiddleware = $this
             ->buildFakeMiddleware(function (ServerRequestInterface $request) {
                 /* @var $data Data */
-                $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                $data  = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                $scope = $data->getScope('foo');
 
-                $data->set('someproperty', 'someValue');
+                $scope->set('someproperty', 'someValue');
 
                 return true;
             });
@@ -306,9 +311,10 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         $containerCheckingMiddleware = $this
             ->buildFakeMiddleware(function (ServerRequestInterface $request) {
                 /* @var $data Data */
-                $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                $data  = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                $scope = $data->getScope('foo');
 
-                self::assertFalse($data->has('someValue'));
+                self::assertNull($scope->get('someValue'));
 
                 return true;
             });
@@ -319,7 +325,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             (new ServerRequest())
                 ->withCookieParams([
                     SessionMiddleware::DEFAULT_COOKIE
-                        => FigResponseCookies::get($response, SessionMiddleware::DEFAULT_COOKIE)->getValue()
+                        => FigResponseCookies::get($response, SessionMiddleware::DEFAULT_COOKIE)->getValue(),
                 ]),
             new Response(),
             $containerCheckingMiddleware
