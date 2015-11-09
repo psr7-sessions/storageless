@@ -58,6 +58,16 @@ final class SessionScope implements \JsonSerializable
         return new self($value, $expirationTime);
     }
 
+    public function setExpiration(\DateTimeImmutable $expirationTime)
+    {
+        if ($expirationTime == $this->expirationTime) {
+            return;
+        }
+
+        $this->expirationTime = $expirationTime;
+        $this->isModified     = true;
+    }
+
     public function set(string $key, $value)
     {
         if (is_object($value)) {
