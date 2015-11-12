@@ -66,9 +66,37 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         self::assertNull($this->getCookie($response)->getValue());
     }
 
-    public function testRemovesSessionCookieOnEmptySessionContainer()
+    /**
+     * @dataProvider validMiddlewaresProvider
+     */
+    public function testRemovesSessionCookieOnEmptySessionContainer(SessionMiddleware $middleware)
     {
-        self::markTestIncomplete('This feature is yet to be implemented, and we may do so in a different middleware');
+        $validTokenRequest = (new ServerRequest())
+            ->withCookieParams([
+                SessionMiddleware::DEFAULT_COOKIE => $this->createToken(
+                    $middleware,
+                    new \DateTime('-1 day'),
+                    new \DateTime('+2 day')
+                )
+            ]);
+
+        $destructiveMiddleware = $this->fakeMiddleware(
+            function (ServerRequestInterface $request, ResponseInterface $response) {
+                /* @var $data Data */
+                $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                $data->remove('foo');
+
+                return $response;
+            }
+        );
+
+        $initialResponse = new Response();
+        $response = $middleware($validTokenRequest, $initialResponse, $destructiveMiddleware);
+        $cookie = $this->getCookie($response);
+
+        self::assertNotSame($initialResponse, $response);
+        self::assertEquals('', $cookie->getValue());
+        self::assertEquals(-1, $cookie->getExpires());
     }
 
     /**

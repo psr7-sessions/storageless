@@ -150,13 +150,14 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     public function __invoke(Request $request, Response $response, callable $out = null) : Response
     {
-        $sessionContainer = $this->extractSessionContainer($this->parseToken($request));
+        $token = $this->parseToken($request);
+        $sessionContainer = $this->extractSessionContainer($token);
 
         if (null !== $out) {
             $response = $out($request->withAttribute(self::SESSION_ATTRIBUTE, $sessionContainer), $response);
         }
 
-        return $this->appendToken($sessionContainer, $response);
+        return $this->appendToken($sessionContainer, $response, $token);
     }
 
     /**
@@ -217,18 +218,32 @@ final class SessionMiddleware implements MiddlewareInterface
     /**
      * @param Data     $sessionContainer
      * @param Response $response
+     * @param Token    $originalToken
      *
      * @return Response
      *
      * @throws \InvalidArgumentException
      */
-    private function appendToken(Data $sessionContainer, Response $response) : Response
+    private function appendToken(Data $sessionContainer, Response $response, Token $originalToken = null) : Response
     {
-        if ($sessionContainer->isEmpty()) {
+        $empty = $sessionContainer->isEmpty();
+
+        if ($empty && null === $originalToken) {
             return $response;
         }
 
-        return FigResponseCookies::set($response, $this->getTokenCookie($sessionContainer));
+        return FigResponseCookies::set(
+            $response,
+            $empty ? $this->getExpiredCookie() : $this->getTokenCookie($sessionContainer)
+        );
+    }
+
+    /**
+     * @return SetCookie
+     */
+    private function getExpiredCookie() : SetCookie
+    {
+        return $this->defaultCookie->withValue(null)->withExpires(-1);
     }
 
     /**
