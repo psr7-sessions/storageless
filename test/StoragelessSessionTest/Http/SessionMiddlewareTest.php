@@ -20,8 +20,6 @@ declare(strict_types=1);
 
 namespace StoragelessSessionTest\Http;
 
-use Dflydev\FigCookies\Cookie;
-use Dflydev\FigCookies\FigRequestCookies;
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\SetCookie;
 use Lcobucci\JWT\Builder;
@@ -34,9 +32,9 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use StoragelessSession\Http\SessionMiddleware;
 use StoragelessSession\Session\Data;
-use Zend\Diactoros\Request;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
+use Zend\Stratigility\MiddlewareInterface;
 
 final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
 {
@@ -45,31 +43,84 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
      */
     public function testInjectsSessionDataEvenWithNoNextMiddleware(SessionMiddleware $middleware)
     {
-        $containerValue = uniqid('', true);
+        $initialResponse = new Response();
 
-        $containerPopulationMiddleware = $this
-            ->buildFakeMiddleware(function (ServerRequestInterface $request) use ($containerValue) {
+        $response = $middleware(
+            $this->requestWithResponseCookies(
+                $middleware(new ServerRequest(), new Response(), $this->writingMiddleware())
+            ),
+            $initialResponse
+        );
+
+        self::assertNotSame($initialResponse, $response);
+        self::assertNotEmpty($this->getCookie($response)->getValue());
+    }
+
+    /**
+     * @dataProvider validMiddlewaresProvider
+     */
+    public function testSkipsInjectingSessionCookieOnEmptyContainer(SessionMiddleware $middleware)
+    {
+        $response = $this->ensureSameResponse($middleware, new ServerRequest(), $this->emptyValidationMiddleware());
+
+        self::assertNull($this->getCookie($response)->getValue());
+    }
+
+    public function testRemovesSessionCookieOnEmptySessionContainer()
+    {
+        self::markTestIncomplete('This feature is yet to be implemented, and we may do so in a different middleware');
+    }
+
+    /**
+     * @dataProvider validMiddlewaresProvider
+     */
+    public function testExtractsSessionContainerFromEmptyRequest(SessionMiddleware $middleware)
+    {
+        $this->ensureSameResponse($middleware, new ServerRequest(), $this->emptyValidationMiddleware());
+    }
+
+    /**
+     * @dataProvider validMiddlewaresProvider
+     */
+    public function testInjectsSessionInResponseCookies(SessionMiddleware $middleware)
+    {
+        $initialResponse = new Response();
+        $response = $middleware(new ServerRequest(), $initialResponse, $this->writingMiddleware());
+
+        self::assertNotSame($initialResponse, $response);
+        self::assertEmpty($this->getCookie($response, 'non-existing')->getValue());
+        self::assertInstanceOf(Token::class, (new Parser())->parse($this->getCookie($response)->getValue()));
+    }
+
+    /**
+     * @dataProvider validMiddlewaresProvider
+     */
+    public function testSessionContainerCanBeReusedOverMultipleRequests(SessionMiddleware $middleware)
+    {
+        $sessionValue = uniqid('', true);
+
+        $checkingMiddleware = $this->fakeMiddleware(
+            function (ServerRequestInterface $request, ResponseInterface $response) use ($sessionValue) {
                 /* @var $data Data */
                 $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
 
-                $data->set('foo', $containerValue);
+                self::assertSame($sessionValue, $data->get('foo'));
 
-                return true;
-            });
-
-        // populate the cookies
-        $firstResponse = $middleware(new ServerRequest(), new Response(), $containerPopulationMiddleware);
-
-        $response = $middleware(
-            (new ServerRequest())
-                ->withCookieParams([
-                    SessionMiddleware::DEFAULT_COOKIE
-                        => FigResponseCookies::get($firstResponse, SessionMiddleware::DEFAULT_COOKIE)->getValue()
-                ]),
-            new Response()
+                return $response;
+            }
         );
 
-        self::assertNotEmpty(FigResponseCookies::get($response, SessionMiddleware::DEFAULT_COOKIE)->getValue());
+        $firstResponse = $middleware(new ServerRequest(), new Response(), $this->writingMiddleware($sessionValue));
+
+        $initialResponse = new Response();
+
+        $response = $middleware(
+            $this->requestWithResponseCookies($firstResponse),
+            $initialResponse,
+            $checkingMiddleware
+        );
+
+        self::assertNotSame($initialResponse, $response);
     }
 
     /**
@@ -77,26 +128,33 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
      */
     public function testWillIgnoreRequestsWithExpiredTokens(SessionMiddleware $middleware)
     {
-        $expiredTokenRequest = (new ServerRequest())
+        $expiredToken = (new ServerRequest())
             ->withCookieParams([
-                SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
-                    ->setIssuedAt((new \DateTime('-1 day'))->getTimestamp())
-                    ->setExpiration((new \DateTime('-2 day'))->getTimestamp())
-                    ->set(SessionMiddleware::SESSION_CLAIM, Data::fromTokenData(['foo' => 'bar'], []))
-                    ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
-                    ->getToken()
+                SessionMiddleware::DEFAULT_COOKIE => $this->createToken(
+                    $middleware,
+                    new \DateTime('-1 day'),
+                    new \DateTime('-2 day')
+                )
             ]);
 
-        $checkingMiddleware = $this->buildFakeMiddleware(function (ServerRequestInterface $request) {
-            /* @var $data Data */
-            $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+        $this->ensureSameResponse($middleware, $expiredToken, $this->emptyValidationMiddleware());
+    }
 
-            self::assertTrue($data->isEmpty());
+    /**
+     * @dataProvider validMiddlewaresProvider
+     */
+    public function testWillIgnoreRequestsWithTokensFromFuture(SessionMiddleware $middleware)
+    {
+        $tokenInFuture = (new ServerRequest())
+            ->withCookieParams([
+                SessionMiddleware::DEFAULT_COOKIE => $this->createToken(
+                    $middleware,
+                    new \DateTime('+1 day'),
+                    new \DateTime('-2 day')
+                )
+            ]);
 
-            return true;
-        });
-
-        $middleware($expiredTokenRequest, new Response(), $checkingMiddleware);
+        $this->ensureSameResponse($middleware, $tokenInFuture, $this->emptyValidationMiddleware());
     }
 
     /**
@@ -113,16 +171,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
                     ->getToken()
             ]);
 
-        $checkingMiddleware = $this->buildFakeMiddleware(function (ServerRequestInterface $request) {
-            /* @var $data Data */
-            $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
-
-            self::assertTrue($data->isEmpty());
-
-            return true;
-        });
-
-        $middleware($unsignedToken, new Response(), $checkingMiddleware);
+        $this->ensureSameResponse($middleware, $unsignedToken, $this->emptyValidationMiddleware());
     }
 
     /**
@@ -130,155 +179,10 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
      */
     public function testWillIgnoreMalformedTokens(SessionMiddleware $middleware)
     {
-        $checkingMiddleware = $this->buildFakeMiddleware(function (ServerRequestInterface $request) {
-            /* @var $data Data */
-            $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
-
-            self::assertTrue($data->isEmpty());
-
-            return true;
-        });
-
-        $middleware(
+        $this->ensureSameResponse(
+            $middleware,
             (new ServerRequest())->withCookieParams([SessionMiddleware::DEFAULT_COOKIE => 'malformed content']),
-            new Response(),
-            $checkingMiddleware
-        );
-    }
-
-    public function testAllowsModifyingHeaderDetails()
-    {
-        $middleware = new SessionMiddleware(
-            new Sha256(),
-            'foo',
-            'foo',
-            SetCookie::create('a-different-cookie-name')
-                ->withDomain('foo.bar')
-                ->withPath('/yadda')
-                ->withHttpOnly(false)
-                ->withMaxAge(123123)
-                ->withValue('a-random-value'),
-            new Parser(),
-            123456
-        );
-
-        $containerPopulationMiddleware = $this
-            ->buildFakeMiddleware(function (ServerRequestInterface $request) {
-                /* @var $data Data */
-                $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
-
-                $data->set('foo', 'bar');
-
-                return true;
-            });
-
-        $response = $middleware(new ServerRequest(), new Response(), $containerPopulationMiddleware);
-
-        self::assertNull(FigResponseCookies::get($response, SessionMiddleware::DEFAULT_COOKIE)->getValue());
-
-        $tokenCookie = FigResponseCookies::get($response, 'a-different-cookie-name');
-
-        self::assertNotEmpty($tokenCookie->getValue());
-        self::assertNotSame('a-random-value', $tokenCookie->getValue());
-        self::assertSame('foo.bar', $tokenCookie->getDomain());
-        self::assertSame('/yadda', $tokenCookie->getPath());
-        self::assertFalse($tokenCookie->getHttpOnly());
-        self::assertEquals(123123, $tokenCookie->getMaxAge());
-        self::assertEquals(time() + 123456, $tokenCookie->getExpires(), '', 2);
-    }
-
-    /**
-     * @dataProvider validMiddlewaresProvider
-     */
-    public function testSkipsInjectingSessionCookieOnEmptyContainer(SessionMiddleware $middleware)
-    {
-        $response = $middleware(new ServerRequest(), new Response());
-
-        self::assertNull(FigResponseCookies::get($response, SessionMiddleware::DEFAULT_COOKIE)->getValue());
-    }
-
-    public function testRemovesSessionCookieOnEmptySessionContainer()
-    {
-        self::markTestIncomplete('This feature is yet to be implemented, and we may do so in a different middleware');
-    }
-
-    /**
-     * @dataProvider validMiddlewaresProvider
-     */
-    public function testExtractsSessionContainerFromEmptyRequest(SessionMiddleware $middleware)
-    {
-        $checkingMiddleware = $this->buildFakeMiddleware(function (ServerRequestInterface $request) {
-            self::assertInstanceOf(Data::class, $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE));
-
-            return true;
-        });
-
-        self::assertInstanceOf(
-            ResponseInterface::class,
-            $middleware(new ServerRequest(), new Response(), $checkingMiddleware)
-        );
-    }
-
-    /**
-     * @dataProvider validMiddlewaresProvider
-     */
-    public function testInjectsSessionInResponseCookies(SessionMiddleware $middleware)
-    {
-        $checkingMiddleware = $this->buildFakeMiddleware(function (ServerRequestInterface $request) {
-            /* @var $data Data */
-            $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
-
-            $data->set('foo', 'bar');
-
-            return new Response();
-        });
-
-        $response = $middleware(new ServerRequest(), new Response(), $checkingMiddleware);
-
-        self::assertEmpty(FigResponseCookies::get($response, 'non-existing')->getValue());
-        self::assertInstanceOf(
-            Token::class,
-            (new Parser())->parse(FigResponseCookies::get($response, SessionMiddleware::DEFAULT_COOKIE)->getValue())
-        );
-    }
-
-    /**
-     * @dataProvider validMiddlewaresProvider
-     */
-    public function testSessionContainerCanBeReusedOverMultipleRequests(SessionMiddleware $middleware)
-    {
-        $containerValue = uniqid('', true);
-
-        $containerPopulationMiddleware = $this
-            ->buildFakeMiddleware(function (ServerRequestInterface $request) use ($containerValue) {
-                /* @var $data Data */
-                $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
-
-                $data->set('foo', $containerValue);
-
-                return true;
-            });
-
-        $containerCheckingMiddleware = $this
-            ->buildFakeMiddleware(function (ServerRequestInterface $request) use ($containerValue) {
-                /* @var $data Data */
-                $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
-
-                self::assertSame($containerValue, $data->get('foo'));
-
-                return true;
-            });
-
-        $response = $middleware(new ServerRequest(), new Response(), $containerPopulationMiddleware);
-
-        $middleware(
-            (new ServerRequest())
-                ->withCookieParams([
-                    SessionMiddleware::DEFAULT_COOKIE
-                        => FigResponseCookies::get($response, SessionMiddleware::DEFAULT_COOKIE)->getValue()
-                ]),
-            new Response(),
-            $containerCheckingMiddleware
+            $this->emptyValidationMiddleware()
         );
     }
 
@@ -293,37 +197,41 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             100
         );
 
-        $containerPopulationMiddleware = $this
-            ->buildFakeMiddleware(function (ServerRequestInterface $request) {
-                /* @var $data Data */
-                $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
-
-                $data->set('someproperty', 'someValue');
-
-                return true;
-            });
-
-        $containerCheckingMiddleware = $this
-            ->buildFakeMiddleware(function (ServerRequestInterface $request) {
-                /* @var $data Data */
-                $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
-
-                self::assertFalse($data->has('someValue'));
-
-                return true;
-            });
-
-        $response = $middleware(new ServerRequest(), new Response(), $containerPopulationMiddleware);
-
-        $middleware(
-            (new ServerRequest())
-                ->withCookieParams([
-                    SessionMiddleware::DEFAULT_COOKIE
-                        => FigResponseCookies::get($response, SessionMiddleware::DEFAULT_COOKIE)->getValue()
-                ]),
-            new Response(),
-            $containerCheckingMiddleware
+        $this->ensureSameResponse(
+            $middleware,
+            $this->requestWithResponseCookies(
+                $middleware(new ServerRequest(), new Response(), $this->writingMiddleware())
+            ),
+            $this->emptyValidationMiddleware()
         );
+    }
+
+    public function testAllowsModifyingCookieDetails()
+    {
+        $defaultCookie = SetCookie::create('a-different-cookie-name')
+            ->withDomain('foo.bar')
+            ->withPath('/yadda')
+            ->withHttpOnly(false)
+            ->withMaxAge('123123')
+            ->withValue('a-random-value');
+
+        $middleware = new SessionMiddleware(new Sha256(), 'foo', 'foo', $defaultCookie, new Parser(), 123456);
+
+        $initialResponse = new Response();
+        $response = $middleware(new ServerRequest(), $initialResponse, $this->writingMiddleware());
+
+        self::assertNotSame($initialResponse, $response);
+        self::assertNull($this->getCookie($response)->getValue());
+
+        $tokenCookie = $this->getCookie($response, 'a-different-cookie-name');
+
+        self::assertNotEmpty($tokenCookie->getValue());
+        self::assertNotSame($defaultCookie->getValue(), $tokenCookie->getValue());
+        self::assertSame($defaultCookie->getDomain(), $tokenCookie->getDomain());
+        self::assertSame($defaultCookie->getPath(), $tokenCookie->getPath());
+        self::assertSame($defaultCookie->getHttpOnly(), $tokenCookie->getHttpOnly());
+        self::assertSame($defaultCookie->getMaxAge(), $tokenCookie->getMaxAge());
+        self::assertEquals(time() + 123456, $tokenCookie->getExpires(), '', 2);
     }
 
     /**
@@ -350,22 +258,119 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param callable               $callback
-     * @param ResponseInterface|null $returnedResponse
+     * @param SessionMiddleware $middleware
+     * @param ServerRequestInterface $request
+     * @param callable $next
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject|callable
+     * @return ResponseInterface
      */
-    private function buildFakeMiddleware(callable $callback, ResponseInterface $returnedResponse = null)
-    {
-        $middleware = $this->getMock(\stdClass::class, ['__invoke']);
+    private function ensureSameResponse(
+        SessionMiddleware $middleware,
+        ServerRequestInterface $request,
+        callable $next = null
+    ): ResponseInterface {
+        $initialResponse = new Response();
+        $response = $middleware($request, $initialResponse, $next);
 
-        $middleware
-            ->expects(self::once())
-            ->method('__invoke')
-            ->with(self::callback($callback))
-            ->willReturn($returnedResponse ?? new Response());
+        self::assertSame($initialResponse, $response);
+
+        return $response;
+    }
+
+    /**
+     * @param SessionMiddleware $middleware
+     * @param \DateTime $issuedAt
+     * @param \DateTime $expiration
+     *
+     * @return string
+     */
+    private function createToken(SessionMiddleware $middleware, \DateTime $issuedAt, \DateTime $expiration): string
+    {
+        return (string) (new Builder())
+            ->setIssuedAt($issuedAt->getTimestamp())
+            ->setExpiration($expiration->getTimestamp())
+            ->set(SessionMiddleware::SESSION_CLAIM, Data::fromTokenData(['foo' => 'bar'], []))
+            ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
+            ->getToken();
+    }
+
+    /**
+     * @return MiddlewareInterface
+     */
+    private function emptyValidationMiddleware(): MiddlewareInterface
+    {
+        return $this->fakeMiddleware(
+            function (ServerRequestInterface $request, ResponseInterface $response) {
+                /* @var $data Data */
+                $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+
+                self::assertInstanceOf(Data::class, $data);
+                self::assertTrue($data->isEmpty());
+
+                return $response;
+            }
+        );
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return MiddlewareInterface
+     */
+    private function writingMiddleware($value = 'bar'): MiddlewareInterface
+    {
+        return $this->fakeMiddleware(
+            function (ServerRequestInterface $request, ResponseInterface $response) use ($value) {
+                /* @var $data Data */
+                $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                $data->set('foo', $value);
+
+                return $response;
+            }
+        );
+    }
+
+    /**
+     * @param callable $callback
+     *
+     * @return MiddlewareInterface
+     */
+    private function fakeMiddleware(callable $callback): MiddlewareInterface
+    {
+        $middleware = $this->getMock(MiddlewareInterface::class);
+
+        $middleware->expects($this->once())
+           ->method('__invoke')
+           ->willReturnCallback($callback)
+           ->with(
+               self::isInstanceOf(ServerRequestInterface::class),
+               self::isInstanceOf(ResponseInterface::class),
+               self::logicalOr(self::isNull(), self::isType('callable'))
+           );
 
         return $middleware;
+    }
+
+    /**
+     * @param ResponseInterface $response
+     *
+     * @return \Zend\Diactoros\ServerRequest
+     */
+    private function requestWithResponseCookies(ResponseInterface $response): ServerRequestInterface
+    {
+        return (new ServerRequest())->withCookieParams([
+            SessionMiddleware::DEFAULT_COOKIE => $this->getCookie($response)->getValue()
+        ]);
+    }
+
+    /**
+     * @param ResponseInterface $response
+     *
+     * @return SetCookie
+     */
+    private function getCookie(ResponseInterface $response, string $name = SessionMiddleware::DEFAULT_COOKIE): SetCookie
+    {
+        return FigResponseCookies::get($response, $name);
     }
 
     /**
@@ -373,13 +378,9 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
      *
      * @return Signer
      */
-    private function getSigner(SessionMiddleware $middleware)
+    private function getSigner(SessionMiddleware $middleware): Signer
     {
-        $signerReflection = new \ReflectionProperty(SessionMiddleware::class, 'signer');
-
-        $signerReflection->setAccessible(true);
-
-        return $signerReflection->getValue($middleware);
+        return $this->getPropertyValue($middleware, 'signer');
     }
 
     /**
@@ -387,12 +388,22 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
      *
      * @return string
      */
-    private function getSignatureKey(SessionMiddleware $middleware)
+    private function getSignatureKey(SessionMiddleware $middleware): string
     {
-        $signatureKeyReflection = new \ReflectionProperty(SessionMiddleware::class, 'signatureKey');
+        return $this->getPropertyValue($middleware, 'signatureKey');
+    }
 
-        $signatureKeyReflection->setAccessible(true);
+    /**
+     * @param object $object
+     * @param string $name
+     *
+     * @return mixed
+     */
+    private function getPropertyValue($object, string $name)
+    {
+        $propertyReflection = new \ReflectionProperty($object, $name);
+        $propertyReflection->setAccessible(true);
 
-        return $signatureKeyReflection->getValue($middleware);
+        return $propertyReflection->getValue($object);
     }
 }
