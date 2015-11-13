@@ -167,7 +167,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
                     ->setIssuedAt((new \DateTime())->getTimestamp())
                     ->setExpiration((new \DateTime())->getTimestamp())
-                    ->set(SessionMiddleware::SESSION_CLAIM, Data::fromTokenData(['foo' => 'bar'], []))
+                    ->set(SessionMiddleware::SESSION_CLAIM, Data::fromTokenData(['foo' => 'bar']))
                     ->getToken()
             ]);
 
@@ -289,7 +289,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         return (string) (new Builder())
             ->setIssuedAt($issuedAt->getTimestamp())
             ->setExpiration($expiration->getTimestamp())
-            ->set(SessionMiddleware::SESSION_CLAIM, Data::fromTokenData(['foo' => 'bar'], []))
+            ->set(SessionMiddleware::SESSION_CLAIM, Data::fromTokenData(['foo' => 'bar']))
             ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
             ->getToken();
     }

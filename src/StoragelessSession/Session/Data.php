@@ -37,7 +37,7 @@ class Data implements \JsonSerializable
 
     public static function fromDecodedTokenData(\stdClass $data)
     {
-        return self::fromTokenData(self::convertStdClassToUsableStuff($data), []);
+        return self::fromTokenData(self::convertStdClassToUsableStuff($data));
     }
 
     private static function convertStdClassToUsableStuff(\stdClass $shit)
@@ -57,9 +57,9 @@ class Data implements \JsonSerializable
         return $arrayData;
     }
 
-    public static function fromTokenData(array $data, array $metadata): self
+    public static function fromTokenData(array $data): self
     {
-        return new self($data, $metadata);
+        return new self($data);
     }
 
     public static function fromJsonString(string $jsonString)
