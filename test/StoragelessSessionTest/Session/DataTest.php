@@ -42,4 +42,13 @@ final class DataTest extends PHPUnit_Framework_TestCase
     {
         self::assertFalse(Data::fromTokenData(['foo' => 'bar'])->isEmpty());
     }
+
+    public function testContainerIsNotEmptyWhenDataIsPassedToItAfterwards()
+    {
+        $data = Data::newEmptySession();
+
+        $data->set('foo', 'bar');
+
+        self::assertFalse($data->isEmpty());
+    }
 }
