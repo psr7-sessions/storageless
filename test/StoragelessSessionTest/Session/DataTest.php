@@ -37,4 +37,9 @@ final class DataTest extends PHPUnit_Framework_TestCase
     {
         self::assertTrue(Data::fromTokenData([])->isEmpty());
     }
+
+    public function testContainerIsNotEmptyWhenDataIsProvided()
+    {
+        self::assertFalse(Data::fromTokenData(['foo' => 'bar'])->isEmpty());
+    }
 }
