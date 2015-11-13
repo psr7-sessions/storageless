@@ -33,6 +33,11 @@ final class DataTest extends PHPUnit_Framework_TestCase
         self::assertInstanceOf(Data::class, Data::fromTokenData([]));
     }
 
+    public function testNewEmptySessionProducesAContainer()
+    {
+        self::assertInstanceOf(Data::class, Data::newEmptySession());
+    }
+
     public function testContainerIsEmptyWhenCreatedExplicitlyAsEmpty()
     {
         self::assertTrue(Data::newEmptySession()->isEmpty());
