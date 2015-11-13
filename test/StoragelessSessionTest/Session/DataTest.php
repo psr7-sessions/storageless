@@ -94,6 +94,16 @@ final class DataTest extends PHPUnit_Framework_TestCase
         self::assertTrue($data->hasChanged());
     }
 
+    /**
+     * @dataProvider storageScalarDataProvider
+     */
+    public function testContainerBuiltWithDataContainsData(string $key, $value)
+    {
+        $data = Data::fromTokenData([$key => $value]);
+
+        self::assertSame($value, $data->get($key));
+    }
+
     public function storageScalarDataProvider() : array
     {
         return [
