@@ -67,14 +67,6 @@ class Data implements \JsonSerializable
         return new self($data);
     }
 
-    public static function fromJsonString(string $jsonString)
-    {
-        $decoded = json_decode($jsonString);
-
-        // @todo stronger validation here
-        return new self($decoded['data'], $decoded['metadata']);
-    }
-
     public static function newEmptySession(): self
     {
         return new self([], []);
