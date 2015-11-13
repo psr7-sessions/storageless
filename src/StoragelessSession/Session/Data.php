@@ -69,7 +69,7 @@ class Data implements \JsonSerializable
 
     public static function newEmptySession(): self
     {
-        return new self([], []);
+        return new self([]);
     }
 
     /**
