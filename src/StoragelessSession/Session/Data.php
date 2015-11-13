@@ -28,11 +28,16 @@ class Data implements \JsonSerializable
     private $data;
 
     /**
+     * @var array
+     */
+    private $originalData;
+
+    /**
      * @todo ensure serializable data?
      */
     private function __construct(array $data)
     {
-        $this->data = $data;
+        $this->originalData = $this->data = $data;
     }
 
     public static function fromDecodedTokenData(\stdClass $data)
@@ -100,6 +105,11 @@ class Data implements \JsonSerializable
     public function has(string $key): bool
     {
         return array_key_exists($key, $this->data);
+    }
+
+    public function hasChanged() : bool
+    {
+        return $this->data !== $this->originalData;
     }
 
     public function isEmpty()
