@@ -28,17 +28,11 @@ class Data implements \JsonSerializable
     private $data;
 
     /**
-     * @var array
-     */
-    private $metadata;
-
-    /**
      * @todo ensure serializable data?
      */
-    private function __construct(array $data, array $metadata)
+    private function __construct(array $data)
     {
-        $this->data     = $data;
-        $this->metadata = $metadata;
+        $this->data = $data;
     }
 
     public static function fromDecodedTokenData(\stdClass $data)
