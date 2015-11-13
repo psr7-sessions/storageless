@@ -70,4 +70,41 @@ final class DataTest extends PHPUnit_Framework_TestCase
 
         self::assertTrue($data->isEmpty());
     }
+
+    /**
+     * @dataProvider storageScalarDataProvider
+     */
+    public function testContainerDataIsStoredAndRetrieved(string $key, $value)
+    {
+        $data = Data::newEmptySession();
+
+        $data->set($key, $value);
+        self::assertSame($value, $data->get($key));
+    }
+
+    public function storageScalarDataProvider() : array
+    {
+        return [
+            'string'             => ['foo', 'bar'],
+            'empty string'       => ['foo', ''],
+            'null-ish string'    => ['foo', 'null'],
+            'null'               => ['foo', null],
+            'empty string key'   => ['', 'bar'],
+            '0-ish string'       => ['foo', '0'],
+            'empty array string' => ['foo', '[]'],
+            'null byte'          => ['foo', "\0"],
+            'null byte key'      => ["\0", 'bar'],
+            'zero'               => ['foo', 0],
+            'integer'            => ['foo', 1],
+            'negative integer'   => ['foo', -1],
+            'large integer'      => ['foo', PHP_INT_MAX],
+            'small integer'      => ['foo', PHP_INT_MIN],
+            'float'              => ['foo', 0.1],
+            'float zero'         => ['foo', 0.0],
+            'empty array'        => ['foo', []],
+            '0-indexed-array'    => ['foo', ['bar', 'baz']],
+            'map'                => ['foo', ['bar' => 'baz']],
+            'nested array'       => ['foo', ['bar' => []]],
+        ];
+    }
 }
