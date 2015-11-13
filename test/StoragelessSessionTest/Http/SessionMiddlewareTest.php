@@ -302,6 +302,64 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function testShouldRegenerateTokenWhenRequestHasATokenThatIsAboutToExpire()
+    {
+        $middleware = new SessionMiddleware(
+            new Sha256(),
+            'foo',
+            'foo',
+            SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
+            new Parser(),
+            1000,
+            300
+        );
+
+        $expiringToken = (new ServerRequest())
+            ->withCookieParams([
+                SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
+                    ->setIssuedAt((new \DateTime('-800 second'))->getTimestamp())
+                    ->setExpiration((new \DateTime('+200 second'))->getTimestamp())
+                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar'], []))
+                    ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
+                    ->getToken()
+            ]);
+
+        $initialResponse = new Response();
+        $response = $middleware($expiringToken, $initialResponse);
+
+        self::assertNotSame($initialResponse, $response);
+
+        $tokenCookie = $this->getCookie($response);
+
+        self::assertNotEmpty($tokenCookie->getValue());
+        self::assertEquals(time() + 1000, $tokenCookie->getExpires(), '', 2);
+    }
+
+    public function testShouldNotRegenerateTokenWhenRequestHasATokenThatIsFarFromExpiration()
+    {
+        $middleware = new SessionMiddleware(
+            new Sha256(),
+            'foo',
+            'foo',
+            SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
+            new Parser(),
+            1000,
+            300
+        );
+
+        $validToken = (new ServerRequest())
+            ->withCookieParams([
+                SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
+                    ->setIssuedAt((new \DateTime('-100 second'))->getTimestamp())
+                    ->setExpiration((new \DateTime('+900 second'))->getTimestamp())
+                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar'], []))
+                    ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
+                    ->getToken()
+            ]);
+
+        $this->ensureSameResponse($middleware, $validToken);
+    }
+
     /**
      * @return SessionMiddleware[][]
      */
