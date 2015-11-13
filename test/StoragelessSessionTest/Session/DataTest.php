@@ -104,6 +104,20 @@ final class DataTest extends PHPUnit_Framework_TestCase
         self::assertSame($value, $data->get($key));
     }
 
+    /**
+     * @dataProvider storageScalarDataProvider
+     */
+    public function testContainerBuiltWithStdClassContainsData(string $key, $value)
+    {
+        if ("\0" === $key || "\0" === $value || '' === $key) {
+            $this->markTestIncomplete('Null bytes or empty keys are not supported by PHP\'s stdClass');
+        }
+
+        $data = Data::fromDecodedTokenData((object) [$key => $value]);
+
+        self::assertSame($value, $data->get($key));
+    }
+
     public function storageScalarDataProvider() : array
     {
         return [
