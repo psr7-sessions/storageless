@@ -82,6 +82,18 @@ final class DataTest extends PHPUnit_Framework_TestCase
         self::assertSame($value, $data->get($key));
     }
 
+    /**
+     * @dataProvider storageScalarDataProvider
+     */
+    public function testSettingDataInAContainerMarksTheContainerAsMutated(string $key, $value)
+    {
+        $data = Data::newEmptySession();
+
+        $data->set($key, $value);
+
+        self::assertTrue($data->hasChanged());
+    }
+
     public function storageScalarDataProvider() : array
     {
         return [
