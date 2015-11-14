@@ -129,6 +129,7 @@ final class DefaultSessionDataTest extends PHPUnit_Framework_TestCase
     {
         $session = DefaultSessionData::fromTokenData([$key => $value]);
 
+        self::assertTrue($session->has($key));
         self::assertSame($value, $session->get($key));
     }
 
@@ -143,6 +144,7 @@ final class DefaultSessionDataTest extends PHPUnit_Framework_TestCase
 
         $session = DefaultSessionData::fromDecodedTokenData((object) [$key => $value]);
 
+        self::assertTrue($session->has($key));
         self::assertSame($value, $session->get($key));
     }
 
@@ -165,7 +167,10 @@ final class DefaultSessionDataTest extends PHPUnit_Framework_TestCase
      */
     public function testGetWillReturnDefaultValueOnNonExistingKey(string $key, $value)
     {
-        self::assertSame($value, DefaultSessionData::newEmptySession()->get($key, $value));
+        $session = DefaultSessionData::newEmptySession();
+
+        self::assertFalse($session->has($key));
+        self::assertSame($value, $session->get($key, $value));
     }
 
     /**
