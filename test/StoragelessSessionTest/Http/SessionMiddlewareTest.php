@@ -42,25 +42,6 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider validMiddlewaresProvider
      */
-    public function testInjectsSessionDataEvenWithNoNextMiddleware(SessionMiddleware $middleware)
-    {
-        $this->markTestIncomplete('This test doesn\'t modify the session container, therefore no cookie should be sent?');
-        $initialResponse = new Response();
-
-        $response = $middleware(
-            $this->requestWithResponseCookies(
-                $middleware(new ServerRequest(), new Response(), $this->writingMiddleware())
-            ),
-            $initialResponse
-        );
-
-        self::assertNotSame($initialResponse, $response);
-        self::assertNotEmpty($this->getCookie($response)->getValue());
-    }
-
-    /**
-     * @dataProvider validMiddlewaresProvider
-     */
     public function testSkipsInjectingSessionCookieOnEmptyContainer(SessionMiddleware $middleware)
     {
         $response = $this->ensureSameResponse($middleware, new ServerRequest(), $this->emptyValidationMiddleware());
