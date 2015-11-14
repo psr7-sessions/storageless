@@ -118,6 +118,16 @@ final class LazySessionTest extends PHPUnit_Framework_TestCase
         $this->lazySession->remove('bar');
     }
 
+    public function testClear()
+    {
+        $this->wrappedSessionWillBeLoaded();
+
+        $this->wrappedSession->expects($this->exactly(2))->method('clear');
+
+        $this->lazySession->clear();
+        $this->lazySession->clear();
+    }
+
     private function wrappedSessionWillBeLoaded()
     {
         $this->sessionLoader->expects($this->once())->method('__invoke')->willReturn($this->wrappedSession);
