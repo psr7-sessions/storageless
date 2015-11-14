@@ -118,6 +118,21 @@ final class DataTest extends PHPUnit_Framework_TestCase
         self::assertSame($value, $data->get($key));
     }
 
+    public function testContainerStoresJsonSerializableData()
+    {
+        $object = new class implements \JsonSerializable
+        {
+            public function jsonSerialize()
+            {
+                return ['foo' => 'bar'];
+            }
+        };
+
+        $data = Data::fromTokenData(['key' => $object]);
+
+        $this->assertSame(['foo' => 'bar'], $data->get('key'));
+    }
+
     public function storageScalarDataProvider() : array
     {
         return [
