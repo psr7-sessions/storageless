@@ -213,6 +213,29 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider validMiddlewaresProvider
      */
+    public function testWillSendExpirationCookieWhenSessionContentsAreCleared(SessionMiddleware $middleware)
+    {
+        $this->ensureClearsSessionCookie(
+            $middleware,
+            $this->requestWithResponseCookies(
+                $middleware(new ServerRequest(), new Response(), $this->writingMiddleware())
+            ),
+            $this->fakeMiddleware(
+                function (ServerRequestInterface $request, ResponseInterface $response) {
+                    /* @var $session SessionInterface */
+                    $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+
+                    $session->clear();
+
+                    return $response;
+                }
+            )
+        );
+    }
+
+    /**
+     * @dataProvider validMiddlewaresProvider
+     */
     public function testWillIgnoreMalformedTokens(SessionMiddleware $middleware)
     {
         $this->ensureSameResponse(
@@ -309,6 +332,27 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         $response = $middleware($request, $initialResponse, $next);
 
         self::assertSame($initialResponse, $response);
+
+        return $response;
+    }
+
+    /**
+     * @param SessionMiddleware $middleware
+     * @param ServerRequestInterface $request
+     * @param callable $next
+     *
+     * @return ResponseInterface
+     */
+    private function ensureClearsSessionCookie(
+        SessionMiddleware $middleware,
+        ServerRequestInterface $request,
+        callable $next = null
+    ): ResponseInterface {
+        $initialResponse = new Response();
+        $response = $middleware($request, $initialResponse, $next);
+
+        self::assertNotSame($initialResponse, $response);
+        self::assertLessThan((new \DateTime('-29 day'))->getTimestamp(), $this->getCookie($response)->getExpires());
 
         return $response;
     }
