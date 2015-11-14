@@ -352,7 +352,11 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         $response = $middleware($request, $initialResponse, $next);
 
         self::assertNotSame($initialResponse, $response);
-        self::assertLessThan((new \DateTime('-29 day'))->getTimestamp(), $this->getCookie($response)->getExpires());
+
+        $cookie = $this->getCookie($response);
+
+        self::assertLessThan((new \DateTime('-29 day'))->getTimestamp(), $cookie->getExpires());
+        self::assertEmpty($cookie->getValue());
 
         return $response;
     }
