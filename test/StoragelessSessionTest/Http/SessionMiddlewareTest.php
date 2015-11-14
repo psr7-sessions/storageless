@@ -164,13 +164,14 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider validMiddlewaresProvider
      */
-    public function testWillIgnoreUnSignedTokensWithoutIssuedAt(SessionMiddleware $middleware)
+    public function testWillNotRefreshSignedTokensWithoutIssuedAt(SessionMiddleware $middleware)
     {
         $unsignedToken = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
                     ->setExpiration((new \DateTime('+1 day'))->getTimestamp())
                     ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
+                    ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
                     ->getToken()
             ]);
 
