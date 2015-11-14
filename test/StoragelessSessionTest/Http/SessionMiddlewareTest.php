@@ -107,6 +107,9 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
                 $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
 
                 self::assertSame($sessionValue, $session->get('foo'));
+                // ensuring that the cookie is sent again, since non-modified session containers are not to be
+                // re-serialized into a token.
+                $session->set('foo', $sessionValue . 'changed');
 
                 return $response;
             }
