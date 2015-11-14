@@ -30,7 +30,8 @@ use Lcobucci\JWT\Token;
 use Lcobucci\JWT\ValidationData;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use StoragelessSession\Session\Data;
+use StoragelessSession\Session\DefaultSessionData;
+use StoragelessSession\Session\SessionInterface;
 use Zend\Stratigility\MiddlewareInterface;
 
 final class SessionMiddleware implements MiddlewareInterface
@@ -205,26 +206,30 @@ final class SessionMiddleware implements MiddlewareInterface
     /**
      * @param Token|null $token
      *
-     * @return Data
+     * @return SessionInterface
      */
-    public function extractSessionContainer(Token $token = null) : Data
+    public function extractSessionContainer(Token $token = null) : SessionInterface
     {
         return $token
-            ? Data::fromDecodedTokenData($token->getClaim(self::SESSION_CLAIM) ?? new \stdClass())
-            : Data::newEmptySession();
+            ? DefaultSessionData::fromDecodedTokenData($token->getClaim(self::SESSION_CLAIM) ?? new \stdClass())
+            : DefaultSessionData::newEmptySession();
     }
 
     /**
-     * @param Data     $sessionContainer
-     * @param Response $response
+     * @param SessionInterface $sessionContainer
+     * @param Response         $response
      *
      * @return Response
      *
      * @throws \InvalidArgumentException
      */
-    private function appendToken(Data $sessionContainer, Response $response) : Response
+    private function appendToken(SessionInterface $sessionContainer, Response $response) : Response
     {
-        if ($sessionContainer->isEmpty()) {
+        if ($sessionContainer->isEmpty() && $sessionContainer->hasChanged()) {
+            return FigResponseCookies::set($response, $this->getExpirationCookie());
+        }
+
+        if (! $sessionContainer->hasChanged()) {
             return $response;
         }
 
@@ -232,11 +237,11 @@ final class SessionMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @param Data $sessionContainer
+     * @param SessionInterface $sessionContainer
      *
      * @return SetCookie
      */
-    private function getTokenCookie(Data $sessionContainer) : SetCookie
+    private function getTokenCookie(SessionInterface $sessionContainer) : SetCookie
     {
         $timestamp = (new \DateTime())->getTimestamp();
 
@@ -251,5 +256,16 @@ final class SessionMiddleware implements MiddlewareInterface
                     ->getToken()
             )
             ->withExpires($timestamp + $this->expirationTime);
+    }
+
+    /**
+     * @return SetCookie
+     */
+    private function getExpirationCookie() : SetCookie
+    {
+        return $this
+            ->defaultCookie
+            ->withValue(null)
+            ->withExpires((new \DateTime('-30 day'))->getTimestamp());
     }
 }

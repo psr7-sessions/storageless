@@ -31,7 +31,8 @@ use PHPUnit_Framework_TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use StoragelessSession\Http\SessionMiddleware;
-use StoragelessSession\Session\Data;
+use StoragelessSession\Session\DefaultSessionData;
+use StoragelessSession\Session\SessionInterface;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
 use Zend\Stratigility\MiddlewareInterface;
@@ -41,34 +42,11 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider validMiddlewaresProvider
      */
-    public function testInjectsSessionDataEvenWithNoNextMiddleware(SessionMiddleware $middleware)
-    {
-        $initialResponse = new Response();
-
-        $response = $middleware(
-            $this->requestWithResponseCookies(
-                $middleware(new ServerRequest(), new Response(), $this->writingMiddleware())
-            ),
-            $initialResponse
-        );
-
-        self::assertNotSame($initialResponse, $response);
-        self::assertNotEmpty($this->getCookie($response)->getValue());
-    }
-
-    /**
-     * @dataProvider validMiddlewaresProvider
-     */
     public function testSkipsInjectingSessionCookieOnEmptyContainer(SessionMiddleware $middleware)
     {
         $response = $this->ensureSameResponse($middleware, new ServerRequest(), $this->emptyValidationMiddleware());
 
         self::assertNull($this->getCookie($response)->getValue());
-    }
-
-    public function testRemovesSessionCookieOnEmptySessionContainer()
-    {
-        self::markTestIncomplete('This feature is yet to be implemented, and we may do so in a different middleware');
     }
 
     /**
@@ -101,10 +79,19 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
 
         $checkingMiddleware = $this->fakeMiddleware(
             function (ServerRequestInterface $request, ResponseInterface $response) use ($sessionValue) {
-                /* @var $data Data */
-                $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                /* @var $session SessionInterface */
+                $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
 
-                self::assertSame($sessionValue, $data->get('foo'));
+                self::assertSame($sessionValue, $session->get('foo'));
+                self::assertFalse($session->hasChanged());
+
+                $session->set('foo', $sessionValue . 'changed');
+
+                self::assertTrue(
+                    $session->hasChanged(),
+                    'ensuring that the cookie is sent again: '
+                    . 'non-modified session containers are not to be re-serialized into a token'
+                );
 
                 return $response;
             }
@@ -167,11 +154,60 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
                     ->setIssuedAt((new \DateTime())->getTimestamp())
                     ->setExpiration((new \DateTime())->getTimestamp())
-                    ->set(SessionMiddleware::SESSION_CLAIM, Data::fromTokenData(['foo' => 'bar'], []))
+                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
                     ->getToken()
             ]);
 
         $this->ensureSameResponse($middleware, $unsignedToken, $this->emptyValidationMiddleware());
+    }
+
+    /**
+     * @dataProvider validMiddlewaresProvider
+     */
+    public function testWillSkipInjectingSessionCookiesWhenSessionIsNotChanged(SessionMiddleware $middleware)
+    {
+        $this->ensureSameResponse(
+            $middleware,
+            $this->requestWithResponseCookies(
+                $middleware(new ServerRequest(), new Response(), $this->writingMiddleware())
+            ),
+            $this->fakeMiddleware(
+                function (ServerRequestInterface $request, ResponseInterface $response) {
+                    /* @var $session SessionInterface */
+                    $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+
+                    // note: we set the same data just to make sure that we are indeed interacting with the session
+                    $session->set('foo', 'bar');
+
+                    self::assertFalse($session->hasChanged());
+
+                    return $response;
+                }
+            )
+        );
+    }
+
+    /**
+     * @dataProvider validMiddlewaresProvider
+     */
+    public function testWillSendExpirationCookieWhenSessionContentsAreCleared(SessionMiddleware $middleware)
+    {
+        $this->ensureClearsSessionCookie(
+            $middleware,
+            $this->requestWithResponseCookies(
+                $middleware(new ServerRequest(), new Response(), $this->writingMiddleware())
+            ),
+            $this->fakeMiddleware(
+                function (ServerRequestInterface $request, ResponseInterface $response) {
+                    /* @var $session SessionInterface */
+                    $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+
+                    $session->clear();
+
+                    return $response;
+                }
+            )
+        );
     }
 
     /**
@@ -279,6 +315,31 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
 
     /**
      * @param SessionMiddleware $middleware
+     * @param ServerRequestInterface $request
+     * @param callable $next
+     *
+     * @return ResponseInterface
+     */
+    private function ensureClearsSessionCookie(
+        SessionMiddleware $middleware,
+        ServerRequestInterface $request,
+        callable $next = null
+    ): ResponseInterface {
+        $initialResponse = new Response();
+        $response = $middleware($request, $initialResponse, $next);
+
+        self::assertNotSame($initialResponse, $response);
+
+        $cookie = $this->getCookie($response);
+
+        self::assertLessThan((new \DateTime('-29 day'))->getTimestamp(), $cookie->getExpires());
+        self::assertEmpty($cookie->getValue());
+
+        return $response;
+    }
+
+    /**
+     * @param SessionMiddleware $middleware
      * @param \DateTime $issuedAt
      * @param \DateTime $expiration
      *
@@ -289,7 +350,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         return (string) (new Builder())
             ->setIssuedAt($issuedAt->getTimestamp())
             ->setExpiration($expiration->getTimestamp())
-            ->set(SessionMiddleware::SESSION_CLAIM, Data::fromTokenData(['foo' => 'bar'], []))
+            ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
             ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
             ->getToken();
     }
@@ -301,11 +362,11 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     {
         return $this->fakeMiddleware(
             function (ServerRequestInterface $request, ResponseInterface $response) {
-                /* @var $data Data */
-                $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                /* @var $session SessionInterface */
+                $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
 
-                self::assertInstanceOf(Data::class, $data);
-                self::assertTrue($data->isEmpty());
+                self::assertInstanceOf(SessionInterface::class, $session);
+                self::assertTrue($session->isEmpty());
 
                 return $response;
             }
@@ -321,9 +382,9 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     {
         return $this->fakeMiddleware(
             function (ServerRequestInterface $request, ResponseInterface $response) use ($value) {
-                /* @var $data Data */
-                $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
-                $data->set('foo', $value);
+                /* @var $session SessionInterface */
+                $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                $session->set('foo', $value);
 
                 return $response;
             }
