@@ -188,6 +188,31 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider validMiddlewaresProvider
      */
+    public function testWillNotSetSessionCookiesWhenSessionIsNotChanged(SessionMiddleware $middleware)
+    {
+        $this->ensureSameResponse(
+            $middleware,
+            $this->requestWithResponseCookies(
+                $middleware(new ServerRequest(), new Response(), $this->writingMiddleware())
+            ),
+            $this->fakeMiddleware(
+                function (ServerRequestInterface $request, ResponseInterface $response) {
+                    /* @var $session SessionInterface */
+                    $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+
+                    $session->set('foo', 'bar');
+
+                    self::assertFalse($session->hasChanged());
+
+                    return $response;
+                }
+            )
+        );
+    }
+
+    /**
+     * @dataProvider validMiddlewaresProvider
+     */
     public function testWillIgnoreMalformedTokens(SessionMiddleware $middleware)
     {
         $this->ensureSameResponse(
