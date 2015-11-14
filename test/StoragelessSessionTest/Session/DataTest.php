@@ -146,37 +146,53 @@ final class DataTest extends PHPUnit_Framework_TestCase
         $this->assertSame(['foo' => 'bar', 'baz' => 'tab'], $data->get('key'));
     }
 
-    public function testContainerStoresScalarValueFromNestedObjects()
+    /**
+     * @dataProvider storageNonScalarDataProvider
+     */
+    public function testContainerStoresScalarValueFromNestedObjects($nonScalar, $expectedScalar)
     {
-        $mixedData = [
-            'class' => new class
-            {
-                public $foo = 'bar';
-            },
-            'object' => (object) ['baz' => [(object) ['tab' => 'taz']]],
-            'array'  => [(object) ['tar' => 'tan']],
-            'jsonSerializable' => new class implements \JsonSerializable
-            {
-                public function jsonSerialize()
+        $data = Data::fromTokenData(['key' => $nonScalar]);
+
+        self::assertSame($expectedScalar, $data->get('key'));
+
+        $data->set('otherKey', $nonScalar);
+
+        self::assertSame($expectedScalar, $data->get('otherKey'));
+    }
+
+    public function storageNonScalarDataProvider() : array
+    {
+        return [
+            'class' => [
+                new class
                 {
-                    return (object) ['war' => 'zip'];
-                }
-            },
-            'emptyObject' => new \stdClass(),
-        ];
-
-        $data = Data::fromTokenData(['key' => $mixedData]);
-
-        $this->assertSame(
-            [
-                'class'            => ['foo' => 'bar'],
-                'object'           => ['baz' => ['tab' => 'taz']],
-                'array'            => ['tar' => 'tan'],
-                'jsonSerializable' => ['war' => 'zip'],
-                'emptyObject'      => [],
+                    public $foo = 'bar';
+                },
+                ['foo' => 'bar'],
             ],
-            $data->get('key')
-        );
+            'object' => [
+                (object) ['baz' => [(object) ['tab' => 'taz']]],
+                ['baz' => ['tab' => 'taz']],
+            ],
+            'array'  => [
+                [(object) ['tar' => 'tan']],
+                ['tar' => 'tan'],
+            ],
+            'jsonSerializable' => [
+                new class implements \JsonSerializable
+                {
+                    public function jsonSerialize()
+                    {
+                        return (object) ['war' => 'zip'];
+                    }
+                },
+                ['war' => 'zip'],
+            ],
+            'emptyObject' => [
+                new \stdClass(),
+                [],
+            ],
+        ];
     }
 
     public function storageScalarDataProvider() : array
