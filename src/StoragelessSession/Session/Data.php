@@ -20,7 +20,7 @@ declare(strict_types=1);
 
 namespace StoragelessSession\Session;
 
-class Data implements SessionInterface
+final class Data implements SessionInterface
 {
     /**
      * @var array
@@ -116,7 +116,7 @@ class Data implements SessionInterface
     /**
      * {@inheritDoc}
      */
-    public function isEmpty()
+    public function isEmpty() : bool
     {
         return empty($this->data);
     }
