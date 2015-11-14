@@ -270,6 +270,38 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         self::assertEquals(time() + 123456, $tokenCookie->getExpires(), '', 2);
     }
 
+    public function testSessionTokenParsingIsDelayedWhenSessionIsNotBeingUsed()
+    {
+        /* @var $signer Signer|\PHPUnit_Framework_MockObject_MockObject */
+        $signer      = $this->getMock(Signer::class);
+        /* @var $tokenParser Parser|\PHPUnit_Framework_MockObject_MockObject */
+        $tokenParser = $this->getMock(Parser::class);
+
+        $signer->expects($this->never())->method('verify');
+        $tokenParser->expects($this->never())->method('parse');
+
+        $middleware = new SessionMiddleware($signer, 'foo', 'foo', SetCookie::create('cookie-name'), $tokenParser, 100);
+        $request    = (new ServerRequest())
+            ->withCookieParams([
+                SessionMiddleware::DEFAULT_COOKIE => (new Builder())
+                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
+                    ->getToken()
+            ]);
+
+        $middleware(
+            $request,
+            new Response(),
+            $this->fakeMiddleware(function (ServerRequestInterface $request, ResponseInterface $response) {
+                self::assertInstanceOf(
+                    SessionInterface::class,
+                    $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE)
+                );
+
+                return $response;
+            })
+        );
+    }
+
     /**
      * @return SessionMiddleware[][]
      */

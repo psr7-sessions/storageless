@@ -31,6 +31,7 @@ use Lcobucci\JWT\ValidationData;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use StoragelessSession\Session\DefaultSessionData;
+use StoragelessSession\Session\LazySession;
 use StoragelessSession\Session\SessionInterface;
 use Zend\Stratigility\MiddlewareInterface;
 
@@ -151,7 +152,9 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     public function __invoke(Request $request, Response $response, callable $out = null) : Response
     {
-        $sessionContainer = $this->extractSessionContainer($this->parseToken($request));
+        $sessionContainer = LazySession::fromContainerBuildingCallback(function () use ($request) : SessionInterface {
+            return $this->extractSessionContainer($this->parseToken($request));
+        });
 
         if (null !== $out) {
             $response = $out($request->withAttribute(self::SESSION_ATTRIBUTE, $sessionContainer), $response);
@@ -225,11 +228,13 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     private function appendToken(SessionInterface $sessionContainer, Response $response) : Response
     {
-        if ($sessionContainer->isEmpty() && $sessionContainer->hasChanged()) {
+        $sessionContainerChanged = $sessionContainer->hasChanged();
+
+        if ($sessionContainerChanged && $sessionContainer->isEmpty()) {
             return FigResponseCookies::set($response, $this->getExpirationCookie());
         }
 
-        if (! $sessionContainer->hasChanged()) {
+        if (! $sessionContainerChanged) {
             return $response;
         }
 
