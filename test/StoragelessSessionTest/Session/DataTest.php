@@ -162,6 +162,7 @@ final class DataTest extends PHPUnit_Framework_TestCase
                     return (object) ['war' => 'zip'];
                 }
             },
+            'emptyObject' => new \stdClass(),
         ];
 
         $data = Data::fromTokenData(['key' => $mixedData]);
@@ -172,6 +173,7 @@ final class DataTest extends PHPUnit_Framework_TestCase
                 'object'           => ['baz' => ['tab' => 'taz']],
                 'array'            => ['tar' => 'tan'],
                 'jsonSerializable' => ['war' => 'zip'],
+                'emptyObject'      => [],
             ],
             $data->get('key')
         );
