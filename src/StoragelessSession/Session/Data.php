@@ -32,44 +32,41 @@ class Data implements \JsonSerializable
      */
     private $originalData;
 
-    /**
-     * @todo ensure serializable data?
-     */
-    private function __construct(array $data)
+    private function __construct()
     {
-        $this->originalData = $this->data = $data;
     }
 
-    public static function fromDecodedTokenData(\stdClass $data)
+    public static function fromDecodedTokenData(\stdClass $data) : self
     {
-        return self::fromTokenData(self::convertStdClassToUsableStuff($data));
-    }
+        $instance = new self();
 
-    private static function convertStdClassToUsableStuff(\stdClass $shit)
-    {
-        $arrayData = [];
+        $instance->originalData = $instance->data = json_decode(json_encode($data, \JSON_PRESERVE_ZERO_FRACTION), true);
 
-        foreach ($shit as $key => $property) {
-            if ($property instanceof \stdClass) {
-                $arrayData[$key] = self::convertStdClassToUsableStuff($property);
-
-                continue;
-            }
-
-            $arrayData[$key] = $property;
-        }
-
-        return $arrayData;
+        return $instance;
     }
 
     public static function fromTokenData(array $data): self
     {
-        return new self($data);
+        $instance = new self();
+
+        $instance->data = [];
+
+        foreach ($data as $key => $value) {
+            $instance->set((string) $key, $value);
+        }
+
+        $instance->originalData = $instance->data;
+
+        return $instance;
     }
 
     public static function newEmptySession(): self
     {
-        return new self([]);
+        $instance = new self();
+
+        $instance->originalData = $instance->data = [];
+
+        return $instance;
     }
 
     /**
@@ -77,7 +74,7 @@ class Data implements \JsonSerializable
      */
     public function set(string $key, $value)
     {
-        $this->data[$key] = $value;
+        $this->data[$key] = json_decode(json_encode($value, \JSON_PRESERVE_ZERO_FRACTION), true);;
     }
 
     public function get(string $key)
