@@ -24,6 +24,7 @@ use DateTime;
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\SetCookie;
 use Lcobucci\JWT\Builder;
+use Lcobucci\JWT\Claim;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Token;
@@ -37,6 +38,7 @@ use Zend\Stratigility\MiddlewareInterface;
 
 final class SessionMiddleware implements MiddlewareInterface
 {
+    const ISSUED_AT_CLAIM      = 'iat';
     const SESSION_CLAIM        = 'session-data';
     const SESSION_ATTRIBUTE    = 'session';
     const DEFAULT_COOKIE       = 'slsession';
@@ -214,7 +216,9 @@ final class SessionMiddleware implements MiddlewareInterface
                 return DefaultSessionData::newEmptySession();
             }
 
-            return DefaultSessionData::fromDecodedTokenData($token->getClaim(self::SESSION_CLAIM) ?? new \stdClass());
+            return DefaultSessionData::fromDecodedTokenData(
+                (object) ($token->getClaim(self::SESSION_CLAIM) ?? new \stdClass())
+            );
         } catch (\BadMethodCallException $invalidToken) {
             return DefaultSessionData::newEmptySession();
         }
@@ -232,13 +236,12 @@ final class SessionMiddleware implements MiddlewareInterface
     private function appendToken(SessionInterface $sessionContainer, Response $response, Token $token = null) : Response
     {
         $sessionContainerChanged = $sessionContainer->hasChanged();
-        $sessionContainerIsEmpty = $sessionContainer->isEmpty();
 
-        if ($sessionContainerChanged && $sessionContainerIsEmpty) {
+        if ($sessionContainerChanged && $sessionContainer->isEmpty()) {
             return FigResponseCookies::set($response, $this->getExpirationCookie());
         }
 
-        if ($sessionContainerChanged || (!$sessionContainerIsEmpty && $this->shouldTokenBeRefreshed($token))) {
+        if ($sessionContainerChanged || ($this->shouldTokenBeRefreshed($token) && ! $sessionContainer->isEmpty())) {
             return FigResponseCookies::set($response, $this->getTokenCookie($sessionContainer));
         }
 
@@ -254,7 +257,11 @@ final class SessionMiddleware implements MiddlewareInterface
             return false;
         }
 
-        return time() >= ($token->getClaim('iat') + $this->refreshTime);
+
+        $issuedAt = $token->getClaims()[self::ISSUED_AT_CLAIM] ?? null;
+
+        return $issuedAt instanceof Claim
+            && (time() >= ($issuedAt->getValue() + $this->refreshTime));
     }
 
 
