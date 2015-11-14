@@ -160,6 +160,22 @@ final class DataTest extends PHPUnit_Framework_TestCase
         self::assertSame($expectedScalar, $data->get('otherKey'));
     }
 
+    /**
+     * @dataProvider storageScalarDataProvider
+     */
+    public function testGetWillReturnDefaultValueOnNonExistingKey(string $key, $value)
+    {
+        self::assertSame($value, Data::newEmptySession()->get($key, $value));
+    }
+
+    /**
+     * @dataProvider storageNonScalarDataProvider
+     */
+    public function testGetWillReturnScalarCastDefaultValueOnNonExistingKey($nonScalar, $expectedScalar)
+    {
+        self::assertSame($expectedScalar, Data::newEmptySession()->get('key', $nonScalar));
+    }
+
     public function storageNonScalarDataProvider() : array
     {
         return [
