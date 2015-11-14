@@ -21,7 +21,6 @@ declare(strict_types=1);
 namespace StoragelessSessionTest\Session;
 
 use PHPUnit_Framework_TestCase;
-use StoragelessSession\Session\DefaultSessionData;
 use StoragelessSession\Session\LazySession;
 use StoragelessSession\Session\SessionInterface;
 
