@@ -170,7 +170,7 @@ final class SessionMiddleware implements MiddlewareInterface
             $response = $out($request->withAttribute(self::SESSION_ATTRIBUTE, $sessionContainer), $response);
         }
 
-        return $this->appendToken($sessionContainer, $response);
+        return $this->appendToken($sessionContainer, $response, $token);
     }
 
     /**
@@ -195,25 +195,11 @@ final class SessionMiddleware implements MiddlewareInterface
             return null;
         }
 
-        if (! $this->validateToken($token)) {
+        if (! $token->validate(new ValidationData())) {
             return null;
         }
 
         return $token;
-    }
-
-    /**
-     * @param Token $token
-     *
-     * @return bool
-     */
-    private function validateToken(Token $token) : bool
-    {
-        try {
-            return $token->verify($this->signer, $this->verificationKey) && $token->validate(new ValidationData());
-        } catch (\BadMethodCallException $invalidToken) {
-            return false;
-        }
     }
 
     /**
@@ -223,20 +209,27 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     public function extractSessionContainer(Token $token = null) : SessionInterface
     {
-        return $token
-            ? DefaultSessionData::fromDecodedTokenData($token->getClaim(self::SESSION_CLAIM) ?? new \stdClass(), $token->getClaim('exp'))
-            : DefaultSessionData::newEmptySession();
+        try {
+            if (null === $token || !$token->verify($this->signer, $this->verificationKey)) {
+                return DefaultSessionData::newEmptySession();
+            }
+
+            return DefaultSessionData::fromDecodedTokenData($token->getClaim(self::SESSION_CLAIM) ?? new \stdClass());
+        } catch (\BadMethodCallException $invalidToken) {
+            return DefaultSessionData::newEmptySession();
+        }
     }
 
     /**
      * @param SessionInterface $sessionContainer
      * @param Response         $response
+     * @param Token            $token
      *
      * @return Response
      *
      * @throws \InvalidArgumentException
      */
-    private function appendToken(SessionInterface $sessionContainer, Response $response) : Response
+    private function appendToken(SessionInterface $sessionContainer, Response $response, Token $token = null) : Response
     {
         $sessionContainerChanged = $sessionContainer->hasChanged();
 
@@ -251,8 +244,18 @@ final class SessionMiddleware implements MiddlewareInterface
         return $response;
     }
 
-        return FigResponseCookies::set($response, $this->getTokenCookie($sessionContainer));
+    /**
+     * {@inheritDoc}
+     */
+    private function shouldTokenBeRefreshed(Token $token = null): bool
+    {
+        if (null === $token) {
+            return false;
+        }
+
+        return time() >= $token->getClaim('exp') - $this->expirationTime;
     }
+
 
     /**
      * @param SessionInterface $sessionContainer

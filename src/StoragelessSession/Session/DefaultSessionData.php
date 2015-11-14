@@ -32,26 +32,20 @@ final class DefaultSessionData implements SessionInterface
      */
     private $originalData;
 
-    /**
-     * @var int
-     */
-    private $expirationTime;
-
     private function __construct()
     {
     }
 
-    public static function fromDecodedTokenData(\stdClass $data, int $expirationTime = null) : self
+    public static function fromDecodedTokenData(\stdClass $data) : self
     {
         $instance = new self();
 
         $instance->originalData = $instance->data = self::convertValueToScalar($data);
-        $instance->expirationTime = $expirationTime;
 
         return $instance;
     }
 
-    public static function fromTokenData(array $data, int $expirationTime = null): self
+    public static function fromTokenData(array $data): self
     {
         $instance = new self();
 
@@ -62,7 +56,6 @@ final class DefaultSessionData implements SessionInterface
         }
 
         $instance->originalData = $instance->data;
-        $instance->expirationTime = $expirationTime;
 
         return $instance;
     }
@@ -152,17 +145,5 @@ final class DefaultSessionData implements SessionInterface
     private static function convertValueToScalar($value)
     {
         return json_decode(json_encode($value, \JSON_PRESERVE_ZERO_FRACTION), true);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function shouldBeRefreshed(int $secondsBeforeExpiration): bool
-    {
-        if (null === $this->expirationTime) {
-            return false;
-        }
-
-        return time() >= $this->expirationTime - $secondsBeforeExpiration;
     }
 }
