@@ -37,9 +37,10 @@ use Zend\Stratigility\MiddlewareInterface;
 
 final class SessionMiddleware implements MiddlewareInterface
 {
-    const SESSION_CLAIM     = 'session-data';
-    const SESSION_ATTRIBUTE = 'session';
-    const DEFAULT_COOKIE    = 'slsession';
+    const SESSION_CLAIM           = 'session-data';
+    const SESSION_ATTRIBUTE       = 'session';
+    const DEFAULT_COOKIE          = 'slsession';
+    const DEFAULT_REFRESH_PERCENT = 10;
 
     /**
      * @var Signer
@@ -62,6 +63,11 @@ final class SessionMiddleware implements MiddlewareInterface
     private $expirationTime;
 
     /**
+     * @var int
+     */
+    private $refreshPercent;
+
+    /**
      * @var Parser
      */
     private $tokenParser;
@@ -78,6 +84,7 @@ final class SessionMiddleware implements MiddlewareInterface
      * @param SetCookie $defaultCookie
      * @param Parser    $tokenParser
      * @param int       $expirationTime
+     * @param int       $refreshPercent
      */
     public function __construct(
         Signer $signer,
@@ -85,7 +92,8 @@ final class SessionMiddleware implements MiddlewareInterface
         string $verificationKey,
         SetCookie $defaultCookie,
         Parser $tokenParser,
-        int $expirationTime
+        int $expirationTime,
+        int $refreshPercent = self::DEFAULT_REFRESH_PERCENT
     ) {
         $this->signer          = $signer;
         $this->signatureKey    = $signatureKey;
@@ -93,6 +101,7 @@ final class SessionMiddleware implements MiddlewareInterface
         $this->tokenParser     = $tokenParser;
         $this->defaultCookie   = clone $defaultCookie;
         $this->expirationTime  = $expirationTime;
+        $this->refreshPercent  = $refreshPercent;
     }
 
     /**
@@ -213,6 +222,17 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     public function extractSessionContainer(Token $token = null) : SessionInterface
     {
+        if ($token) {
+            $claims     = $token->getClaims();
+            $issuedAt   = $claims['iat'] ? $claims['iat']->getValue() : null;
+            $expiration = $claims['exp'] ? $claims['exp']->getValue() : null;
+            $percent    = $expiration + ($issuedAt * $this->refreshPercent / 100);
+
+            if ($percent >= (new DateTime())->getTimestamp()) {
+                $this->defaultCookie->withExpires(new \DateTime('+10 minutes'));
+            }
+        }
+
         return $token
             ? DefaultSessionData::fromDecodedTokenData($token->getClaim(self::SESSION_CLAIM) ?? new \stdClass())
             : DefaultSessionData::newEmptySession();
