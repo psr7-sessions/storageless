@@ -170,7 +170,7 @@ final class SessionMiddleware implements MiddlewareInterface
             $response = $out($request->withAttribute(self::SESSION_ATTRIBUTE, $sessionContainer), $response);
         }
 
-        return $this->appendToken($sessionContainer, $response, $token);
+        return $this->appendToken($sessionContainer, $response);
     }
 
     /**
@@ -224,7 +224,7 @@ final class SessionMiddleware implements MiddlewareInterface
     public function extractSessionContainer(Token $token = null) : SessionInterface
     {
         return $token
-            ? DefaultSessionData::fromDecodedTokenData($token->getClaim(self::SESSION_CLAIM) ?? new \stdClass())
+            ? DefaultSessionData::fromDecodedTokenData($token->getClaim(self::SESSION_CLAIM) ?? new \stdClass(), $token->getClaim('exp'))
             : DefaultSessionData::newEmptySession();
     }
 
@@ -236,7 +236,7 @@ final class SessionMiddleware implements MiddlewareInterface
      *
      * @throws \InvalidArgumentException
      */
-    private function appendToken(SessionInterface $sessionContainer, Response $response, Token $token = null) : Response
+    private function appendToken(SessionInterface $sessionContainer, Response $response) : Response
     {
         $sessionContainerChanged = $sessionContainer->hasChanged();
 
@@ -244,9 +244,12 @@ final class SessionMiddleware implements MiddlewareInterface
             return FigResponseCookies::set($response, $this->getExpirationCookie());
         }
 
-        if (! ($sessionContainerChanged || $this->shouldRefreshToken($token))) {
-            return $response;
+        if ($sessionContainer->hasChanged() || $this->shouldRefreshToken($token)) {
+            return FigResponseCookies::set($response, $this->getTokenCookie($sessionContainer));
         }
+
+        return $response;
+    }
 
         return FigResponseCookies::set($response, $this->getTokenCookie($sessionContainer));
     }
@@ -282,19 +285,5 @@ final class SessionMiddleware implements MiddlewareInterface
             ->defaultCookie
             ->withValue(null)
             ->withExpires((new \DateTime('-30 day'))->getTimestamp());
-    }
-
-    /**
-     * @param Token|null $token
-     *
-     * @return bool
-     */
-    private function shouldRefreshToken(Token $token = null) : bool
-    {
-        if (null === $token) {
-            return false;
-        }
-
-        return time() >= $token->getClaim('exp') - $this->refreshBefore;
     }
 }

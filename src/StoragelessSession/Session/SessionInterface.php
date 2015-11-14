@@ -82,4 +82,13 @@ interface SessionInterface extends \JsonSerializable
      * @return bool
      */
     public function isEmpty() : bool;
+
+    /**
+     * Checks whether the session should be refreshed (based on its expiration)
+     *
+     * @param int $secondsBeforeExpiration
+     *
+     * @return bool
+     */
+    public function shouldBeRefreshed(int $secondsBeforeExpiration) : bool;
 }
