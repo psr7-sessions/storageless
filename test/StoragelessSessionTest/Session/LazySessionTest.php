@@ -66,4 +66,28 @@ final class LazySessionTest extends PHPUnit_Framework_TestCase
 
         self::assertFalse($this->lazySession->hasChanged());
     }
+
+    public function testHasChanged()
+    {
+        $this->wrappedSessionWillBeLoaded();
+
+        $this->wrappedSession->expects($this->at(1))->method('hasChanged')->willReturn(true);
+        $this->wrappedSession->expects($this->at(2))->method('hasChanged')->willReturn(false);
+
+        $this->forceWrappedSessionInitialization();
+
+        self::assertTrue($this->lazySession->hasChanged());
+        self::assertFalse($this->lazySession->hasChanged());
+    }
+
+    private function wrappedSessionWillBeLoaded()
+    {
+        $this->sessionLoader->expects($this->once())->method('__invoke')->willReturn($this->wrappedSession);
+    }
+
+    private function forceWrappedSessionInitialization()
+    {
+        // no-op operation that is known to trigger session lazy-loading
+        $this->lazySession->remove(uniqid('nonExisting', true));
+    }
 }
