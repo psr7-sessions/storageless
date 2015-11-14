@@ -97,6 +97,20 @@ final class DataTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider storageScalarDataProvider
      */
+    public function testContainerIsNotChangedWhenScalarDataIsSetAndOverwrittenInIt(string $key, $value)
+    {
+        $data = Data::fromTokenData($key, $value);
+
+        self::assertFalse($data->hasChanged());
+
+        $data->set($key, $value);
+
+        self::assertFalse($data->hasChanged());
+    }
+
+    /**
+     * @dataProvider storageScalarDataProvider
+     */
     public function testContainerBuiltWithDataContainsData(string $key, $value)
     {
         $data = Data::fromTokenData([$key => $value]);
