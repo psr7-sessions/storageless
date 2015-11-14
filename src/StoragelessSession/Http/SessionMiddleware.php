@@ -253,7 +253,7 @@ final class SessionMiddleware implements MiddlewareInterface
             return false;
         }
 
-        return time() >= (($token->getClaim('exp') - $this->expirationTime) + $this->refreshTime);
+        return time() >= ($token->getClaim('iat') + $this->refreshTime);
     }
 
 
