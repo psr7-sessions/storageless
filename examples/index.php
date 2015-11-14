@@ -35,7 +35,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 // $publicKey = new Key('file://public_key.pem');
 
 // simply run `php -S localhost:8888 index.php`
-// then point your browser at `http://localhost:8888/get`
+// then point your browser at `http://localhost:8888/`
 
 $sessionMiddleware = new SessionMiddleware(
     new Sha256(),
