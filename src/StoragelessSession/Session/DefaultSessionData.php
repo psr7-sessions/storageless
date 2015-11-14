@@ -20,7 +20,7 @@ declare(strict_types=1);
 
 namespace StoragelessSession\Session;
 
-final class Data implements SessionInterface
+final class DefaultSessionData implements SessionInterface
 {
     /**
      * @var array

@@ -21,54 +21,54 @@ declare(strict_types=1);
 namespace StoragelessSessionTest\Session;
 
 use PHPUnit_Framework_TestCase;
-use StoragelessSession\Session\Data;
+use StoragelessSession\Session\DefaultSessionData;
 
 /**
- * @covers \StoragelessSession\Session\Data
+ * @covers \StoragelessSession\Session\DefaultSessionData
  */
-final class DataTest extends PHPUnit_Framework_TestCase
+final class DefaultSessionDataTest extends PHPUnit_Framework_TestCase
 {
     public function testFromFromTokenDataBuildsADataContainer()
     {
-        self::assertInstanceOf(Data::class, Data::fromTokenData([]));
+        self::assertInstanceOf(DefaultSessionData::class, DefaultSessionData::fromTokenData([]));
     }
 
     public function testNewEmptySessionProducesAContainer()
     {
-        self::assertInstanceOf(Data::class, Data::newEmptySession());
+        self::assertInstanceOf(DefaultSessionData::class, DefaultSessionData::newEmptySession());
     }
 
     public function testContainerIsEmptyWhenCreatedExplicitlyAsEmpty()
     {
-        self::assertTrue(Data::newEmptySession()->isEmpty());
+        self::assertTrue(DefaultSessionData::newEmptySession()->isEmpty());
     }
 
     public function testContainerIsEmptyWhenCreatedWithoutData()
     {
-        self::assertTrue(Data::fromTokenData([])->isEmpty());
+        self::assertTrue(DefaultSessionData::fromTokenData([])->isEmpty());
     }
 
     public function testContainerIsNotEmptyWhenDataIsProvided()
     {
-        self::assertFalse(Data::fromTokenData(['foo' => 'bar'])->isEmpty());
+        self::assertFalse(DefaultSessionData::fromTokenData(['foo' => 'bar'])->isEmpty());
     }
 
     public function testContainerIsNotEmptyWhenDataIsPassedToItAfterwards()
     {
-        $data = Data::newEmptySession();
+        $session = DefaultSessionData::newEmptySession();
 
-        $data->set('foo', 'bar');
+        $session->set('foo', 'bar');
 
-        self::assertFalse($data->isEmpty());
+        self::assertFalse($session->isEmpty());
     }
 
     public function testContainerIsEmptyWhenDataIsRemovedFromIt()
     {
-        $data = Data::fromTokenData(['foo' => 'bar']);
+        $session = DefaultSessionData::fromTokenData(['foo' => 'bar']);
 
-        $data->remove('foo');
+        $session->remove('foo');
 
-        self::assertTrue($data->isEmpty());
+        self::assertTrue($session->isEmpty());
     }
 
     /**
@@ -76,10 +76,10 @@ final class DataTest extends PHPUnit_Framework_TestCase
      */
     public function testContainerDataIsStoredAndRetrieved(string $key, $value)
     {
-        $data = Data::newEmptySession();
+        $session = DefaultSessionData::newEmptySession();
 
-        $data->set($key, $value);
-        self::assertSame($value, $data->get($key));
+        $session->set($key, $value);
+        self::assertSame($value, $session->get($key));
     }
 
     /**
@@ -87,11 +87,11 @@ final class DataTest extends PHPUnit_Framework_TestCase
      */
     public function testSettingDataInAContainerMarksTheContainerAsMutated(string $key, $value)
     {
-        $data = Data::newEmptySession();
+        $session = DefaultSessionData::newEmptySession();
 
-        $data->set($key, $value);
+        $session->set($key, $value);
 
-        self::assertTrue($data->hasChanged());
+        self::assertTrue($session->hasChanged());
     }
 
     /**
@@ -99,13 +99,13 @@ final class DataTest extends PHPUnit_Framework_TestCase
      */
     public function testContainerIsNotChangedWhenScalarDataIsSetAndOverwrittenInIt(string $key, $value)
     {
-        $data = Data::fromTokenData([$key => $value]);
+        $session = DefaultSessionData::fromTokenData([$key => $value]);
 
-        self::assertFalse($data->hasChanged());
+        self::assertFalse($session->hasChanged());
 
-        $data->set($key, $value);
+        $session->set($key, $value);
 
-        self::assertFalse($data->hasChanged());
+        self::assertFalse($session->hasChanged());
     }
 
     /**
@@ -113,13 +113,13 @@ final class DataTest extends PHPUnit_Framework_TestCase
      */
     public function testContainerIsNotChangedWhenNonScalarDataIsSetAndOverwrittenInIt($nonScalarValue)
     {
-        $data = Data::fromTokenData(['key' => $nonScalarValue]);
+        $session = DefaultSessionData::fromTokenData(['key' => $nonScalarValue]);
 
-        self::assertFalse($data->hasChanged());
+        self::assertFalse($session->hasChanged());
 
-        $data->set('key', $nonScalarValue);
+        $session->set('key', $nonScalarValue);
 
-        self::assertFalse($data->hasChanged());
+        self::assertFalse($session->hasChanged());
     }
 
     /**
@@ -127,9 +127,9 @@ final class DataTest extends PHPUnit_Framework_TestCase
      */
     public function testContainerBuiltWithDataContainsData(string $key, $value)
     {
-        $data = Data::fromTokenData([$key => $value]);
+        $session = DefaultSessionData::fromTokenData([$key => $value]);
 
-        self::assertSame($value, $data->get($key));
+        self::assertSame($value, $session->get($key));
     }
 
     /**
@@ -141,9 +141,9 @@ final class DataTest extends PHPUnit_Framework_TestCase
             $this->markTestIncomplete('Null bytes or empty keys are not supported by PHP\'s stdClass');
         }
 
-        $data = Data::fromDecodedTokenData((object) [$key => $value]);
+        $session = DefaultSessionData::fromDecodedTokenData((object) [$key => $value]);
 
-        self::assertSame($value, $data->get($key));
+        self::assertSame($value, $session->get($key));
     }
 
     /**
@@ -151,13 +151,13 @@ final class DataTest extends PHPUnit_Framework_TestCase
      */
     public function testContainerStoresScalarValueFromNestedObjects($nonScalar, $expectedScalar)
     {
-        $data = Data::fromTokenData(['key' => $nonScalar]);
+        $session = DefaultSessionData::fromTokenData(['key' => $nonScalar]);
 
-        self::assertSame($expectedScalar, $data->get('key'));
+        self::assertSame($expectedScalar, $session->get('key'));
 
-        $data->set('otherKey', $nonScalar);
+        $session->set('otherKey', $nonScalar);
 
-        self::assertSame($expectedScalar, $data->get('otherKey'));
+        self::assertSame($expectedScalar, $session->get('otherKey'));
     }
 
     /**
@@ -165,7 +165,7 @@ final class DataTest extends PHPUnit_Framework_TestCase
      */
     public function testGetWillReturnDefaultValueOnNonExistingKey(string $key, $value)
     {
-        self::assertSame($value, Data::newEmptySession()->get($key, $value));
+        self::assertSame($value, DefaultSessionData::newEmptySession()->get($key, $value));
     }
 
     /**
@@ -173,12 +173,12 @@ final class DataTest extends PHPUnit_Framework_TestCase
      */
     public function testGetWillReturnScalarCastDefaultValueOnNonExistingKey($nonScalar, $expectedScalar)
     {
-        self::assertSame($expectedScalar, Data::newEmptySession()->get('key', $nonScalar));
+        self::assertSame($expectedScalar, DefaultSessionData::newEmptySession()->get('key', $nonScalar));
     }
 
     public function testAllMethodsAreCoveredByAnInterfacedMethod()
     {
-        $reflection = new \ReflectionClass(Data::class);
+        $reflection = new \ReflectionClass(DefaultSessionData::class);
         $interfaces = $reflection->getInterfaces();
 
         foreach ($reflection->getMethods() as $method) {

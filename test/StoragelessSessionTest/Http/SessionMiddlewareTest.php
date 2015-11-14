@@ -31,7 +31,8 @@ use PHPUnit_Framework_TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use StoragelessSession\Http\SessionMiddleware;
-use StoragelessSession\Session\Data;
+use StoragelessSession\Session\DefaultSessionData;
+use StoragelessSession\Session\SessionInterface;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
 use Zend\Stratigility\MiddlewareInterface;
@@ -101,10 +102,10 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
 
         $checkingMiddleware = $this->fakeMiddleware(
             function (ServerRequestInterface $request, ResponseInterface $response) use ($sessionValue) {
-                /* @var $data Data */
-                $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                /* @var $session SessionInterface */
+                $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
 
-                self::assertSame($sessionValue, $data->get('foo'));
+                self::assertSame($sessionValue, $session->get('foo'));
 
                 return $response;
             }
@@ -167,7 +168,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
                     ->setIssuedAt((new \DateTime())->getTimestamp())
                     ->setExpiration((new \DateTime())->getTimestamp())
-                    ->set(SessionMiddleware::SESSION_CLAIM, Data::fromTokenData(['foo' => 'bar']))
+                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
                     ->getToken()
             ]);
 
@@ -289,7 +290,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         return (string) (new Builder())
             ->setIssuedAt($issuedAt->getTimestamp())
             ->setExpiration($expiration->getTimestamp())
-            ->set(SessionMiddleware::SESSION_CLAIM, Data::fromTokenData(['foo' => 'bar']))
+            ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
             ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
             ->getToken();
     }
@@ -301,11 +302,11 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     {
         return $this->fakeMiddleware(
             function (ServerRequestInterface $request, ResponseInterface $response) {
-                /* @var $data Data */
-                $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                /* @var $session SessionInterface */
+                $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
 
-                self::assertInstanceOf(Data::class, $data);
-                self::assertTrue($data->isEmpty());
+                self::assertInstanceOf(SessionInterface::class, $session);
+                self::assertTrue($session->isEmpty());
 
                 return $response;
             }
@@ -321,9 +322,9 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     {
         return $this->fakeMiddleware(
             function (ServerRequestInterface $request, ResponseInterface $response) use ($value) {
-                /* @var $data Data */
-                $data = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
-                $data->set('foo', $value);
+                /* @var $session SessionInterface */
+                $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                $session->set('foo', $value);
 
                 return $response;
             }
