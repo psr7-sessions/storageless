@@ -37,10 +37,10 @@ use Zend\Stratigility\MiddlewareInterface;
 
 final class SessionMiddleware implements MiddlewareInterface
 {
-    const SESSION_CLAIM           = 'session-data';
-    const SESSION_ATTRIBUTE       = 'session';
-    const DEFAULT_COOKIE          = 'slsession';
-    const DEFAULT_REFRESH_TIME    = 60;
+    const SESSION_CLAIM        = 'session-data';
+    const SESSION_ATTRIBUTE    = 'session';
+    const DEFAULT_COOKIE       = 'slsession';
+    const DEFAULT_REFRESH_TIME = 60;
 
     /**
      * @var Signer
@@ -182,7 +182,7 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     private function parseToken(Request $request)
     {
-        $cookies   = $request->getCookieParams();
+        $cookies    = $request->getCookieParams();
         $cookieName = $this->defaultCookie->getName();
 
         if (! isset($cookies[$cookieName])) {
@@ -210,7 +210,7 @@ final class SessionMiddleware implements MiddlewareInterface
     public function extractSessionContainer(Token $token = null) : SessionInterface
     {
         try {
-            if (null === $token || !$token->verify($this->signer, $this->verificationKey)) {
+            if (null === $token || ! $token->verify($this->signer, $this->verificationKey)) {
                 return DefaultSessionData::newEmptySession();
             }
 
@@ -253,7 +253,7 @@ final class SessionMiddleware implements MiddlewareInterface
             return false;
         }
 
-        return time() >= ($token->getClaim('exp') - $this->refreshTime);
+        return time() >= (($token->getClaim('exp') - $this->expirationTime) + $this->refreshTime);
     }
 
 
