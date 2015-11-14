@@ -152,8 +152,8 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         $unsignedToken = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
-                    ->setIssuedAt((new \DateTime())->getTimestamp())
-                    ->setExpiration((new \DateTime())->getTimestamp())
+                    ->setIssuedAt((new \DateTime('-1 day'))->getTimestamp())
+                    ->setExpiration((new \DateTime('+1 day'))->getTimestamp())
                     ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
                     ->getToken()
             ]);
