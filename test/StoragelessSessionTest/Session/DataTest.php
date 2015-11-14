@@ -133,6 +133,19 @@ final class DataTest extends PHPUnit_Framework_TestCase
         $this->assertSame(['foo' => 'bar'], $data->get('key'));
     }
 
+    public function testContainerStoresPublicPropertiesData()
+    {
+        $object = new class
+        {
+            public $foo = 'bar';
+            public $baz = 'tab';
+        };
+
+        $data = Data::fromTokenData(['key' => $object]);
+
+        $this->assertSame(['foo' => 'bar', 'baz' => 'tab'], $data->get('key'));
+    }
+
     public function storageScalarDataProvider() : array
     {
         return [
