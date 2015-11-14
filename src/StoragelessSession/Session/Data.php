@@ -69,9 +69,6 @@ class Data implements \JsonSerializable
         return $instance;
     }
 
-    /**
-     * @todo ensure serializable data?
-     */
     public function set(string $key, $value)
     {
         $this->data[$key] = json_decode(json_encode($value, \JSON_PRESERVE_ZERO_FRACTION), true);;
