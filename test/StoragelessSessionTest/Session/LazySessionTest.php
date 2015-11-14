@@ -142,6 +142,17 @@ final class LazySessionTest extends PHPUnit_Framework_TestCase
         $this->lazySession->set('baz', 'tab');
     }
 
+    public function testIsEmpty()
+    {
+        $this->wrappedSessionWillBeLoaded();
+
+        $this->wrappedSession->expects($this->at(0))->method('isEmpty')->willReturn(true);
+        $this->wrappedSession->expects($this->at(0))->method('isEmpty')->willReturn(false);
+
+        self::assertTrue($this->lazySession->isEmpty());
+        self::assertFalse($this->lazySession->isEmpty());
+    }
+
     private function wrappedSessionWillBeLoaded()
     {
         $this->sessionLoader->expects($this->once())->method('__invoke')->willReturn($this->wrappedSession);
