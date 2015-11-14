@@ -20,7 +20,7 @@ declare(strict_types=1);
 
 namespace StoragelessSession\Session;
 
-class Data implements \JsonSerializable
+class Data implements SessionInterface
 {
     /**
      * @var array
@@ -69,11 +69,17 @@ class Data implements \JsonSerializable
         return $instance;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function set(string $key, $value)
     {
         $this->data[$key] = json_decode(json_encode($value, \JSON_PRESERVE_ZERO_FRACTION), true);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function get(string $key, $default = null)
     {
         if (! (isset($this->data[$key]) || array_key_exists($key, $this->data))) {
@@ -83,21 +89,33 @@ class Data implements \JsonSerializable
         return $this->data[$key];
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function remove(string $key)
     {
         unset($this->data[$key]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function has(string $key): bool
     {
         return array_key_exists($key, $this->data);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function hasChanged() : bool
     {
         return $this->data !== $this->originalData;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function isEmpty()
     {
         return empty($this->data);
