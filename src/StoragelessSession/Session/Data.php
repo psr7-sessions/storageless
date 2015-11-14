@@ -103,7 +103,6 @@ class Data implements \JsonSerializable
         return empty($this->data);
     }
 
-    // @TODO ArrayAccess stuff? Or Containers? (probably better to just allow plain keys)
     /**
      * {@inheritDoc}
      */
