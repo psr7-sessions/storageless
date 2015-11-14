@@ -80,6 +80,19 @@ final class LazySessionTest extends PHPUnit_Framework_TestCase
         self::assertFalse($this->lazySession->hasChanged());
     }
 
+    public function testHas()
+    {
+        $this->wrappedSessionWillBeLoaded();
+
+        $this->wrappedSession->expects($this->exactly(2))->method('has')->willReturnMap([
+            ['foo', false],
+            ['bar', true],
+        ]);
+
+        self::assertFalse($this->lazySession->has('foo'));
+        self::assertTrue($this->lazySession->has('bar'));
+    }
+
     private function wrappedSessionWillBeLoaded()
     {
         $this->sessionLoader->expects($this->once())->method('__invoke')->willReturn($this->wrappedSession);
