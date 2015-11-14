@@ -71,6 +71,21 @@ final class DefaultSessionDataTest extends PHPUnit_Framework_TestCase
         self::assertTrue($session->isEmpty());
     }
 
+    public function testClearWillRemoveEverythingFromTheSessionContainer()
+    {
+        $session = DefaultSessionData::fromTokenData([
+            'foo' => 'bar',
+            'baz' => 'tab',
+        ]);
+
+        $session->clear();
+
+        self::assertTrue($session->isEmpty());
+        self::assertTrue($session->hasChanged());
+        self::assertFalse($session->has('foo'));
+        self::assertFalse($session->has('baz'));
+    }
+
     /**
      * @dataProvider storageScalarDataProvider
      */
