@@ -146,6 +146,37 @@ final class DataTest extends PHPUnit_Framework_TestCase
         $this->assertSame(['foo' => 'bar', 'baz' => 'tab'], $data->get('key'));
     }
 
+    public function testContainerStoresScalarValueFromNestedObjects()
+    {
+        $mixedData = [
+            'class' => new class
+            {
+                public $foo = 'bar';
+            },
+            'object' => (object) ['baz' => [(object) ['tab' => 'taz']]],
+            'array'  => [(object) ['tar' => 'tan']],
+            'jsonSerializable' => new class implements \JsonSerializable
+            {
+                public function jsonSerialize()
+                {
+                    return (object) ['war' => 'zip'];
+                }
+            },
+        ];
+
+        $data = Data::fromTokenData(['key' => $mixedData]);
+
+        $this->assertSame(
+            [
+                'class'            => ['foo' => 'bar'],
+                'object'           => ['baz' => ['tab' => 'taz']],
+                'array'            => ['tar' => 'tan'],
+                'jsonSerializable' => ['war' => 'zip'],
+            ],
+            $data->get('key')
+        );
+    }
+
     public function storageScalarDataProvider() : array
     {
         return [
