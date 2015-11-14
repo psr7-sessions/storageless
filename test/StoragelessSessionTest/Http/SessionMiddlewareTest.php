@@ -169,7 +169,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider validMiddlewaresProvider
      */
-    public function testWillNotSetSessionCookiesWhenSessionIsNotChanged(SessionMiddleware $middleware)
+    public function testWillSkipInjectingSessionCookiesWhenSessionIsNotChanged(SessionMiddleware $middleware)
     {
         $this->ensureSameResponse(
             $middleware,
@@ -181,6 +181,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
                     /* @var $session SessionInterface */
                     $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
 
+                    // note: we set the same data just to make sure that we are indeed interacting with the session
                     $session->set('foo', 'bar');
 
                     self::assertFalse($session->hasChanged());
