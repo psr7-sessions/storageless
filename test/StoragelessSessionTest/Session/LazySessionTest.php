@@ -147,10 +147,21 @@ final class LazySessionTest extends PHPUnit_Framework_TestCase
         $this->wrappedSessionWillBeLoaded();
 
         $this->wrappedSession->expects($this->at(0))->method('isEmpty')->willReturn(true);
-        $this->wrappedSession->expects($this->at(0))->method('isEmpty')->willReturn(false);
+        $this->wrappedSession->expects($this->at(1))->method('isEmpty')->willReturn(false);
 
         self::assertTrue($this->lazySession->isEmpty());
         self::assertFalse($this->lazySession->isEmpty());
+    }
+
+    public function testJsonSerialize()
+    {
+        $this->wrappedSessionWillBeLoaded();
+
+        $this->wrappedSession->expects($this->at(0))->method('jsonSerialize')->willReturn('foo');
+        $this->wrappedSession->expects($this->at(1))->method('jsonSerialize')->willReturn('bar');
+
+        self::assertSame('foo', $this->lazySession->jsonSerialize());
+        self::assertSame('bar', $this->lazySession->jsonSerialize());
     }
 
     private function wrappedSessionWillBeLoaded()
