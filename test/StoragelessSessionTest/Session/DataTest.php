@@ -172,11 +172,11 @@ final class DataTest extends PHPUnit_Framework_TestCase
             ],
             'object' => [
                 (object) ['baz' => [(object) ['tab' => 'taz']]],
-                ['baz' => ['tab' => 'taz']],
+                ['baz' => [['tab' => 'taz']]],
             ],
             'array'  => [
                 [(object) ['tar' => 'tan']],
-                ['tar' => 'tan'],
+                [['tar' => 'tan']],
             ],
             'jsonSerializable' => [
                 new class implements \JsonSerializable
