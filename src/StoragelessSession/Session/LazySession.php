@@ -57,7 +57,7 @@ final class LazySession implements SessionInterface
      */
     public function set(string $key, $value)
     {
-        return $this->getRealSession()->set($key, $value);
+        $this->getRealSession()->set($key, $value);
     }
 
     /**
