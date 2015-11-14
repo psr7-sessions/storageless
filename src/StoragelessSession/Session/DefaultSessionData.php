@@ -40,7 +40,7 @@ final class DefaultSessionData implements SessionInterface
     {
         $instance = new self();
 
-        $instance->originalData = $instance->data = json_decode(json_encode($data, \JSON_PRESERVE_ZERO_FRACTION), true);
+        $instance->originalData = $instance->data = self::convertValueToScalar($data);
 
         return $instance;
     }
@@ -74,7 +74,7 @@ final class DefaultSessionData implements SessionInterface
      */
     public function set(string $key, $value)
     {
-        $this->data[$key] = json_decode(json_encode($value, \JSON_PRESERVE_ZERO_FRACTION), true);
+        $this->data[$key] = self::convertValueToScalar($value);
     }
 
     /**
@@ -82,8 +82,8 @@ final class DefaultSessionData implements SessionInterface
      */
     public function get(string $key, $default = null)
     {
-        if (! (isset($this->data[$key]) || array_key_exists($key, $this->data))) {
-            return json_decode(json_encode($default, \JSON_PRESERVE_ZERO_FRACTION), true);
+        if (! $this->has($key)) {
+            return self::convertValueToScalar($default);
         }
 
         return $this->data[$key];
@@ -110,7 +110,7 @@ final class DefaultSessionData implements SessionInterface
      */
     public function has(string $key): bool
     {
-        return isset($this->data[$key]) || array_key_exists($key, $this->data);
+        return array_key_exists($key, $this->data);
     }
 
     /**
@@ -135,5 +135,15 @@ final class DefaultSessionData implements SessionInterface
     public function jsonSerialize()
     {
         return $this->data;
+    }
+
+    /**
+     * @param int|bool|string|float|array|object|\JsonSerializable $value
+     *
+     * @return int|bool|string|float|array
+     */
+    private static function convertValueToScalar($value)
+    {
+        return json_decode(json_encode($value, \JSON_PRESERVE_ZERO_FRACTION), true);
     }
 }
