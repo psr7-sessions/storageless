@@ -176,6 +176,25 @@ final class DataTest extends PHPUnit_Framework_TestCase
         self::assertSame($expectedScalar, Data::newEmptySession()->get('key', $nonScalar));
     }
 
+    public function testAllMethodsAreCoveredByAnInterfacedMethod()
+    {
+        $reflection = new \ReflectionClass(Data::class);
+        $interfaces = $reflection->getInterfaces();
+
+        foreach ($reflection->getMethods() as $method) {
+            if ($method->isConstructor() || $method->isStatic() || ! $method->isPublic()) {
+                continue;
+            }
+
+            self::assertNotEmpty(array_filter(
+                $interfaces,
+                function (\ReflectionClass $interface) use ($method) {
+                    return $interface->hasMethod($method->getName());
+                }
+            ), $method->getName());
+        }
+    }
+
     public function storageNonScalarDataProvider() : array
     {
         return [
