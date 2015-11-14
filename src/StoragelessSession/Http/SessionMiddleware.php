@@ -40,7 +40,7 @@ final class SessionMiddleware implements MiddlewareInterface
     const SESSION_CLAIM           = 'session-data';
     const SESSION_ATTRIBUTE       = 'session';
     const DEFAULT_COOKIE          = 'slsession';
-    const DEFAULT_REFRESH_PERCENT = 10;
+    const DEFAULT_REFRESH_TIME    = 60;
 
     /**
      * @var Signer
@@ -65,7 +65,7 @@ final class SessionMiddleware implements MiddlewareInterface
     /**
      * @var int
      */
-    private $refreshBefore;
+    private $refreshTime;
 
     /**
      * @var Parser
@@ -84,7 +84,7 @@ final class SessionMiddleware implements MiddlewareInterface
      * @param SetCookie $defaultCookie
      * @param Parser    $tokenParser
      * @param int       $expirationTime
-     * @param int       $refreshPercent
+     * @param int       $refreshTime
      */
     public function __construct(
         Signer $signer,
@@ -93,7 +93,7 @@ final class SessionMiddleware implements MiddlewareInterface
         SetCookie $defaultCookie,
         Parser $tokenParser,
         int $expirationTime,
-        int $refreshPercent = self::DEFAULT_REFRESH_PERCENT
+        int $refreshTime = self::DEFAULT_REFRESH_TIME
     ) {
         $this->signer          = $signer;
         $this->signatureKey    = $signatureKey;
@@ -101,7 +101,7 @@ final class SessionMiddleware implements MiddlewareInterface
         $this->tokenParser     = $tokenParser;
         $this->defaultCookie   = clone $defaultCookie;
         $this->expirationTime  = $expirationTime;
-        $this->refreshBefore   = $refreshPercent;
+        $this->refreshTime     = $refreshTime;
     }
 
     /**
@@ -244,7 +244,7 @@ final class SessionMiddleware implements MiddlewareInterface
             return FigResponseCookies::set($response, $this->getExpirationCookie());
         }
 
-        if ($sessionContainer->hasChanged() || $this->shouldRefreshToken($token)) {
+        if ($sessionContainerChanged || $this->shouldRefreshToken($token)) {
             return FigResponseCookies::set($response, $this->getTokenCookie($sessionContainer));
         }
 
