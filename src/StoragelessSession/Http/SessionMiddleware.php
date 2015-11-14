@@ -65,7 +65,7 @@ final class SessionMiddleware implements MiddlewareInterface
     /**
      * @var int
      */
-    private $refreshPercent;
+    private $refreshBefore;
 
     /**
      * @var Parser
@@ -101,7 +101,7 @@ final class SessionMiddleware implements MiddlewareInterface
         $this->tokenParser     = $tokenParser;
         $this->defaultCookie   = clone $defaultCookie;
         $this->expirationTime  = $expirationTime;
-        $this->refreshPercent  = $refreshPercent;
+        $this->refreshBefore   = $refreshPercent;
     }
 
     /**
@@ -161,15 +161,16 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     public function __invoke(Request $request, Response $response, callable $out = null) : Response
     {
-        $sessionContainer = LazySession::fromContainerBuildingCallback(function () use ($request) : SessionInterface {
-            return $this->extractSessionContainer($this->parseToken($request));
+        $token            = $this->parseToken($request);
+        $sessionContainer = LazySession::fromContainerBuildingCallback(function () use ($token) : SessionInterface {
+            return $this->extractSessionContainer($token);
         });
 
         if (null !== $out) {
             $response = $out($request->withAttribute(self::SESSION_ATTRIBUTE, $sessionContainer), $response);
         }
 
-        return $this->appendToken($sessionContainer, $response);
+        return $this->appendToken($sessionContainer, $response, $token);
     }
 
     /**
@@ -222,17 +223,6 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     public function extractSessionContainer(Token $token = null) : SessionInterface
     {
-        if ($token) {
-            $claims     = $token->getClaims();
-            $issuedAt   = $claims['iat'] ? $claims['iat']->getValue() : null;
-            $expiration = $claims['exp'] ? $claims['exp']->getValue() : null;
-            $percent    = $expiration + ($issuedAt * $this->refreshPercent / 100);
-
-            if ($percent >= (new DateTime())->getTimestamp()) {
-                $this->defaultCookie->withExpires(new \DateTime('+10 minutes'));
-            }
-        }
-
         return $token
             ? DefaultSessionData::fromDecodedTokenData($token->getClaim(self::SESSION_CLAIM) ?? new \stdClass())
             : DefaultSessionData::newEmptySession();
@@ -246,7 +236,7 @@ final class SessionMiddleware implements MiddlewareInterface
      *
      * @throws \InvalidArgumentException
      */
-    private function appendToken(SessionInterface $sessionContainer, Response $response) : Response
+    private function appendToken(SessionInterface $sessionContainer, Response $response, Token $token = null) : Response
     {
         $sessionContainerChanged = $sessionContainer->hasChanged();
 
@@ -254,7 +244,7 @@ final class SessionMiddleware implements MiddlewareInterface
             return FigResponseCookies::set($response, $this->getExpirationCookie());
         }
 
-        if (! $sessionContainerChanged) {
+        if (! ($sessionContainerChanged || $this->shouldRefreshToken($token))) {
             return $response;
         }
 
@@ -292,5 +282,19 @@ final class SessionMiddleware implements MiddlewareInterface
             ->defaultCookie
             ->withValue(null)
             ->withExpires((new \DateTime('-30 day'))->getTimestamp());
+    }
+
+    /**
+     * @param Token|null $token
+     *
+     * @return bool
+     */
+    private function shouldRefreshToken(Token $token = null) : bool
+    {
+        if (null === $token) {
+            return false;
+        }
+
+        return time() >= $token->getClaim('exp') - $this->refreshBefore;
     }
 }
