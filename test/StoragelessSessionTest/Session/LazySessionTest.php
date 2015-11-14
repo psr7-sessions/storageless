@@ -128,6 +128,20 @@ final class LazySessionTest extends PHPUnit_Framework_TestCase
         $this->lazySession->clear();
     }
 
+    public function testSet()
+    {
+        $this->wrappedSessionWillBeLoaded();
+
+        $this
+            ->wrappedSession
+            ->expects($this->exactly(2))
+            ->method('set')
+            ->with(self::logicalOr('foo', 'baz'), self::logicalOr('bar', 'tab'));
+
+        $this->lazySession->set('foo', 'bar');
+        $this->lazySession->set('baz', 'tab');
+    }
+
     private function wrappedSessionWillBeLoaded()
     {
         $this->sessionLoader->expects($this->once())->method('__invoke')->willReturn($this->wrappedSession);
