@@ -108,6 +108,16 @@ final class LazySessionTest extends PHPUnit_Framework_TestCase
         self::assertSame('taz', $this->lazySession->get('baz', 'default'));
     }
 
+    public function testRemove()
+    {
+        $this->wrappedSessionWillBeLoaded();
+
+        $this->wrappedSession->expects($this->exactly(2))->method('remove')->with(self::logicalOr('foo', 'bar'));
+
+        $this->lazySession->remove('foo');
+        $this->lazySession->remove('bar');
+    }
+
     private function wrappedSessionWillBeLoaded()
     {
         $this->sessionLoader->expects($this->once())->method('__invoke')->willReturn($this->wrappedSession);
