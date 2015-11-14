@@ -170,7 +170,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
                     ->setExpiration((new \DateTime('+1 day'))->getTimestamp())
-                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
+                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::newEmptySession())
                     ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
                     ->getToken()
             ]);
