@@ -225,7 +225,11 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     private function appendToken(SessionInterface $sessionContainer, Response $response) : Response
     {
-        if ($sessionContainer->isEmpty()) {
+        if ($sessionContainer->isEmpty() && $sessionContainer->hasChanged()) {
+            return FigResponseCookies::set($response, $this->getExpirationCookie());
+        }
+
+        if (! $sessionContainer->hasChanged()) {
             return $response;
         }
 
@@ -252,5 +256,16 @@ final class SessionMiddleware implements MiddlewareInterface
                     ->getToken()
             )
             ->withExpires($timestamp + $this->expirationTime);
+    }
+
+    /**
+     * @return SetCookie
+     */
+    private function getExpirationCookie() : SetCookie
+    {
+        return $this
+            ->defaultCookie
+            ->withValue(null)
+            ->withExpires((new \DateTime('-30 day'))->getTimestamp());
     }
 }
