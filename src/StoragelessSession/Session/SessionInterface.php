@@ -54,6 +54,13 @@ interface SessionInterface extends \JsonSerializable
     public function remove(string $key);
 
     /**
+     * Clears the contents of the session
+     *
+     * @return void
+     */
+    public function clear();
+
+    /**
      * Checks whether a given key exists in the session
      *
      * @param string $key

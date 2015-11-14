@@ -100,6 +100,14 @@ final class DefaultSessionData implements SessionInterface
     /**
      * {@inheritDoc}
      */
+    public function clear()
+    {
+        $this->data = [];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function has(string $key): bool
     {
         return isset($this->data[$key]) || array_key_exists($key, $this->data);
