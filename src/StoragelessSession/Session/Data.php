@@ -71,13 +71,13 @@ class Data implements \JsonSerializable
 
     public function set(string $key, $value)
     {
-        $this->data[$key] = json_decode(json_encode($value, \JSON_PRESERVE_ZERO_FRACTION), true);;
+        $this->data[$key] = json_decode(json_encode($value, \JSON_PRESERVE_ZERO_FRACTION), true);
     }
 
-    public function get(string $key)
+    public function get(string $key, $default = null)
     {
-        if (! $this->has($key)) {
-            throw new \OutOfBoundsException(sprintf('Non-existing key "%s" requested', $key));
+        if (! (isset($this->data[$key]) || array_key_exists($key, $this->data))) {
+            return json_decode(json_encode($default, \JSON_PRESERVE_ZERO_FRACTION), true);
         }
 
         return $this->data[$key];
