@@ -13,7 +13,7 @@ use StoragelessSession\Http\StorageLessSession;
 
 $sessionMiddleware = StorageLessSession::fromSymmetricKeyDefaults(
     'contents of the symmetric key', // symmetric key
-    1200                             // session lifetime
+    1200                             // session lifetime, in seconds
 );
 ```
 
@@ -23,6 +23,33 @@ to achieve that.
 
 In this example, we just used a manually typed-in string for the sake
 of explicitness.
+
+#### Asymmetric key
+
+You can set up symmetric key based signatures via the
+`StorageLessSession::fromAsymmetricKeyDefaults` named constructor:
+
+```php
+use StoragelessSession\Http\StorageLessSession;
+
+$sessionMiddleware = StorageLessSession::fromAsymmetricKeyDefaults(
+    file_get_contents('/path/to/private_key.pem'),
+    file_get_contents('/path/to/public_key.pem'),
+    1200 // session lifetime, in seconds
+);
+```
+
+You can generate a private and a public key with [GPG](https://www.gnupg.org/), via:
+
+```sh
+gpg --gen-key
+```
+
+Beware that asymmetric key signatures are more resource-greedy, and therefore
+you may have higher CPU usage.
+
+`StorageLessSession` will only parse and regenerate the sessions lazily, when strictly
+needed, therefore performance shouldn't be a problem for most setups.
 
 ### Defaults
 
