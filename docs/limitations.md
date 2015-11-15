@@ -26,6 +26,10 @@ then manually block clients with those identifiers in the session cookie.
 Note that this approach also defeats the benefits of StorageLessSession,
 therefore you may want to just use traditional sessions.
 
+This limitation is also why StorageLessSession should only be used with secure
+(TLS) HTTPS connections: if any session is spoofed, there is no way to lock
+out an attacker.
+
 #### Increased network traffic
 
 This is a very minor detail, but you may have increased network transfer
