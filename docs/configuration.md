@@ -51,6 +51,39 @@ you may have higher CPU usage.
 `StorageLessSession` will only parse and regenerate the sessions lazily, when strictly
 needed, therefore performance shouldn't be a problem for most setups.
 
+### Fine-tuning
+
+Since `StoragelessSession` depends on `lcobucci/jwt` and `dflydev/fig-cookies`,
+you need to require them as well, since with this sort of setup you are explicitly using
+those components:
+
+```sh
+composer require "lcobucci/jwt:~3.1"
+composer require "dflydev/fig-cookies:^1.0.1"
+```
+
+If you want to fine-tune more settings of `StoragelessSession`, then simply use the
+`StoragelessSession\Http\StorageLessSession` constructor.
+
+```php
+use StoragelessSession\Http\StorageLessSession;
+
+// a blueprint of the cookie that `StorageLessSession` should use to generate
+// and read cookies:
+$cookieBlueprint   = \Dflydev\FigCookies\SetCookie::create('cookie-name');
+$sessionMiddleware = new StorageLessSession(
+    $signer, // an \Lcobucci\JWT\Signer
+    'signature key contents',
+    'verification key contents',
+    $cookieBlueprint,
+    new \Lcobucci\JWT\Parser(),
+    1200, // session lifetime, in seconds
+    60    // session automatic refresh time, in seconds
+);
+```
+
+It is recommended not to use this setup
+
 ### Defaults
 
 By default, sessions generated via the `SessionMiddleware` use following parameters:
