@@ -8,7 +8,10 @@
 
 **StoragelessSession** is a [PSR-7](http://www.php-fig.org/psr/psr-7/)
 [middleware](https://mwop.net/blog/2015-01-08-on-http-middleware-and-psr-7.html) that enables
-session usage in PSR-7 based applications
+session usage in PSR-7 based applications.
+
+Proudly brought to you by [ocramius](https://github.com/Ocramius), [malukenho](https://github.com/malukenho)
+and [lcobucci](https://github.com/lcobucci).
 
 ### Installation
 
