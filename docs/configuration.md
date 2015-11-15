@@ -53,7 +53,8 @@ needed, therefore performance shouldn't be a problem for most setups.
 
 ### Fine-tuning
 
-Since `StoragelessSession` depends on `lcobucci/jwt` and `dflydev/fig-cookies`,
+Since `StoragelessSession` depends on [`lcobucci/jwt`](https://packagist.org/packages/lcobucci/jwt)
+and [`dflydev/fig-cookies`](https://packagist.org/packages/dflydev/fig-cookies),
 you need to require them as well, since with this sort of setup you are explicitly using
 those components:
 
