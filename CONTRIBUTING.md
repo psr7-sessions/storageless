@@ -17,7 +17,7 @@ $ git clone git://github.com/Ocramius/PSR7Session.git
 You will then need to run a composer installation:
 
 ```sh
-$ cd ProxyManager
+$ cd PSR7Session
 $ curl -s https://getcomposer.org/installer | php
 $ php composer.phar update
 ```
