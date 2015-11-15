@@ -1,4 +1,4 @@
-# Storage-Less HTTP Sessions
+# PSR-7 Storage-less HTTP Sessions
 
 [![Build Status](https://travis-ci.org/Ocramius/PSR7Session.svg)](https://travis-ci.org/Ocramius/PSR7Session)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Ocramius/PSR7Session/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Ocramius/PSR7Session/?branch=master)
