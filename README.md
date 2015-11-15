@@ -134,3 +134,6 @@ eventually be introduced.
  * not affected by PHP serialization RCE attacks
  * not limited to PHP process scope: can have many sessions per process
  * no reliance on global state
+ * when in a multi-server setup, you may allow read-only access to servers
+   that only have access to public keys, while writes are limited to
+   servers that have access to private keys
