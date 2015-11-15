@@ -25,3 +25,9 @@ You will need to identify (and attach identifiers to) session cookies, and
 then manually block clients with those identifiers in the session cookie.
 Note that this approach also defeats the benefits of StorageLessSession,
 therefore you may want to just use traditional sessions.
+
+#### Increased network traffic
+
+This is a very minor detail, but you may have increased network transfer
+due to the session cookie being quite large, and being part of headers sent
+from the user agent in every HTTP request.
