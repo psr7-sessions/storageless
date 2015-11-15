@@ -96,10 +96,6 @@ This is all fair and nice, except for:
 This project tries to implement storage-less sessions and to mitigate the
 issues listed above.
 
-Most of the logic isn't finalized yet, and this is just a mockup of a
-[PSR-7](http://www.php-fig.org/psr/psr-7/) middleware that injects a 
-`'session'` attribute (containing session data) into incoming requests.
-
 ### Assumptions
 
  * your sessions are fairly small and contain only few identifiers and
