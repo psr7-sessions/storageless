@@ -136,3 +136,19 @@ tokens.
  * when in a multi-server setup, you may allow read-only access to servers
    that only have access to public keys, while writes are limited to
    servers that have access to private keys
+
+### Configuration options
+
+Please refer to the [configuration documentation](docs/configuration.md).
+
+### Known limitations
+
+Please refer to the [limitations documentation](docs/limitations.md).
+
+### Contributing
+
+Please refer to the [contributing notes](CONTRIBUTING.md).
+
+### License
+
+This project is made public under the [MIT LICENSE](LICENSE).
