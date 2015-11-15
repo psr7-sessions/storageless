@@ -10,6 +10,19 @@ concerns such as CSRF-token validation.
 If you want to store frequently-updated or concurrently-updated information
 inside a session, then StorageLessSession is likely not fitting your use-case.
 
+#### Cannot store private information in the session
+
+StorageLessSession stores session data in cookies in an unencrypted JWT token.
+The fact that the token is unencrypted means that all the information in the
+session is also available in read-only mode to the user agent.
+
+Storing information such as the user identifier, the user data, CSRF tokens
+and similar is perfectly OK, but storing sensitive information that should
+never be shared with the client MUST be avoided.
+
+This is actually also valid for traditional PHP sessions, since those
+sessions may be read by various processes.
+
 #### Sessions cannot be invalidated
 
 There is no way to (securely) manually invalidate a session just via
