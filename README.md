@@ -105,8 +105,10 @@ issues listed above.
 
 ### How does it work?
 
-Nothing new happening here: session data is directly stored inside the 
-session cookie.
+Session data is directly stored inside a session cookie as a JWT token.
+
+This approach is not new, and is commonly used with `Bearer` tokens in
+HTTP/REST/OAuth APIs.
 
 In order to guarantee that the session data is not modified, that the
 client can trust the information and that the expiration date is
