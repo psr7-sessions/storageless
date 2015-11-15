@@ -20,7 +20,8 @@ composer require ocramius/storage-less-session
 
 You can use the `StoragelessSession\Http\SessionMiddleware` in any 
 [`zendframework/zend-stratigility`](https://github.com/zendframework/zend-stratigility)
-compatible [PSR-7](http://www.php-fig.org/psr/psr-7/) middleware.
+compatible [PSR-7](http://www.php-fig.org/psr/psr-7/)
+[middleware](https://github.com/zendframework/zend-stratigility/blob/1.1.2/src/MiddlewareInterface.php).
 
 In a [`zendframework/zend-expressive`](https://github.com/zendframework/zend-expressive)
 application, this would look like following:
