@@ -1,12 +1,12 @@
 # Storage-Less HTTP Sessions
 
-[![Build Status](https://travis-ci.org/Ocramius/StorageLessSession.svg)](https://travis-ci.org/Ocramius/StorageLessSession)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Ocramius/StorageLessSession/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Ocramius/StorageLessSession/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/Ocramius/StorageLessSession/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Ocramius/StorageLessSession/?branch=master)
-[![Packagist](https://img.shields.io/packagist/v/ocramius/storage-less-session.svg)](https://packagist.org/packages/ocramius/storage-less-session)
-[![Packagist](https://img.shields.io/packagist/vpre/ocramius/storage-less-session.svg)](https://packagist.org/packages/ocramius/storage-less-session)
+[![Build Status](https://travis-ci.org/Ocramius/PSR7Session.svg)](https://travis-ci.org/Ocramius/PSR7Session)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Ocramius/PSR7Session/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Ocramius/PSR7Session/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/Ocramius/PSR7Session/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Ocramius/PSR7Session/?branch=master)
+[![Packagist](https://img.shields.io/packagist/v/ocramius/psr7-session.svg)](https://packagist.org/packages/ocramius/psr7-session)
+[![Packagist](https://img.shields.io/packagist/vpre/ocramius/psr7-session.svg)](https://packagist.org/packages/ocramius/psr7-session)
 
-**StoragelessSession** is a [PSR-7](http://www.php-fig.org/psr/psr-7/)
+**PSR7Session** is a [PSR-7](http://www.php-fig.org/psr/psr-7/)
 [middleware](https://mwop.net/blog/2015-01-08-on-http-middleware-and-psr-7.html) that enables
 session usage in PSR-7 based applications.
 
@@ -15,12 +15,12 @@ Proudly brought to you by [ocramius](https://github.com/Ocramius), [malukenho](h
 ### Installation
 
 ```sh
-composer require ocramius/storage-less-session
+composer require ocramius/psr7-session
 ```
 
 ### Usage
 
-You can use the `StoragelessSession\Http\SessionMiddleware` in any 
+You can use the `PSR7Session\Http\SessionMiddleware` in any 
 [`zendframework/zend-stratigility`](https://github.com/zendframework/zend-stratigility)
 compatible [PSR-7](http://www.php-fig.org/psr/psr-7/)
 [middleware](https://github.com/zendframework/zend-stratigility/blob/1.1.2/src/MiddlewareInterface.php).
@@ -31,7 +31,7 @@ application, this would look like following:
 ```php
 $app = \Zend\Expressive\AppFactory::create();
 
-$app->pipe(new \StoragelessSession\Http\SessionMiddleware::fromSymmetricKeyDefaults(
+$app->pipe(new \PSR7Session\Http\SessionMiddleware::fromSymmetricKeyDefaults(
     'a symmetric key',
     1200 // 20 minutes
 ));
@@ -42,7 +42,7 @@ has access to the `Psr\Http\Message\ServerRequestInterface` attributes:
 
 ```php
 $app->get('/get', function (ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface {
-    /* @var \StoragelessSession\Session\Data $session */
+    /* @var \PSR7Session\Session\Data $session */
     $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
     $session->set('counter', $session->get('counter', 0) + 1);
 
@@ -58,8 +58,8 @@ You can do this also in asynchronous contexts and long running processes,
 since no super-globals nor I/O are involved.
 
 Note that you can also use asymmetric keys by using either the
-`StoragelessSession\Http\SessionMiddleware` constructor or the named
-constructor `StoragelessSession\Http\SessionMiddleware::fromAsymmetricKeyDefaults()`
+`PSR7Session\Http\SessionMiddleware` constructor or the named
+constructor `PSR7Session\Http\SessionMiddleware::fromAsymmetricKeyDefaults()`
 
 ### Examples
 

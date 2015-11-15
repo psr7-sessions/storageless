@@ -11,8 +11,8 @@
     backupGlobals="false"
     syntaxCheck="true"
 >
-    <testsuite name="StoragelessSession tests">
-        <directory>./test/StoragelessSessionTest</directory>
+    <testsuite name="PSR7Session tests">
+        <directory>./test/PSR7SessionTest</directory>
     </testsuite>
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">

@@ -11,7 +11,7 @@
 To install the project and run the tests, you need to clone it first:
 
 ```sh
-$ git clone git://github.com/Ocramius/StorageLessSession.git
+$ git clone git://github.com/Ocramius/PSR7Session.git
 ```
 
 You will then need to run a composer installation:

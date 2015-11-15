@@ -1,17 +1,17 @@
-## Configuring StorageLessSession
+## Configuring PSR7Session
 
-In most HTTPS-based setups, StorageLessSession can be initialized with some sane
+In most HTTPS-based setups, PSR7Session can be initialized with some sane
 defaults.
 
 #### Symmetric key
 
 You can set up symmetric key based signatures via the
-`StorageLessSession::fromSymmetricKeyDefaults` named constructor:
+`PSR7Session::fromSymmetricKeyDefaults` named constructor:
 
 ```php
-use StoragelessSession\Http\StorageLessSession;
+use PSR7Session\Http\SessionMiddleware;
 
-$sessionMiddleware = StorageLessSession::fromSymmetricKeyDefaults(
+$sessionMiddleware = SessionMiddleware::fromSymmetricKeyDefaults(
     'contents of the symmetric key', // symmetric key
     1200                             // session lifetime, in seconds
 );
@@ -27,12 +27,12 @@ of explicitness.
 #### Asymmetric key
 
 You can set up symmetric key based signatures via the
-`StorageLessSession::fromAsymmetricKeyDefaults` named constructor:
+`PSR7Session::fromAsymmetricKeyDefaults` named constructor:
 
 ```php
-use StoragelessSession\Http\StorageLessSession;
+use PSR7Session\Http\SessionMiddleware;
 
-$sessionMiddleware = StorageLessSession::fromAsymmetricKeyDefaults(
+$sessionMiddleware = SessionMiddleware::fromAsymmetricKeyDefaults(
     file_get_contents('/path/to/private_key.pem'),
     file_get_contents('/path/to/public_key.pem'),
     1200 // session lifetime, in seconds
@@ -48,12 +48,12 @@ gpg --gen-key
 Beware that asymmetric key signatures are more resource-greedy, and therefore
 you may have higher CPU usage.
 
-`StorageLessSession` will only parse and regenerate the sessions lazily, when strictly
+`PSR7Session` will only parse and regenerate the sessions lazily, when strictly
 needed, therefore performance shouldn't be a problem for most setups.
 
 ### Fine-tuning
 
-Since `StoragelessSession` depends on [`lcobucci/jwt`](https://packagist.org/packages/lcobucci/jwt)
+Since `PSR7Session` depends on [`lcobucci/jwt`](https://packagist.org/packages/lcobucci/jwt)
 and [`dflydev/fig-cookies`](https://packagist.org/packages/dflydev/fig-cookies),
 you need to require them as well, since with this sort of setup you are explicitly using
 those components:
@@ -63,16 +63,16 @@ composer require "lcobucci/jwt:~3.1"
 composer require "dflydev/fig-cookies:^1.0.1"
 ```
 
-If you want to fine-tune more settings of `StoragelessSession`, then simply use the
-`StoragelessSession\Http\StorageLessSession` constructor.
+If you want to fine-tune more settings of `PSR7Session`, then simply use the
+`PSR7Session\Http\SessionMiddleware` constructor.
 
 ```php
-use StoragelessSession\Http\StorageLessSession;
+use PSR7Session\Http\SessionMiddleware;
 
-// a blueprint of the cookie that `StorageLessSession` should use to generate
+// a blueprint of the cookie that `PSR7Session` should use to generate
 // and read cookies:
 $cookieBlueprint   = \Dflydev\FigCookies\SetCookie::create('cookie-name');
-$sessionMiddleware = new StorageLessSession(
+$sessionMiddleware = new SessionMiddleware(
     $signer, // an \Lcobucci\JWT\Signer
     'signature key contents',
     'verification key contents',

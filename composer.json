@@ -1,5 +1,5 @@
 {
-    "name":     "ocramius/storage-less-session",
+    "name":     "ocramius/psr7-session",
     "license":  "MIT",
     "authors": [
         {
@@ -31,12 +31,12 @@
     },
     "autoload": {
         "psr-4": {
-            "StoragelessSession\\": "src/StoragelessSession"
+            "PSR7Session\\": "src/PSR7Session"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "StoragelessSessionTest\\": "test/StoragelessSessionTest"
+            "PSR7SessionTest\\": "test/PSR7SessionTest"
         }
     }
 }

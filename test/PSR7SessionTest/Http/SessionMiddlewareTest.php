@@ -18,7 +18,7 @@
 
 declare(strict_types=1);
 
-namespace StoragelessSessionTest\Http;
+namespace PSR7SessionTest\Http;
 
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\SetCookie;
@@ -30,9 +30,9 @@ use Lcobucci\JWT\Token;
 use PHPUnit_Framework_TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use StoragelessSession\Http\SessionMiddleware;
-use StoragelessSession\Session\DefaultSessionData;
-use StoragelessSession\Session\SessionInterface;
+use PSR7Session\Http\SessionMiddleware;
+use PSR7Session\Session\DefaultSessionData;
+use PSR7Session\Session\SessionInterface;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
 use Zend\Stratigility\MiddlewareInterface;

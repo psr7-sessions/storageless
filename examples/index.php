@@ -23,7 +23,7 @@ use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Diactoros\Response;
-use StoragelessSession\Http\SessionMiddleware;
+use PSR7Session\Http\SessionMiddleware;
 use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Response\SapiEmitter;
 use Zend\Diactoros\ServerRequestFactory;
@@ -48,7 +48,7 @@ $sessionMiddleware = new SessionMiddleware(
     1200 // 20 minutes
 );
 $myMiddleware = function (ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface {
-    /* @var \StoragelessSession\Session\SessionInterface $session */
+    /* @var \PSR7Session\Session\SessionInterface $session */
     $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
     $session->set('counter', $session->get('counter', 0) + 1);
 
