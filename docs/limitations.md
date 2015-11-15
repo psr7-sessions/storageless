@@ -54,3 +54,18 @@ concerns such as CSRF-token validation.
 
 If you want to store frequently-updated or concurrently-updated information
 inside a session, then StorageLessSession is likely not fitting your use-case.
+
+#### Limit on the amount of data stored in a session
+
+StorageLessSession session size limitations are directly related with the
+[size of the cookies](http://www.ietf.org/rfc/rfc2965.txt) allowed on the
+user-agent.
+While RFC2965 encourages allowing arbitrary-length cookies, this sadly
+isn't true for every implementation of it.
+
+Therefore keep session data limited, with a good rule of thumb of less than
+512 bytes in it (when JSON encoded).
+
+The limit of 512bytes is much lower than the usually accepted 4096 bytes in
+most user-agents, but you have to consider that JWT tokens are base64 encoded
+and also include additional data, such as the signature and more claims
