@@ -1,11 +1,21 @@
 {
-    "name":     "ocramius/storage-less-session",
+    "name":     "ocramius/psr7-session",
     "license":  "MIT",
     "authors": [
         {
             "name":     "Marco Pivetta",
             "email":    "ocramius@gmail.com",
-            "homepage": "http://ocramius.github.io/"
+            "homepage": "http://ocramius.github.io/",
+            "role":     "Developer"
+        },
+        {
+            "name":  "Jefersson Nathan",
+            "email": "malukenho@phpse.net"
+        },
+        {
+            "name":  "Luís Otávio Cobucci Oblonczyk",
+            "email": "lcobucci@gmail.com",
+            "role":  "Developer"
         }
     ],
     "require": {
@@ -20,8 +30,13 @@
         "zendframework/zend-diactoros": "^1.1"
     },
     "autoload": {
-	    "psr-4": {
-	       "StoragelessSession\\": "src/StoragelessSession"
-	    }
+        "psr-4": {
+            "PSR7Session\\": "src/PSR7Session"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PSR7SessionTest\\": "test/PSR7SessionTest"
+        }
     }
 }

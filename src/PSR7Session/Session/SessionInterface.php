@@ -18,7 +18,7 @@
 
 declare(strict_types=1);
 
-namespace StoragelessSession\Session;
+namespace PSR7Session\Session;
 
 interface SessionInterface extends \JsonSerializable
 {
