@@ -114,14 +114,11 @@ In order to guarantee that the session data is not modified, that the
 client can trust the information and that the expiration date is
 mutually agreed between server and client, a [JWT token](https://tools.ietf.org/html/rfc7519)
 is used to transmit the information.
- 
-The token MUST be signed (and eventually encrypted) in the default
-implementation of the library.
 
-Encryption must be asymmetric and based on private/public key, where the
-private key is owned by the server creating the session. Client-side
-verification of the session is not necessary if TLS is used, but it can
-eventually be introduced.
+The JWT token is always signed to ensure that the user-agent is never
+able to manipulate the session.
+Both symmetric and asymmetric keys are supported for signing/verifying
+tokens.
 
 ### Advantages
 
