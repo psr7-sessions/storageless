@@ -50,7 +50,7 @@ $sessionMiddleware = new SessionMiddleware(
 $myMiddleware = function (ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface {
     /* @var \StoragelessSession\Session\SessionInterface $session */
     $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
-    $session->set('counter', $container->get('counter', 0) + 1);
+    $session->set('counter', $session->get('counter', 0) + 1);
 
     $response
         ->getBody()
