@@ -30,8 +30,13 @@
         "zendframework/zend-diactoros": "^1.1"
     },
     "autoload": {
-	    "psr-4": {
-	       "StoragelessSession\\": "src/StoragelessSession"
-	    }
+        "psr-4": {
+            "StoragelessSession\\": "src/StoragelessSession"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "StoragelessSessionTest\\": "test/StoragelessSessionTest"
+        }
     }
 }
