@@ -24,6 +24,7 @@ use DateTime;
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\SetCookie;
 use Lcobucci\JWT\Builder;
+use Lcobucci\JWT\Claim;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Token;
@@ -37,9 +38,11 @@ use Zend\Stratigility\MiddlewareInterface;
 
 final class SessionMiddleware implements MiddlewareInterface
 {
-    const SESSION_CLAIM     = 'session-data';
-    const SESSION_ATTRIBUTE = 'session';
-    const DEFAULT_COOKIE    = 'slsession';
+    const ISSUED_AT_CLAIM      = 'iat';
+    const SESSION_CLAIM        = 'session-data';
+    const SESSION_ATTRIBUTE    = 'session';
+    const DEFAULT_COOKIE       = 'slsession';
+    const DEFAULT_REFRESH_TIME = 60;
 
     /**
      * @var Signer
@@ -62,6 +65,11 @@ final class SessionMiddleware implements MiddlewareInterface
     private $expirationTime;
 
     /**
+     * @var int
+     */
+    private $refreshTime;
+
+    /**
      * @var Parser
      */
     private $tokenParser;
@@ -78,6 +86,7 @@ final class SessionMiddleware implements MiddlewareInterface
      * @param SetCookie $defaultCookie
      * @param Parser    $tokenParser
      * @param int       $expirationTime
+     * @param int       $refreshTime
      */
     public function __construct(
         Signer $signer,
@@ -85,7 +94,8 @@ final class SessionMiddleware implements MiddlewareInterface
         string $verificationKey,
         SetCookie $defaultCookie,
         Parser $tokenParser,
-        int $expirationTime
+        int $expirationTime,
+        int $refreshTime = self::DEFAULT_REFRESH_TIME
     ) {
         $this->signer          = $signer;
         $this->signatureKey    = $signatureKey;
@@ -93,6 +103,7 @@ final class SessionMiddleware implements MiddlewareInterface
         $this->tokenParser     = $tokenParser;
         $this->defaultCookie   = clone $defaultCookie;
         $this->expirationTime  = $expirationTime;
+        $this->refreshTime     = $refreshTime;
     }
 
     /**
@@ -152,15 +163,16 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     public function __invoke(Request $request, Response $response, callable $out = null) : Response
     {
-        $sessionContainer = LazySession::fromContainerBuildingCallback(function () use ($request) : SessionInterface {
-            return $this->extractSessionContainer($this->parseToken($request));
+        $token            = $this->parseToken($request);
+        $sessionContainer = LazySession::fromContainerBuildingCallback(function () use ($token) : SessionInterface {
+            return $this->extractSessionContainer($token);
         });
 
         if (null !== $out) {
             $response = $out($request->withAttribute(self::SESSION_ATTRIBUTE, $sessionContainer), $response);
         }
 
-        return $this->appendToken($sessionContainer, $response);
+        return $this->appendToken($sessionContainer, $response, $token);
     }
 
     /**
@@ -172,7 +184,7 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     private function parseToken(Request $request)
     {
-        $cookies   = $request->getCookieParams();
+        $cookies    = $request->getCookieParams();
         $cookieName = $this->defaultCookie->getName();
 
         if (! isset($cookies[$cookieName])) {
@@ -185,25 +197,11 @@ final class SessionMiddleware implements MiddlewareInterface
             return null;
         }
 
-        if (! $this->validateToken($token)) {
+        if (! $token->validate(new ValidationData())) {
             return null;
         }
 
         return $token;
-    }
-
-    /**
-     * @param Token $token
-     *
-     * @return bool
-     */
-    private function validateToken(Token $token) : bool
-    {
-        try {
-            return $token->verify($this->signer, $this->verificationKey) && $token->validate(new ValidationData());
-        } catch (\BadMethodCallException $invalidToken) {
-            return false;
-        }
     }
 
     /**
@@ -213,20 +211,29 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     public function extractSessionContainer(Token $token = null) : SessionInterface
     {
-        return $token
-            ? DefaultSessionData::fromDecodedTokenData($token->getClaim(self::SESSION_CLAIM) ?? new \stdClass())
-            : DefaultSessionData::newEmptySession();
+        try {
+            if (null === $token || ! $token->verify($this->signer, $this->verificationKey)) {
+                return DefaultSessionData::newEmptySession();
+            }
+
+            return DefaultSessionData::fromDecodedTokenData(
+                (object) ($token->getClaim(self::SESSION_CLAIM) ?? new \stdClass())
+            );
+        } catch (\BadMethodCallException $invalidToken) {
+            return DefaultSessionData::newEmptySession();
+        }
     }
 
     /**
      * @param SessionInterface $sessionContainer
      * @param Response         $response
+     * @param Token            $token
      *
      * @return Response
      *
      * @throws \InvalidArgumentException
      */
-    private function appendToken(SessionInterface $sessionContainer, Response $response) : Response
+    private function appendToken(SessionInterface $sessionContainer, Response $response, Token $token = null) : Response
     {
         $sessionContainerChanged = $sessionContainer->hasChanged();
 
@@ -234,12 +241,29 @@ final class SessionMiddleware implements MiddlewareInterface
             return FigResponseCookies::set($response, $this->getExpirationCookie());
         }
 
-        if (! $sessionContainerChanged) {
-            return $response;
+        if ($sessionContainerChanged || ($this->shouldTokenBeRefreshed($token) && ! $sessionContainer->isEmpty())) {
+            return FigResponseCookies::set($response, $this->getTokenCookie($sessionContainer));
         }
 
-        return FigResponseCookies::set($response, $this->getTokenCookie($sessionContainer));
+        return $response;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    private function shouldTokenBeRefreshed(Token $token = null) : bool
+    {
+        if (null === $token) {
+            return false;
+        }
+
+
+        $issuedAt = $token->getClaims()[self::ISSUED_AT_CLAIM] ?? null;
+
+        return $issuedAt instanceof Claim
+            && (time() >= ($issuedAt->getValue() + $this->refreshTime));
+    }
+
 
     /**
      * @param SessionInterface $sessionContainer

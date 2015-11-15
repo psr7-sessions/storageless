@@ -152,9 +152,26 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         $unsignedToken = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
-                    ->setIssuedAt((new \DateTime())->getTimestamp())
-                    ->setExpiration((new \DateTime())->getTimestamp())
+                    ->setIssuedAt((new \DateTime('-1 day'))->getTimestamp())
+                    ->setExpiration((new \DateTime('+1 day'))->getTimestamp())
                     ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
+                    ->getToken()
+            ]);
+
+        $this->ensureSameResponse($middleware, $unsignedToken, $this->emptyValidationMiddleware());
+    }
+
+    /**
+     * @dataProvider validMiddlewaresProvider
+     */
+    public function testWillNotRefreshSignedTokensWithoutIssuedAt(SessionMiddleware $middleware)
+    {
+        $unsignedToken = (new ServerRequest())
+            ->withCookieParams([
+                SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
+                    ->setExpiration((new \DateTime('+1 day'))->getTimestamp())
+                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::newEmptySession())
+                    ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
                     ->getToken()
             ]);
 
@@ -273,17 +290,15 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     public function testSessionTokenParsingIsDelayedWhenSessionIsNotBeingUsed()
     {
         /* @var $signer Signer|\PHPUnit_Framework_MockObject_MockObject */
-        $signer      = $this->getMock(Signer::class);
-        /* @var $tokenParser Parser|\PHPUnit_Framework_MockObject_MockObject */
-        $tokenParser = $this->getMock(Parser::class);
+        $signer = $this->getMock(Signer::class);
 
         $signer->expects($this->never())->method('verify');
-        $tokenParser->expects($this->never())->method('parse');
 
-        $middleware = new SessionMiddleware($signer, 'foo', 'foo', SetCookie::create('cookie-name'), $tokenParser, 100);
+        $setCookie  = SetCookie::create(SessionMiddleware::DEFAULT_COOKIE);
+        $middleware = new SessionMiddleware($signer, 'foo', 'foo', $setCookie, new Parser(), 100);
         $request    = (new ServerRequest())
             ->withCookieParams([
-                SessionMiddleware::DEFAULT_COOKIE => (new Builder())
+                SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
                     ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
                     ->getToken()
             ]);
@@ -300,6 +315,64 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
                 return $response;
             })
         );
+    }
+
+    public function testShouldRegenerateTokenWhenRequestHasATokenThatIsAboutToExpire()
+    {
+        $middleware = new SessionMiddleware(
+            new Sha256(),
+            'foo',
+            'foo',
+            SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
+            new Parser(),
+            1000,
+            300
+        );
+
+        $expiringToken = (new ServerRequest())
+            ->withCookieParams([
+                SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
+                    ->setIssuedAt((new \DateTime('-800 second'))->getTimestamp())
+                    ->setExpiration((new \DateTime('+200 second'))->getTimestamp())
+                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
+                    ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
+                    ->getToken()
+            ]);
+
+        $initialResponse = new Response();
+        $response = $middleware($expiringToken, $initialResponse);
+
+        self::assertNotSame($initialResponse, $response);
+
+        $tokenCookie = $this->getCookie($response);
+
+        self::assertNotEmpty($tokenCookie->getValue());
+        self::assertEquals(time() + 1000, $tokenCookie->getExpires(), '', 2);
+    }
+
+    public function testShouldNotRegenerateTokenWhenRequestHasATokenThatIsFarFromExpiration()
+    {
+        $middleware = new SessionMiddleware(
+            new Sha256(),
+            'foo',
+            'foo',
+            SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
+            new Parser(),
+            1000,
+            300
+        );
+
+        $validToken = (new ServerRequest())
+            ->withCookieParams([
+                SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
+                    ->setIssuedAt((new \DateTime('-100 second'))->getTimestamp())
+                    ->setExpiration((new \DateTime('+900 second'))->getTimestamp())
+                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
+                    ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
+                    ->getToken()
+            ]);
+
+        $this->ensureSameResponse($middleware, $validToken);
     }
 
     /**
