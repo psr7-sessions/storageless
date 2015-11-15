@@ -40,13 +40,13 @@ has access to the `Psr\Http\Message\ServerRequestInterface` attributes:
 
 ```php
 $app->get('/get', function (ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface {
-    /* @var \StoragelessSession\Session\Data $container */
-    $container = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
-    $container->set('counter', $container->get('counter', 0) + 1);
+    /* @var \StoragelessSession\Session\Data $session */
+    $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+    $session->set('counter', $session->get('counter', 0) + 1);
 
     $response
         ->getBody()
-        ->write('Counter Value: ' . $container->get('counter'));
+        ->write('Counter Value: ' . $session->get('counter'));
 
     return $response;
 });
