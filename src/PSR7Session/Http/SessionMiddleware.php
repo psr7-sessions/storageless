@@ -24,7 +24,6 @@ use DateTime;
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\SetCookie;
 use Lcobucci\JWT\Builder;
-use Lcobucci\JWT\Claim;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Token;
@@ -217,7 +216,7 @@ final class SessionMiddleware implements MiddlewareInterface
             }
 
             return DefaultSessionData::fromDecodedTokenData(
-                (object) ($token->getClaim(self::SESSION_CLAIM) ?? new \stdClass())
+                (object) $token->getClaim(self::SESSION_CLAIM, new \stdClass())
             );
         } catch (\BadMethodCallException $invalidToken) {
             return DefaultSessionData::newEmptySession();
@@ -257,11 +256,11 @@ final class SessionMiddleware implements MiddlewareInterface
             return false;
         }
 
+        if (! $token->hasClaim(self::ISSUED_AT_CLAIM)) {
+            return false;
+        }
 
-        $issuedAt = $token->getClaims()[self::ISSUED_AT_CLAIM] ?? null;
-
-        return $issuedAt instanceof Claim
-            && (time() >= ($issuedAt->getValue() + $this->refreshTime));
+        return time() >= ($token->getClaim(self::ISSUED_AT_CLAIM) + $this->refreshTime);
     }
 
 
