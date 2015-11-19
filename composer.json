@@ -38,5 +38,10 @@
         "psr-4": {
             "PSR7SessionTest\\": "test/PSR7SessionTest"
         }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.0.x-dev"
+        }
     }
 }
