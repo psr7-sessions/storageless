@@ -92,6 +92,7 @@ This is all fair and nice, except for:
  * having to use a centralized storage for setups that scale horizontally
  * having to use sticky sessions (with a "smart" load-balancer) when the
    storage is not centralized
+ * not designed to be used for multiple dispatch cycles
 
 ### What does this project do?
 
@@ -138,6 +139,7 @@ tokens.
  * when in a multi-server setup, you may allow read-only access to servers
    that only have access to public keys, while writes are limited to
    servers that have access to private keys
+ * can be used over multiple dispatch cycles
 
 ### Configuration options
 
