@@ -33,7 +33,11 @@ final class DefaultSessionData implements SessionInterface
     private $originalData;
 
     /**
-     * Instantiation of this class is not allowed.
+     * Instantiation via __construct is not allowed, use
+     * - {@see DefaultSessionData::fromDecodedTokenData}
+     * - {@see DefaultSessionData::fromTokenData}
+     * - {@see DefaultSessionData::newEmptySession}
+     * instead
      */
     private function __construct()
     {

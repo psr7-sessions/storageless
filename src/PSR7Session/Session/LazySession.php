@@ -35,7 +35,7 @@ final class LazySession implements SessionInterface
     private $sessionLoader;
 
     /**
-     * Instantiation of this class is not allowed.
+     * Instantiation via __construct is not allowed, use {@see LazySession::fromContainerBuildingCallback} instead
      */
     private function __construct()
     {
