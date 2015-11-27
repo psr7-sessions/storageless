@@ -34,6 +34,9 @@ final class LazySession implements SessionInterface
      */
     private $sessionLoader;
 
+    /**
+     * Instantiation of this class is not allowed.
+     */
     private function __construct()
     {
     }

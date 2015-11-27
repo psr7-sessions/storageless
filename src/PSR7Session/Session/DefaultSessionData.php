@@ -32,6 +32,9 @@ final class DefaultSessionData implements SessionInterface
      */
     private $originalData;
 
+    /**
+     * Instantiation of this class is not allowed.
+     */
     private function __construct()
     {
     }
