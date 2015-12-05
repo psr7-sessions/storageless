@@ -31,7 +31,7 @@ application, this would look like following:
 ```php
 $app = \Zend\Expressive\AppFactory::create();
 
-$app->pipe(new \PSR7Session\Http\SessionMiddleware::fromSymmetricKeyDefaults(
+$app->pipe(\PSR7Session\Http\SessionMiddleware::fromSymmetricKeyDefaults(
     'a symmetric key',
     1200 // 20 minutes
 ));
