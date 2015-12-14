@@ -6,9 +6,13 @@ php:
 
 before_script:
   - composer update --prefer-source
+  - if [[ $TRAVIS_PHP_VERSION = '7.0' ]]; then PHPUNIT_FLAGS="--coverage-clover coverage.xml"; fi
 
 script:
-  - ./vendor/bin/phpunit
+  - ./vendor/bin/phpunit $PHPUNIT_FLAGS
+
+after_script:
+  - if [[ $TRAVIS_PHP_VERSION = '7.0' ]]; then wget https://scrutinizer-ci.com/ocular.phar && php ocular.phar code-coverage:upload --format=php-clover coverage.xml; fi
 
 matrix:
   allow_failures:
