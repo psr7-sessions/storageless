@@ -32,7 +32,7 @@ application, this would look like following:
 $app = \Zend\Expressive\AppFactory::create();
 
 $app->pipe(\PSR7Session\Http\SessionMiddleware::fromSymmetricKeyDefaults(
-    'a symmetric key',
+    'mBC5v1sOKVvbdEitdSBenu59nfNfhwkedkJVNabosTw=', // replace this with a key of your own (see docs below)
     1200 // 20 minutes
 ));
 ```
