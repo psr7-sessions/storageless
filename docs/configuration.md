@@ -12,8 +12,8 @@ You can set up symmetric key based signatures via the
 use PSR7Session\Http\SessionMiddleware;
 
 $sessionMiddleware = SessionMiddleware::fromSymmetricKeyDefaults(
-    'contents of the symmetric key', // symmetric key
-    1200                             // session lifetime, in seconds
+    'OpcMuKmoxkhzW0Y1iESpjWwL/D3UBdDauJOe742BJ5Q=', // symmetric key (important: replace with your own)
+    1200                                            // session lifetime, in seconds
 );
 ```
 
