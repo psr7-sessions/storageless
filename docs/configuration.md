@@ -12,17 +12,15 @@ You can set up symmetric key based signatures via the
 use PSR7Session\Http\SessionMiddleware;
 
 $sessionMiddleware = SessionMiddleware::fromSymmetricKeyDefaults(
-    'contents of the symmetric key', // symmetric key
-    1200                             // session lifetime, in seconds
+    'OpcMuKmoxkhzW0Y1iESpjWwL/D3UBdDauJOe742BJ5Q=', // replace this with a key of your own (see below)
+    1200                                            // session lifetime, in seconds
 );
 ```
 
 Please use a fairly long symmetric key: it is suggested to use a
-[pseudorandom number generator](https://en.wikipedia.org/wiki/Cryptographically_secure_pseudorandom_number_generator)
-to achieve that.
-
-In this example, we just used a manually typed-in string for the sake
-of explicitness.
+[cryptographically secure pseudo-random number generator (CSPRNG)](https://en.wikipedia.org/wiki/Cryptographically_secure_pseudorandom_number_generator),
+such as the [CryptoKey tool](https://github.com/AndrewCarterUK/CryptoKey),
+for this purpose.
 
 #### Asymmetric key
 

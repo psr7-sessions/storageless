@@ -32,7 +32,7 @@ application, this would look like following:
 $app = \Zend\Expressive\AppFactory::create();
 
 $app->pipe(\PSR7Session\Http\SessionMiddleware::fromSymmetricKeyDefaults(
-    'a symmetric key',
+    'mBC5v1sOKVvbdEitdSBenu59nfNfhwkedkJVNabosTw=', // replace this with a key of your own (see docs below)
     1200 // 20 minutes
 ));
 ```
@@ -56,6 +56,11 @@ $app->get('/get', function (ServerRequestInterface $request, ResponseInterface $
 
 You can do this also in asynchronous contexts and long running processes,
 since no super-globals nor I/O are involved.
+
+It is recommended that you use a key with lots of entropy, preferably
+generated using a cryptographically secure pseudo-random number generator
+(CSPRNG). You can use the [CryptoKey tool](https://github.com/AndrewCarterUK/CryptoKey)
+to do this for you.
 
 Note that you can also use asymmetric keys by using either the
 `PSR7Session\Http\SessionMiddleware` constructor or the named
