@@ -64,7 +64,7 @@ to do this for you.
 
 Note that you can also use asymmetric keys by using either the
 `PSR7Session\Http\SessionMiddleware` constructor or the named
-constructor `PSR7Session\Http\SessionMiddleware::fromAsymmetricKeyDefaults()`.
+constructor `PSR7Session\Http\SessionMiddleware::fromAsymmetricKeyDefaults()`
 
 ### Examples
 
