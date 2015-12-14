@@ -19,7 +19,8 @@ $sessionMiddleware = SessionMiddleware::fromSymmetricKeyDefaults(
 
 Please use a fairly long symmetric key: it is suggested to use a
 [cryptographically secure pseudo-random number generator (CSPRNG)](https://en.wikipedia.org/wiki/Cryptographically_secure_pseudorandom_number_generator),
-such as the [CryptoKey tool](https://github.com/AndrewCarterUK/CryptoKey).
+such as the [CryptoKey tool](https://github.com/AndrewCarterUK/CryptoKey),
+for this purpose.
 
 #### Asymmetric key
 
