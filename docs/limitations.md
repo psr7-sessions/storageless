@@ -49,7 +49,7 @@ it is not safe to use it for highly concurrent write operations.
 
 The idea around PSR7Session is that a session is not supposed to be
 an actual storage for transient client information, but rather be used for
-the concerns of authentication, authorization and eventually and for validation
+the concerns of authentication, authorization and eventually for validation
 concerns such as CSRF-token validation.
 
 If you want to store frequently-updated or concurrently-updated information
