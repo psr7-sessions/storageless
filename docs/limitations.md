@@ -55,6 +55,9 @@ concerns such as CSRF-token validation.
 If you want to store frequently-updated or concurrently-updated information
 inside a session, then PSR7Session is likely not fitting your use-case.
 
+It should be pointed out that PSR7Session does not address replay of old cookies. 
+Legitimate client can send previous (old) cookies within the cookie lifetime period.
+
 #### Limit on the amount of data stored in a session
 
 PSR7Session session size limitations are directly related with the
