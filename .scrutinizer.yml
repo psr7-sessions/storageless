@@ -1,3 +1,8 @@
+build:
+    environment:
+        php:
+            version: 7.0
+
 before_commands:
     - "composer update --prefer-source"
 
@@ -7,6 +12,7 @@ tools:
         test_command: ./vendor/bin/phpunit
     php_code_sniffer:
         enabled: true
+        command: composer update && vendor/bin/phpcs
         config:
             standard: PSR2
         filter:
