@@ -25,7 +25,7 @@ interface SessionInterface extends \JsonSerializable
     /**
      * Stores a given value in the session
      *
-     * @param string                                          $key
+     * @param string                                               $key
      * @param int|bool|string|float|array|object|\JsonSerializable $value allows any nested combination of the previous
      *                                                                    types as well
      *
@@ -37,10 +37,10 @@ interface SessionInterface extends \JsonSerializable
      * Retrieves a value from the session - if the value doesn't exist, then it uses the given $default, but transformed
      * into a immutable and safely manipulated scalar or array
      *
-     * @param string                                          $key
+     * @param string                                               $key
      * @param int|bool|string|float|array|object|\JsonSerializable $default
      *
-     * @return int|string|float|array
+     * @return int|bool|string|float|array
      */
     public function get(string $key, $default = null);
 
