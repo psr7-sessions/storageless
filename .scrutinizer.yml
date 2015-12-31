@@ -6,11 +6,7 @@ tools:
         enabled: true
         test_command: ./vendor/bin/phpunit
     php_code_sniffer:
-        enabled: true
-        config:
-            standard: PSR2
-        filter:
-            paths: ["src/*", "test/*"]
+        enabled: false
     php_cpd:
         enabled: true
         excluded_dirs: ["test", "vendor"]
