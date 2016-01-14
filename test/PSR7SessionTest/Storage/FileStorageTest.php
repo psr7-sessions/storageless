@@ -4,6 +4,8 @@ declare(strict_types = 1);
 
 namespace PSR7SessionTest\Storage;
 
+use org\bovigo\vfs\vfsStream;
+use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit_Framework_MockObject_MockObject;
 use PHPUnit_Framework_TestCase;
 use PSR7Session\Id\Factory\SessionIdFactoryInterface;
@@ -16,8 +18,8 @@ use PSR7Session\Storage\FileStorage;
 
 class FileStorageTest extends PHPUnit_Framework_TestCase
 {
-    /** @var string */
-    private $directory;
+    /** @var vfsStreamDirectory */
+    private $fileSystem;
     /** @var FileStorage */
     private $storage;
     /** @var SessionIdFactoryInterface|PHPUnit_Framework_MockObject_MockObject */
@@ -25,20 +27,9 @@ class FileStorageTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->directory = __DIR__ . '/file-storage-sessions';
+        $this->fileSystem = vfsStream::setup();
         $this->idFactory = $this->getMock(SessionIdFactoryInterface::class);
-        $this->storage = new FileStorage($this->directory, $this->idFactory);
-    }
-
-    public function tearDown()
-    {
-        $dir = opendir($this->directory);
-        while (($file = readdir($dir)) !== false) {
-            $path = $this->directory . '/' . $file;
-            if (is_file($path) && $file !== '.gitignore') {
-                unlink($path);
-            }
-        }
+        $this->storage = new FileStorage($this->fileSystem->url(), $this->idFactory);
     }
 
     public function testSaveNewSession()
