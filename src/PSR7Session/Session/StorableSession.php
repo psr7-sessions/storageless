@@ -49,6 +49,7 @@ class StorableSession implements StorableSessionInterface
     public function set(string $key, $value)
     {
         $this->wrappedSession->set($key, $value);
+        $this->save();
     }
 
     /**
@@ -65,6 +66,7 @@ class StorableSession implements StorableSessionInterface
     public function remove(string $key)
     {
         $this->wrappedSession->remove($key);
+        $this->save();
     }
 
     /**
@@ -73,6 +75,7 @@ class StorableSession implements StorableSessionInterface
     public function clear()
     {
         $this->wrappedSession->clear();
+        $this->save();
     }
 
     /**
@@ -105,5 +108,10 @@ class StorableSession implements StorableSessionInterface
     public function jsonSerialize()
     {
         return $this->wrappedSession->jsonSerialize();
+    }
+
+    private function save()
+    {
+        $this->storage->save($this);
     }
 }

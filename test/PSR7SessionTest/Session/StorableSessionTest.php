@@ -112,4 +112,36 @@ class StorableSessionTest extends PHPUnit_Framework_TestCase
         $this->assertSame($id, $session->getId());
         $this->assertSame('bar', $session->get('foo'));
     }
+
+    public function testSaveOnSet()
+    {
+        $this->storage
+            ->expects($this->once())
+            ->method('save')
+            ->with($this->session);
+
+        $this->session->set('foo', 'bar');
+    }
+
+    public function testSaveOnRemove()
+    {
+        $this->session->set('foo', 'bar');
+        $this->storage
+            ->expects($this->once())
+            ->method('save')
+            ->with($this->session);
+
+        $this->session->remove('foo');
+    }
+
+    public function testSaveOnClear()
+    {
+        $this->session->set('foo', 'bar');
+        $this->storage
+            ->expects($this->once())
+            ->method('save')
+            ->with($this->session);
+
+        $this->session->clear();
+    }
 }
