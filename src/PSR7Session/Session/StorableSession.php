@@ -3,30 +3,44 @@
 namespace PSR7Session\Session;
 
 use PSR7Session\Id\SessionIdInterface;
+use PSR7Session\Id\UuidSessionId;
+use PSR7Session\Storage\StorageInterface;
 
 class StorableSession implements StorableSessionInterface
 {
-    /** @var SessionIdInterface|null */
+    /** @var SessionIdInterface */
     private $id;
     /** @var SessionInterface */
     private $wrappedSession;
+    /** @var StorageInterface */
+    private $storage;
 
-    public function __construct(SessionInterface $wrappedSession)
+    public static function create(
+        SessionInterface $wrappedSession,
+        StorageInterface $storage
+    ) : StorableSessionInterface
+    {
+        return new self($wrappedSession, $storage, new UuidSessionId());
+    }
+
+    public static function fromStorage(StorageInterface $storage, SessionIdInterface $id) : StorableSessionInterface
+    {
+        return new self($storage->load($id), $storage, $id);
+    }
+
+    private function __construct(SessionInterface $wrappedSession, StorageInterface $storage, SessionIdInterface $id)
     {
         $this->wrappedSession = $wrappedSession;
+        $this->storage = $storage;
+        $this->id = $id;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getId()
+    public function getId() : SessionIdInterface
     {
         return $this->id;
-    }
-
-    public function setId(SessionIdInterface $id)
-    {
-        $this->id = $id;
     }
 
     /**
@@ -42,7 +56,7 @@ class StorableSession implements StorableSessionInterface
      */
     public function get(string $key, $default = null)
     {
-        $this->wrappedSession->get($key, $default);
+        return $this->wrappedSession->get($key, $default);
     }
 
     /**

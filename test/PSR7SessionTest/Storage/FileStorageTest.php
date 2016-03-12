@@ -45,7 +45,6 @@ class FileStorageTest extends PHPUnit_Framework_TestCase
 
         $loadedSession = $this->storage->load($session->getId());
         $this->assertEquals($session->get('test'), $loadedSession->get('test'));
-        $this->assertEquals((string)$session->getId(), (string)$loadedSession->getId());
     }
 
     public function testDestroy()
@@ -68,7 +67,7 @@ class FileStorageTest extends PHPUnit_Framework_TestCase
     private function createSession()
     {
         $innerSession = DefaultSessionData::newEmptySession();
-        return new StorableSession($innerSession);
+        return StorableSession::create($innerSession, $this->storage);
     }
 
     /**

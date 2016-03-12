@@ -3,6 +3,7 @@
 namespace PSR7Session\Storage;
 
 use PSR7Session\Id\SessionIdInterface;
+use PSR7Session\Session\SessionInterface;
 use PSR7Session\Session\StorableSessionInterface;
 
 interface StorageInterface
@@ -10,9 +11,9 @@ interface StorageInterface
     public function save(StorableSessionInterface $session);
 
     /**
-     * @return StorableSessionInterface|null
+     * @return SessionInterface|null
      */
-    public function load(SessionIdInterface $id) ;
+    public function load(SessionIdInterface $id);
 
     public function destroy(SessionIdInterface $id);
 }
