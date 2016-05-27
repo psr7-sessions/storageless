@@ -31,11 +31,11 @@ use Lcobucci\JWT\Token;
 use PHPUnit_Framework_TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use PSR7Session\Time\FakeCurrentTime;
 use PSR7Session\Http\SessionMiddleware;
 use PSR7Session\Session\DefaultSessionData;
 use PSR7Session\Session\SessionInterface;
 use PSR7Session\Time\SystemCurrentTime;
+use PSR7SessionTest\Time\FakeCurrentTime;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
 use Zend\Stratigility\MiddlewareInterface;
@@ -272,8 +272,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             ->withMaxAge('123123')
             ->withValue('a-random-value');
 
-        $currentTimeProvider = new FakeCurrentTime(new DateTimeImmutable());
-
+        $dateTime   = new DateTimeImmutable();
         $middleware = new SessionMiddleware(
             new Sha256(),
             'foo',
@@ -281,7 +280,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             $defaultCookie,
             new Parser(),
             123456,
-            $currentTimeProvider,
+            new FakeCurrentTime($dateTime),
             123
         );
 
@@ -299,7 +298,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         self::assertSame($defaultCookie->getPath(), $tokenCookie->getPath());
         self::assertSame($defaultCookie->getHttpOnly(), $tokenCookie->getHttpOnly());
         self::assertSame($defaultCookie->getMaxAge(), $tokenCookie->getMaxAge());
-        self::assertEquals($currentTimeProvider()->getTimestamp() + 123456, $tokenCookie->getExpires());
+        self::assertEquals($dateTime->getTimestamp() + 123456, $tokenCookie->getExpires());
     }
 
     public function testSessionTokenParsingIsDelayedWhenSessionIsNotBeingUsed()
@@ -335,7 +334,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
 
     public function testShouldRegenerateTokenWhenRequestHasATokenThatIsAboutToExpire()
     {
-        $currentTimeProvider = new FakeCurrentTime(new DateTimeImmutable());
+        $dateTime   = new DateTimeImmutable();
         $middleware = new SessionMiddleware(
             new Sha256(),
             'foo',
@@ -343,7 +342,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             new Parser(),
             1000,
-            new SystemCurrentTime(),
+            new FakeCurrentTime($dateTime),
             300
         );
 
@@ -365,7 +364,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         $tokenCookie = $this->getCookie($response);
 
         self::assertNotEmpty($tokenCookie->getValue());
-        self::assertEquals($currentTimeProvider()->getTimestamp() + 1000, $tokenCookie->getExpires());
+        self::assertEquals($dateTime->getTimestamp() + 1000, $tokenCookie->getExpires());
     }
 
     public function testShouldNotRegenerateTokenWhenRequestHasATokenThatIsFarFromExpiration()

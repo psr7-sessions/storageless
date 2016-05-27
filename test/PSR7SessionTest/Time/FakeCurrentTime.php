@@ -21,15 +21,25 @@ declare(strict_types=1);
 namespace PSR7SessionTest\Time;
 
 use DateTimeImmutable;
-use PSR7Session\Time\FakeCurrentTime;
+use PSR7Session\Time\CurrentTimeProviderInterface;
 
-class FakeCurrentTimeTest extends \PHPUnit_Framework_TestCase
+final class FakeCurrentTime implements CurrentTimeProviderInterface
 {
-    public function testReturnEqualDateTimeGiven()
-    {
-        $dateTime            = new DateTimeImmutable('-1 day');
-        $currentTimeProvider = new FakeCurrentTime($dateTime);
+    /**
+     * @var DateTimeImmutable
+     */
+    private $dateTime;
 
-        $this->assertEquals($dateTime, $currentTimeProvider());
+    public function __construct(DateTimeImmutable $dateTime)
+    {
+        $this->dateTime = $dateTime;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function __invoke() : DateTimeImmutable
+    {
+        return $this->dateTime;
     }
 }

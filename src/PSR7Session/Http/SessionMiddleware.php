@@ -314,7 +314,7 @@ final class SessionMiddleware implements MiddlewareInterface
     /**
      * @return int
      */
-    private function timestamp()
+    private function timestamp() : int
     {
         $currentTimeProvider = $this->currentTimeProvider;
 
