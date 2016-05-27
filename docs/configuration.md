@@ -78,6 +78,7 @@ $sessionMiddleware = new SessionMiddleware(
     new \Lcobucci\JWT\Parser(),
     1200, // session lifetime, in seconds
     60    // session automatic refresh time, in seconds
+    new \PSR7Session\Clock\SystemClock() // Clock implementation using current time system
 );
 ```
 
