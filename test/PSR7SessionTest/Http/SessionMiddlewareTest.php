@@ -35,6 +35,7 @@ use PSR7Session\Time\FakeCurrentTime;
 use PSR7Session\Http\SessionMiddleware;
 use PSR7Session\Session\DefaultSessionData;
 use PSR7Session\Session\SessionInterface;
+use PSR7Session\Time\SystemCurrentTime;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
 use Zend\Stratigility\MiddlewareInterface;
@@ -249,7 +250,8 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             'bar', // wrong symmetric key (on purpose)
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             new Parser(),
-            100
+            100,
+            new SystemCurrentTime()
         );
 
         $this->ensureSameResponse(
@@ -279,8 +281,8 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             $defaultCookie,
             new Parser(),
             123456,
-            123,
-            $currentTimeProvider
+            $currentTimeProvider,
+            123
         );
 
         $initialResponse = new Response();
@@ -307,8 +309,9 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
 
         $signer->expects($this->never())->method('verify');
 
+        $currentTimeProvider = new SystemCurrentTime();
         $setCookie  = SetCookie::create(SessionMiddleware::DEFAULT_COOKIE);
-        $middleware = new SessionMiddleware($signer, 'foo', 'foo', $setCookie, new Parser(), 100);
+        $middleware = new SessionMiddleware($signer, 'foo', 'foo', $setCookie, new Parser(), 100, $currentTimeProvider);
         $request    = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
@@ -340,6 +343,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             new Parser(),
             1000,
+            new SystemCurrentTime(),
             300
         );
 
@@ -373,6 +377,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             new Parser(),
             1000,
+            new SystemCurrentTime(),
             300
         );
 
@@ -401,7 +406,8 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
                 'foo',
                 SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
                 new Parser(),
-                100
+                100,
+                new SystemCurrentTime()
             )],
             [SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100)],
             [SessionMiddleware::fromAsymmetricKeyDefaults(

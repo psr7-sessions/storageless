@@ -91,8 +91,8 @@ final class SessionMiddleware implements MiddlewareInterface
      * @param SetCookie                     $defaultCookie
      * @param Parser                        $tokenParser
      * @param int                           $expirationTime
-     * @param int                           $refreshTime
      * @param CurrentTimeProviderInterface  $currentTimeProvider
+     * @param int                           $refreshTime
      */
     public function __construct(
         Signer $signer,
@@ -101,8 +101,8 @@ final class SessionMiddleware implements MiddlewareInterface
         SetCookie $defaultCookie,
         Parser $tokenParser,
         int $expirationTime,
-        int $refreshTime = self::DEFAULT_REFRESH_TIME,
-        CurrentTimeProviderInterface $currentTimeProvider = null
+        CurrentTimeProviderInterface $currentTimeProvider,
+        int $refreshTime = self::DEFAULT_REFRESH_TIME
     ) {
         $this->signer              = $signer;
         $this->signatureKey        = $signatureKey;
@@ -110,8 +110,8 @@ final class SessionMiddleware implements MiddlewareInterface
         $this->tokenParser         = $tokenParser;
         $this->defaultCookie       = clone $defaultCookie;
         $this->expirationTime      = $expirationTime;
+        $this->currentTimeProvider = $currentTimeProvider;
         $this->refreshTime         = $refreshTime;
-        $this->currentTimeProvider = $currentTimeProvider ?? new SystemCurrentTime();
     }
 
     /**
@@ -132,7 +132,8 @@ final class SessionMiddleware implements MiddlewareInterface
                 ->withSecure(true)
                 ->withHttpOnly(true),
             new Parser(),
-            $expirationTime
+            $expirationTime,
+            new SystemCurrentTime()
         );
     }
 
@@ -159,7 +160,8 @@ final class SessionMiddleware implements MiddlewareInterface
                 ->withSecure(true)
                 ->withHttpOnly(true),
             new Parser(),
-            $expirationTime
+            $expirationTime,
+            new SystemCurrentTime()
         );
     }
 
