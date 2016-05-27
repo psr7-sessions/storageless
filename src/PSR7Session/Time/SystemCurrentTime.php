@@ -18,16 +18,16 @@
 
 declare(strict_types=1);
 
-namespace PSR7Session\Clock;
+namespace PSR7Session\Time;
 
 use DateTimeImmutable;
 
-final class SystemClock implements ClockInterface
+final class SystemCurrentTime implements CurrentTimeProviderInterface
 {
     /**
      * {@inheritDoc}
      */
-    public function now() : DateTimeImmutable
+    public function __invoke() : DateTimeImmutable
     {
         return new DateTimeImmutable();
     }

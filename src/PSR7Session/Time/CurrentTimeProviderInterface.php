@@ -18,27 +18,14 @@
 
 declare(strict_types=1);
 
-namespace PSR7Session\Clock;
+namespace PSR7Session\Time;
 
 use DateTimeImmutable;
 
-final class FakeClock implements ClockInterface
+interface CurrentTimeProviderInterface
 {
     /**
-     * @var DateTimeImmutable
+     * @return DateTimeImmutable
      */
-    private $dateTime;
-
-    public function __construct(DateTimeImmutable $dateTime)
-    {
-        $this->dateTime = $dateTime;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function now() : DateTimeImmutable
-    {
-        return $this->dateTime;
-    }
+    public function __invoke() : DateTimeImmutable;
 }

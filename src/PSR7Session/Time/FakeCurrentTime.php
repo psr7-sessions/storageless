@@ -18,18 +18,27 @@
 
 declare(strict_types=1);
 
-namespace PSR7SessionTest\Clock;
+namespace PSR7Session\Time;
 
 use DateTimeImmutable;
-use PSR7Session\Clock\FakeClock;
 
-class FakeClockTest extends \PHPUnit_Framework_TestCase
+final class FakeCurrentTime implements CurrentTimeProviderInterface
 {
-    public function testReturnEqualDateTimeGiven()
-    {
-        $dateTime = new DateTimeImmutable('-1 day');
-        $clock    = new FakeClock($dateTime);
+    /**
+     * @var DateTimeImmutable
+     */
+    private $dateTime;
 
-        $this->assertEquals($dateTime, $clock->now());
+    public function __construct(DateTimeImmutable $dateTime)
+    {
+        $this->dateTime = $dateTime;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function __invoke() : DateTimeImmutable
+    {
+        return $this->dateTime;
     }
 }

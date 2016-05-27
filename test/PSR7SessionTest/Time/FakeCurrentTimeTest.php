@@ -18,20 +18,18 @@
 
 declare(strict_types=1);
 
-namespace PSR7SessionTest\Clock;
+namespace PSR7SessionTest\Time;
 
 use DateTimeImmutable;
-use PSR7Session\Clock\SystemClock;
+use PSR7Session\Time\FakeCurrentTime;
 
-class SystemClockTest extends \PHPUnit_Framework_TestCase
+class FakeCurrentTimeTest extends \PHPUnit_Framework_TestCase
 {
-    public function testReturnCurrentSystemTime()
+    public function testReturnEqualDateTimeGiven()
     {
-        $beforeDateTime = new DateTimeImmutable();
-        $systemDateTime = (new SystemClock())->now();
-        $afterDateTime  = new DateTimeImmutable();
+        $dateTime            = new DateTimeImmutable('-1 day');
+        $currentTimeProvider = new FakeCurrentTime($dateTime);
 
-        $this->assertGreaterThanOrEqual($beforeDateTime, $systemDateTime);
-        $this->assertLessThanOrEqual($afterDateTime, $systemDateTime);
+        $this->assertEquals($dateTime, $currentTimeProvider());
     }
 }
