@@ -433,6 +433,29 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @group #46
+     *
+     * @throws \InvalidArgumentException
+     * @throws \OutOfBoundsException
+     */
+    public function testFromAsymmetricKeyDefaultsWillHaveADefaultSessionPath()
+    {
+        self::assertSame(
+            '/',
+            $this
+                ->getCookie(
+                    SessionMiddleware
+                        ::fromAsymmetricKeyDefaults(
+                            file_get_contents(__DIR__ . '/../../keys/private_key.pem'),
+                            file_get_contents(__DIR__ . '/../../keys/public_key.pem'),
+                            200
+                        )
+                        ->__invoke(new ServerRequest(), new Response(), $this->writingMiddleware())
+                )
+                ->getPath()
+        );
+    }
 
     /**
      * @param SessionMiddleware $middleware
