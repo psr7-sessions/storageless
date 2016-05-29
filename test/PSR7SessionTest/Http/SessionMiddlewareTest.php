@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace PSR7SessionTest\Http;
 
+use DateTimeImmutable;
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\SetCookie;
 use Lcobucci\JWT\Builder;
@@ -33,6 +34,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use PSR7Session\Http\SessionMiddleware;
 use PSR7Session\Session\DefaultSessionData;
 use PSR7Session\Session\SessionInterface;
+use PSR7Session\Time\SystemCurrentTime;
+use PSR7SessionTest\Time\FakeCurrentTime;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
 use Zend\Stratigility\MiddlewareInterface;
@@ -247,7 +250,8 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             'bar', // wrong symmetric key (on purpose)
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             new Parser(),
-            100
+            100,
+            new SystemCurrentTime()
         );
 
         $this->ensureSameResponse(
@@ -268,7 +272,17 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             ->withMaxAge('123123')
             ->withValue('a-random-value');
 
-        $middleware = new SessionMiddleware(new Sha256(), 'foo', 'foo', $defaultCookie, new Parser(), 123456);
+        $dateTime   = new DateTimeImmutable();
+        $middleware = new SessionMiddleware(
+            new Sha256(),
+            'foo',
+            'foo',
+            $defaultCookie,
+            new Parser(),
+            123456,
+            new FakeCurrentTime($dateTime),
+            123
+        );
 
         $initialResponse = new Response();
         $response = $middleware(new ServerRequest(), $initialResponse, $this->writingMiddleware());
@@ -284,7 +298,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         self::assertSame($defaultCookie->getPath(), $tokenCookie->getPath());
         self::assertSame($defaultCookie->getHttpOnly(), $tokenCookie->getHttpOnly());
         self::assertSame($defaultCookie->getMaxAge(), $tokenCookie->getMaxAge());
-        self::assertEquals(time() + 123456, $tokenCookie->getExpires(), '', 2);
+        self::assertEquals($dateTime->getTimestamp() + 123456, $tokenCookie->getExpires());
     }
 
     public function testSessionTokenParsingIsDelayedWhenSessionIsNotBeingUsed()
@@ -294,8 +308,9 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
 
         $signer->expects($this->never())->method('verify');
 
+        $currentTimeProvider = new SystemCurrentTime();
         $setCookie  = SetCookie::create(SessionMiddleware::DEFAULT_COOKIE);
-        $middleware = new SessionMiddleware($signer, 'foo', 'foo', $setCookie, new Parser(), 100);
+        $middleware = new SessionMiddleware($signer, 'foo', 'foo', $setCookie, new Parser(), 100, $currentTimeProvider);
         $request    = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
@@ -319,6 +334,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
 
     public function testShouldRegenerateTokenWhenRequestHasATokenThatIsAboutToExpire()
     {
+        $dateTime   = new DateTimeImmutable();
         $middleware = new SessionMiddleware(
             new Sha256(),
             'foo',
@@ -326,6 +342,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             new Parser(),
             1000,
+            new FakeCurrentTime($dateTime),
             300
         );
 
@@ -347,7 +364,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         $tokenCookie = $this->getCookie($response);
 
         self::assertNotEmpty($tokenCookie->getValue());
-        self::assertEquals(time() + 1000, $tokenCookie->getExpires(), '', 2);
+        self::assertEquals($dateTime->getTimestamp() + 1000, $tokenCookie->getExpires());
     }
 
     public function testShouldNotRegenerateTokenWhenRequestHasATokenThatIsFarFromExpiration()
@@ -359,6 +376,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             new Parser(),
             1000,
+            new SystemCurrentTime(),
             300
         );
 
@@ -387,7 +405,8 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
                 'foo',
                 SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
                 new Parser(),
-                100
+                100,
+                new SystemCurrentTime()
             )],
             [SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100)],
             [SessionMiddleware::fromAsymmetricKeyDefaults(

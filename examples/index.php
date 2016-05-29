@@ -24,6 +24,7 @@ use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Diactoros\Response;
 use PSR7Session\Http\SessionMiddleware;
+use PSR7Session\Time\SystemCurrentTime;
 use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Response\SapiEmitter;
 use Zend\Diactoros\ServerRequestFactory;
@@ -45,7 +46,8 @@ $sessionMiddleware = new SessionMiddleware(
         ->withSecure(false) // false on purpose, unless you have https locally
         ->withHttpOnly(true),
     new Parser(),
-    1200 // 20 minutes
+    1200, // 20 minutes
+    new SystemCurrentTime()
 );
 $myMiddleware = function (ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface {
     /* @var \PSR7Session\Session\SessionInterface $session */
