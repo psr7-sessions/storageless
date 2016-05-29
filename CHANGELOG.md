@@ -13,3 +13,11 @@ This release contains backwards compatibility breaks with previous releases.
   continue to work and they're no affected.
 - Using `PSR7Session\Http\SessionMiddleware` constructor, it's needed to upgrade
   introducing an instance of `\PSR7Session\Time\SystemCurrentTime()`.
+
+Total issues resolved: **5**
+
+- [20: Make the dependency on time explicit](https://github.com/Ocramius/PSR7Session/issues/20)
+- [31: Added comment for private modifier for &#95;&#95;construct()](https://github.com/Ocramius/PSR7Session/pull/31)
+- [42: Disabling phpcs for scrutinizer-ci runs](https://github.com/Ocramius/PSR7Session/pull/42)
+- [44: Scrutinizer: external coverage support](https://github.com/Ocramius/PSR7Session/pull/44)
+- [50: Make the dependency on time explicit](https://github.com/Ocramius/PSR7Session/pull/50)
