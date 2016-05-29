@@ -418,6 +418,23 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @group #46
+     */
+    public function testFromSymmetricKeyDefaultsWillHaveADefaultSessionPath()
+    {
+        self::assertSame(
+            '/',
+            $this
+                ->getCookie(
+                    SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100)
+                        ->__invoke(new ServerRequest(), new Response(), $this->writingMiddleware())
+                )
+                ->getPath()
+        );
+    }
+
+
+    /**
      * @param SessionMiddleware $middleware
      * @param ServerRequestInterface $request
      * @param callable $next
