@@ -302,18 +302,15 @@ final class SessionMiddleware implements MiddlewareInterface
     private function getExpirationCookie() : SetCookie
     {
         $currentTimeProvider = $this->currentTimeProvider;
-        $dateTime            = $currentTimeProvider();
-        $dateTime            = $dateTime->modify('-30 days');
+        $expirationDate      = $currentTimeProvider();
+        $expirationDate      = $expirationDate->modify('-30 days');
 
         return $this
             ->defaultCookie
             ->withValue(null)
-            ->withExpires($dateTime->getTimestamp());
+            ->withExpires($expirationDate->getTimestamp());
     }
 
-    /**
-     * @return int
-     */
     private function timestamp() : int
     {
         $currentTimeProvider = $this->currentTimeProvider;

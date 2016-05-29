@@ -24,8 +24,5 @@ use DateTimeImmutable;
 
 interface CurrentTimeProviderInterface
 {
-    /**
-     * @return DateTimeImmutable
-     */
     public function __invoke() : DateTimeImmutable;
 }
