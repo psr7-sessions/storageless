@@ -130,7 +130,8 @@ final class SessionMiddleware implements MiddlewareInterface
             $symmetricKey,
             SetCookie::create(self::DEFAULT_COOKIE)
                 ->withSecure(true)
-                ->withHttpOnly(true),
+                ->withHttpOnly(true)
+                ->withPath('/'),
             new Parser(),
             $expirationTime,
             new SystemCurrentTime()
@@ -158,7 +159,8 @@ final class SessionMiddleware implements MiddlewareInterface
             $publicRsaKey,
             SetCookie::create(self::DEFAULT_COOKIE)
                 ->withSecure(true)
-                ->withHttpOnly(true),
+                ->withHttpOnly(true)
+                ->withPath('/'),
             new Parser(),
             $expirationTime,
             new SystemCurrentTime()

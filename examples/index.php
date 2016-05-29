@@ -44,7 +44,8 @@ $sessionMiddleware = new SessionMiddleware(
     'c9UA8QKLSmDEn4DhNeJIad/4JugZd/HvrjyKrS0jOes=', // verification key (important: change this to your own)
     SetCookie::create('an-example-cookie-name')
         ->withSecure(false) // false on purpose, unless you have https locally
-        ->withHttpOnly(true),
+        ->withHttpOnly(true)
+        ->withPath('/'),
     new Parser(),
     1200, // 20 minutes
     new SystemCurrentTime()
