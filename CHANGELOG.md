@@ -21,3 +21,8 @@ Total issues resolved: **5**
 - [42: Disabling phpcs for scrutinizer-ci runs](https://github.com/Ocramius/PSR7Session/pull/42)
 - [44: Scrutinizer: external coverage support](https://github.com/Ocramius/PSR7Session/pull/44)
 - [50: Make the dependency on time explicit](https://github.com/Ocramius/PSR7Session/pull/50)
+
+## 1.0.x
+
+This release is going to be maintained with security-related updates until
+2016-12-31: please consider upgrading to 2.0.x.
