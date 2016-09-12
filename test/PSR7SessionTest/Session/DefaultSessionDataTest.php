@@ -154,7 +154,7 @@ final class DefaultSessionDataTest extends PHPUnit_Framework_TestCase
     public function testContainerBuiltWithStdClassContainsData(string $key, $value)
     {
         if ("\0" === $key || "\0" === $value || '' === $key) {
-            $this->markTestSkipped('Null bytes or empty keys are not supported by PHP\'s stdClass');
+            self::markTestSkipped('Null bytes or empty keys are not supported by PHP\'s stdClass');
         }
 
         $session = DefaultSessionData::fromDecodedTokenData((object) [$key => $value]);

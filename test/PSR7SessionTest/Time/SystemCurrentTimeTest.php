@@ -33,7 +33,7 @@ class SystemCurrentTimeTest extends \PHPUnit_Framework_TestCase
         $currentTime         = $currentTimeProvider();
         $afterDateTime       = new DateTimeImmutable();
 
-        $this->assertGreaterThanOrEqual($beforeDateTime, $currentTime);
-        $this->assertLessThanOrEqual($afterDateTime, $currentTime);
+        self::assertGreaterThanOrEqual($beforeDateTime, $currentTime);
+        self::assertLessThanOrEqual($afterDateTime, $currentTime);
     }
 }
