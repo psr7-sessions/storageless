@@ -304,7 +304,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     public function testSessionTokenParsingIsDelayedWhenSessionIsNotBeingUsed()
     {
         /* @var $signer Signer|\PHPUnit_Framework_MockObject_MockObject */
-        $signer = $this->getMock(Signer::class);
+        $signer = $this->createMock(Signer::class);
 
         $signer->expects($this->never())->method('verify');
 
@@ -562,7 +562,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
      */
     private function fakeMiddleware(callable $callback): MiddlewareInterface
     {
-        $middleware = $this->getMock(MiddlewareInterface::class);
+        $middleware = $this->createMock(MiddlewareInterface::class);
 
         $middleware->expects($this->once())
            ->method('__invoke')

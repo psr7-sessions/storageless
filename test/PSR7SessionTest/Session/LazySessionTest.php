@@ -49,8 +49,8 @@ final class LazySessionTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->wrappedSession = $this->getMock(SessionInterface::class);
-        $this->sessionLoader  = $this->getMock(\stdClass::class, ['__invoke']);
+        $this->wrappedSession = $this->createMock(SessionInterface::class);
+        $this->sessionLoader  = $this->getMockBuilder(\stdClass::class)->setMethods(['__invoke'])->getMock();
         $this->lazySession    = LazySession::fromContainerBuildingCallback($this->sessionLoader);
     }
 
