@@ -1,5 +1,5 @@
 {
-    "name":     "ocramius/psr7-session",
+    "name":     "psr7-sessions/storageless",
     "license":  "MIT",
     "authors": [
         {
@@ -10,7 +10,8 @@
         },
         {
             "name":  "Jefersson Nathan",
-            "email": "malukenho@phpse.net"
+            "email": "malukenho@phpse.net",
+            "role":  "Developer"
         },
         {
             "name":  "Luís Otávio Cobucci Oblonczyk",
