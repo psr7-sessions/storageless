@@ -18,7 +18,7 @@
 
 declare(strict_types=1);
 
-namespace PSR7Session\Http;
+namespace PSR7Session\Storageless\Http;
 
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\SetCookie;
@@ -29,11 +29,11 @@ use Lcobucci\JWT\Token;
 use Lcobucci\JWT\ValidationData;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use PSR7Session\Time\CurrentTimeProviderInterface;
-use PSR7Session\Time\SystemCurrentTime;
-use PSR7Session\Session\DefaultSessionData;
-use PSR7Session\Session\LazySession;
-use PSR7Session\Session\SessionInterface;
+use PSR7Session\Storageless\Time\CurrentTimeProviderInterface;
+use PSR7Session\Storageless\Time\SystemCurrentTime;
+use PSR7Session\Storageless\Session\DefaultSessionData;
+use PSR7Session\Storageless\Session\LazySession;
+use PSR7Session\Storageless\Session\SessionInterface;
 use Zend\Stratigility\MiddlewareInterface;
 
 final class SessionMiddleware implements MiddlewareInterface

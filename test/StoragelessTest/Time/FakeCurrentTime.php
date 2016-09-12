@@ -18,17 +18,28 @@
 
 declare(strict_types=1);
 
-namespace PSR7Session\Time;
+namespace PSR7SessionTest\Storageless\Time;
 
 use DateTimeImmutable;
+use PSR7Session\Storageless\Time\CurrentTimeProviderInterface;
 
-final class SystemCurrentTime implements CurrentTimeProviderInterface
+final class FakeCurrentTime implements CurrentTimeProviderInterface
 {
+    /**
+     * @var DateTimeImmutable
+     */
+    private $dateTime;
+
+    public function __construct(DateTimeImmutable $dateTime)
+    {
+        $this->dateTime = $dateTime;
+    }
+
     /**
      * {@inheritDoc}
      */
     public function __invoke() : DateTimeImmutable
     {
-        return new DateTimeImmutable();
+        return $this->dateTime;
     }
 }

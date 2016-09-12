@@ -18,60 +18,39 @@
 
 declare(strict_types=1);
 
-namespace PSR7Session\Session;
+namespace PSR7Session\Storageless\Session;
 
-final class DefaultSessionData implements SessionInterface
+final class LazySession implements SessionInterface
 {
     /**
-     * @var array
+     * @internal do not access directly: use {@see LazySession::getRealSession} instead
+     *
+     * @var SessionInterface|null
      */
-    private $data;
+    private $realSession;
 
     /**
-     * @var array
+     * @var callable
      */
-    private $originalData;
+    private $sessionLoader;
 
     /**
-     * Instantiation via __construct is not allowed, use
-     * - {@see DefaultSessionData::fromDecodedTokenData}
-     * - {@see DefaultSessionData::fromTokenData}
-     * - {@see DefaultSessionData::newEmptySession}
-     * instead
+     * Instantiation via __construct is not allowed, use {@see LazySession::fromContainerBuildingCallback} instead
      */
     private function __construct()
     {
     }
 
-    public static function fromDecodedTokenData(\stdClass $data) : self
+    /**
+     * @param callable $sessionLoader
+     *
+     * @return self
+     */
+    public static function fromContainerBuildingCallback(callable $sessionLoader) : self
     {
         $instance = new self();
 
-        $instance->originalData = $instance->data = self::convertValueToScalar($data);
-
-        return $instance;
-    }
-
-    public static function fromTokenData(array $data): self
-    {
-        $instance = new self();
-
-        $instance->data = [];
-
-        foreach ($data as $key => $value) {
-            $instance->set((string) $key, $value);
-        }
-
-        $instance->originalData = $instance->data;
-
-        return $instance;
-    }
-
-    public static function newEmptySession(): self
-    {
-        $instance = new self();
-
-        $instance->originalData = $instance->data = [];
+        $instance->sessionLoader = $sessionLoader;
 
         return $instance;
     }
@@ -81,7 +60,7 @@ final class DefaultSessionData implements SessionInterface
      */
     public function set(string $key, $value)
     {
-        $this->data[$key] = self::convertValueToScalar($value);
+        $this->getRealSession()->set($key, $value);
     }
 
     /**
@@ -89,11 +68,7 @@ final class DefaultSessionData implements SessionInterface
      */
     public function get(string $key, $default = null)
     {
-        if (! $this->has($key)) {
-            return self::convertValueToScalar($default);
-        }
-
-        return $this->data[$key];
+        return $this->getRealSession()->get($key, $default);
     }
 
     /**
@@ -101,7 +76,7 @@ final class DefaultSessionData implements SessionInterface
      */
     public function remove(string $key)
     {
-        unset($this->data[$key]);
+        $this->getRealSession()->remove($key);
     }
 
     /**
@@ -109,7 +84,7 @@ final class DefaultSessionData implements SessionInterface
      */
     public function clear()
     {
-        $this->data = [];
+        $this->getRealSession()->clear();
     }
 
     /**
@@ -117,7 +92,7 @@ final class DefaultSessionData implements SessionInterface
      */
     public function has(string $key): bool
     {
-        return array_key_exists($key, $this->data);
+        return $this->getRealSession()->has($key);
     }
 
     /**
@@ -125,7 +100,7 @@ final class DefaultSessionData implements SessionInterface
      */
     public function hasChanged() : bool
     {
-        return $this->data !== $this->originalData;
+        return $this->realSession && $this->realSession->hasChanged();
     }
 
     /**
@@ -133,7 +108,7 @@ final class DefaultSessionData implements SessionInterface
      */
     public function isEmpty() : bool
     {
-        return empty($this->data);
+        return $this->getRealSession()->isEmpty();
     }
 
     /**
@@ -141,16 +116,28 @@ final class DefaultSessionData implements SessionInterface
      */
     public function jsonSerialize()
     {
-        return $this->data;
+        return $this->getRealSession()->jsonSerialize();
     }
 
     /**
-     * @param int|bool|string|float|array|object|\JsonSerializable $value
+     * Get or initialize the session
      *
-     * @return int|bool|string|float|array
+     * @return SessionInterface
      */
-    private static function convertValueToScalar($value)
+    private function getRealSession() : SessionInterface
     {
-        return json_decode(json_encode($value, \JSON_PRESERVE_ZERO_FRACTION), true);
+        return $this->realSession ?? $this->realSession = $this->loadSession();
+    }
+
+    /**
+     * Type-safe wrapper that ensures that the given callback returns the expected type of object, when called
+     *
+     * @return SessionInterface
+     */
+    private function loadSession() : SessionInterface
+    {
+        $sessionLoader = $this->sessionLoader;
+
+        return $sessionLoader();
     }
 }
