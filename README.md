@@ -1,10 +1,10 @@
 # PSR-7 Storage-less HTTP Sessions
 
-[![Build Status](https://travis-ci.org/Ocramius/PSR7Session.svg)](https://travis-ci.org/Ocramius/PSR7Session)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Ocramius/PSR7Session/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Ocramius/PSR7Session/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/Ocramius/PSR7Session/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Ocramius/PSR7Session/?branch=master)
-[![Packagist](https://img.shields.io/packagist/v/ocramius/psr7-session.svg)](https://packagist.org/packages/ocramius/psr7-session)
-[![Packagist](https://img.shields.io/packagist/vpre/ocramius/psr7-session.svg)](https://packagist.org/packages/ocramius/psr7-session)
+[![Build Status](https://travis-ci.org/psr7-sessions/storageless.svg)](https://travis-ci.org/psr7-sessions/storageless)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/psr7-sessions/storageless/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/psr7-sessions/storageless/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/psr7-sessions/storageless/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/psr7-sessions/storageless/?branch=master)
+[![Packagist](https://img.shields.io/packagist/v/psr7-sessions/storageless.svg)](https://packagist.org/packages/psr7-sessions/storageless)
+[![Packagist](https://img.shields.io/packagist/vpre/psr7-sessions/storageless.svg)](https://packagist.org/packages/psr7-sessions/storageless)
 
 **PSR7Session** is a [PSR-7](http://www.php-fig.org/psr/psr-7/)
 [middleware](https://mwop.net/blog/2015-01-08-on-http-middleware-and-psr-7.html) that enables
@@ -15,12 +15,12 @@ Proudly brought to you by [ocramius](https://github.com/Ocramius), [malukenho](h
 ### Installation
 
 ```sh
-composer require ocramius/psr7-session
+composer require psr7-sessions/storageless
 ```
 
 ### Usage
 
-You can use the `PSR7Session\Http\SessionMiddleware` in any 
+You can use the `PSR7Session\Storageless\Http\SessionMiddleware` in any 
 [`zendframework/zend-stratigility`](https://github.com/zendframework/zend-stratigility)
 compatible [PSR-7](http://www.php-fig.org/psr/psr-7/)
 [middleware](https://github.com/zendframework/zend-stratigility/blob/1.1.2/src/MiddlewareInterface.php).
@@ -31,7 +31,7 @@ application, this would look like following:
 ```php
 $app = \Zend\Expressive\AppFactory::create();
 
-$app->pipe(\PSR7Session\Http\SessionMiddleware::fromSymmetricKeyDefaults(
+$app->pipe(\PSR7Session\Storageless\Http\SessionMiddleware::fromSymmetricKeyDefaults(
     'mBC5v1sOKVvbdEitdSBenu59nfNfhwkedkJVNabosTw=', // replace this with a key of your own (see docs below)
     1200 // 20 minutes
 ));
@@ -42,7 +42,7 @@ has access to the `Psr\Http\Message\ServerRequestInterface` attributes:
 
 ```php
 $app->get('/get', function (ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface {
-    /* @var \PSR7Session\Session\Data $session */
+    /* @var \PSR7Session\Storageless\Session\Data $session */
     $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
     $session->set('counter', $session->get('counter', 0) + 1);
 
@@ -63,8 +63,8 @@ generated using a cryptographically secure pseudo-random number generator
 to do this for you.
 
 Note that you can also use asymmetric keys by using either the
-`PSR7Session\Http\SessionMiddleware` constructor or the named
-constructor `PSR7Session\Http\SessionMiddleware::fromAsymmetricKeyDefaults()`
+`PSR7Session\Storageless\Http\SessionMiddleware` constructor or the named
+constructor `PSR7Session\Storageless\Http\SessionMiddleware::fromAsymmetricKeyDefaults()`
 
 ### Examples
 

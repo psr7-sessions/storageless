@@ -9,7 +9,7 @@ You can set up symmetric key based signatures via the
 `PSR7Session::fromSymmetricKeyDefaults` named constructor:
 
 ```php
-use PSR7Session\Http\SessionMiddleware;
+use PSR7Session\Storageless\Http\SessionMiddleware;
 
 $sessionMiddleware = SessionMiddleware::fromSymmetricKeyDefaults(
     'OpcMuKmoxkhzW0Y1iESpjWwL/D3UBdDauJOe742BJ5Q=', // replace this with a key of your own (see below)
@@ -28,7 +28,7 @@ You can set up symmetric key based signatures via the
 `PSR7Session::fromAsymmetricKeyDefaults` named constructor:
 
 ```php
-use PSR7Session\Http\SessionMiddleware;
+use PSR7Session\Storageless\Http\SessionMiddleware;
 
 $sessionMiddleware = SessionMiddleware::fromAsymmetricKeyDefaults(
     file_get_contents('/path/to/private_key.pem'),
@@ -62,10 +62,10 @@ composer require "dflydev/fig-cookies:^1.0.1"
 ```
 
 If you want to fine-tune more settings of `PSR7Session`, then simply use the
-`PSR7Session\Http\SessionMiddleware` constructor.
+`PSR7Session\Storageless\Http\SessionMiddleware` constructor.
 
 ```php
-use PSR7Session\Http\SessionMiddleware;
+use PSR7Session\Storageless\Http\SessionMiddleware;
 
 // a blueprint of the cookie that `PSR7Session` should use to generate
 // and read cookies:
@@ -77,7 +77,7 @@ $sessionMiddleware = new SessionMiddleware(
     $cookieBlueprint,
     new \Lcobucci\JWT\Parser(),
     1200, // session lifetime, in seconds
-    new \PSR7Session\Time\SystemCurrentTime(), // Current time provider implementation using current time system
+    new \PSR7Session\Storageless\Time\SystemCurrentTime(), // Current time provider implementation using current time system
     60    // session automatic refresh time, in seconds
 );
 ```
