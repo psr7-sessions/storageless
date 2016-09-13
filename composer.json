@@ -28,7 +28,8 @@
     },
     "require-dev": {
         "phpunit/phpunit":              "^5.0",
-        "zendframework/zend-diactoros": "^1.1"
+        "zendframework/zend-diactoros": "^1.1",
+        "humbug/humbug":                "dev-master"
     },
     "autoload": {
         "psr-4": {
