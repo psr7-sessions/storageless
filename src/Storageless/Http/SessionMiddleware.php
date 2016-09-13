@@ -254,7 +254,7 @@ final class SessionMiddleware implements MiddlewareInterface
             return FigResponseCookies::set($response, $this->getExpirationCookie());
         }
 
-        if ($sessionContainerChanged || (! $sessionContainerEmpty && $this->shouldTokenBeRefreshed($token))) {
+        if ($sessionContainerChanged || (! $sessionContainerEmpty && $token && $this->shouldTokenBeRefreshed($token))) {
             return FigResponseCookies::set($response, $this->getTokenCookie($sessionContainer));
         }
 
@@ -264,12 +264,8 @@ final class SessionMiddleware implements MiddlewareInterface
     /**
      * {@inheritDoc}
      */
-    private function shouldTokenBeRefreshed(Token $token = null) : bool
+    private function shouldTokenBeRefreshed(Token $token) : bool
     {
-        if (null === $token) {
-            return false;
-        }
-
         if (! $token->hasClaim(self::ISSUED_AT_CLAIM)) {
             return false;
         }
