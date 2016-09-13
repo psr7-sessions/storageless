@@ -50,6 +50,19 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         self::assertTrue($this->getCookie($response)->getSecure());
     }
 
+    public function testFromAsymmetricKeyDefaultsUsesASecureCookie()
+    {
+        $response = SessionMiddleware
+            ::fromAsymmetricKeyDefaults(
+                file_get_contents(__DIR__ . '/../../keys/private_key.pem'),
+                file_get_contents(__DIR__ . '/../../keys/public_key.pem'),
+                200
+            )
+            ->__invoke(new ServerRequest(), new Response(), $this->writingMiddleware());
+
+        self::assertTrue($this->getCookie($response)->getSecure());
+    }
+
     /**
      * @dataProvider validMiddlewaresProvider
      */
