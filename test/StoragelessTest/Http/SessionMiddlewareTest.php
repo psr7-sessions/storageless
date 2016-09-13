@@ -201,12 +201,12 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
                     ->setExpiration((new \DateTime('+1 day'))->getTimestamp())
-                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::newEmptySession())
+                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
                     ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
                     ->getToken()
             ]);
 
-        $this->ensureSameResponse($middleware, $unsignedToken, $this->emptyValidationMiddleware());
+        $this->ensureSameResponse($middleware, $unsignedToken);
     }
 
     public function testWillRefreshTokenWithIssuedAtExactlyAtTokenRefreshTimeThreshold()
