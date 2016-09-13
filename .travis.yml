@@ -3,7 +3,6 @@ language: php
 php:
   - 7
   - 7.1
-  - hhvm
 
 before_script:
   - composer update --prefer-source --ignore-platform-reqs
@@ -11,10 +10,6 @@ before_script:
 script:
   - ./vendor/bin/phpunit --disallow-test-output --report-useless-tests --coverage-clover ./clover.xml
   - if php -i |grep -qE xdebug; then ./vendor/bin/humbug; fi
-
-matrix:
-  allow_failures:
-    - php: hhvm
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
