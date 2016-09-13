@@ -34,6 +34,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use PSR7Session\Storageless\Http\SessionMiddleware;
 use PSR7Session\Storageless\Session\DefaultSessionData;
 use PSR7Session\Storageless\Session\SessionInterface;
+use PSR7Session\Storageless\Time\CurrentTimeProviderInterface;
 use PSR7Session\Storageless\Time\SystemCurrentTime;
 use PSR7SessionTest\Storageless\Time\FakeCurrentTime;
 use Zend\Diactoros\Response;
@@ -206,6 +207,44 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             ]);
 
         $this->ensureSameResponse($middleware, $unsignedToken, $this->emptyValidationMiddleware());
+    }
+
+    public function testWillRefreshTokenWithIssuedAtExactlyAtTokenRefreshTimeThreshold()
+    {
+        /* @var $currentTimeProvider CurrentTimeProviderInterface|\PHPUnit_Framework_MockObject_MockObject */
+        $currentTimeProvider = $this->createMock(CurrentTimeProviderInterface::class);
+
+        $middleware = new SessionMiddleware(
+            new Sha256(),
+            'foo',
+            'foo',
+            SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
+            new Parser(),
+            1000,
+            $currentTimeProvider,
+            100
+        );
+
+        // forcing ourselves to think of time as a mutable value:
+        $time = time() + random_int(-100, +100);
+
+        $currentTimeProvider->expects(self::any())->method('__invoke')->willReturn(new \DateTimeImmutable('@' . $time));
+
+        $requestWithTokenIssuedInThePast = (new ServerRequest())
+            ->withCookieParams([
+                SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
+                    ->setExpiration($time + 10000)
+                    ->setIssuedAt($time - 100)
+                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
+                    ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
+                    ->getToken()
+            ]);
+
+        $cookie = $this->getCookie($middleware->__invoke($requestWithTokenIssuedInThePast, new Response()));
+
+        $token = (new Parser())->parse($cookie->getValue());
+
+        self::assertEquals($time, $token->getClaim(SessionMiddleware::ISSUED_AT_CLAIM), 'Token was refreshed');
     }
 
     /**
