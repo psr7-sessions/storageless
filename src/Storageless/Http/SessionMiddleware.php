@@ -248,12 +248,13 @@ final class SessionMiddleware implements MiddlewareInterface
     private function appendToken(SessionInterface $sessionContainer, Response $response, Token $token = null) : Response
     {
         $sessionContainerChanged = $sessionContainer->hasChanged();
+        $sessionContainerEmpty   = $sessionContainer->isEmpty();
 
-        if ($sessionContainerChanged && $sessionContainer->isEmpty()) {
+        if ($sessionContainerChanged && $sessionContainerEmpty) {
             return FigResponseCookies::set($response, $this->getExpirationCookie());
         }
 
-        if ($sessionContainerChanged || ($this->shouldTokenBeRefreshed($token) && ! $sessionContainer->isEmpty())) {
+        if ($sessionContainerChanged || (! $sessionContainerEmpty && $this->shouldTokenBeRefreshed($token))) {
             return FigResponseCookies::set($response, $this->getTokenCookie($sessionContainer));
         }
 
