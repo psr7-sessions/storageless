@@ -42,6 +42,14 @@ use Zend\Stratigility\MiddlewareInterface;
 
 final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
 {
+    public function testFromSymmetricKeyDefaultsUsesASecureCookie()
+    {
+        $response = SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100)
+            ->__invoke(new ServerRequest(), new Response(), $this->writingMiddleware());
+
+        self::assertTrue($this->getCookie($response)->getSecure());
+    }
+
     /**
      * @dataProvider validMiddlewaresProvider
      */
