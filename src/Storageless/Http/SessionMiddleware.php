@@ -317,6 +317,6 @@ final class SessionMiddleware implements MiddlewareInterface
     {
         $currentTimeProvider = $this->currentTimeProvider;
 
-        return $currentTimeProvider()->getTimestamp();
+        return $currentTimeProvider->__invoke()->getTimestamp();
     }
 }
