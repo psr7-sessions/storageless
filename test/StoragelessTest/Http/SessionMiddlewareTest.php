@@ -47,7 +47,10 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         $response = SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100)
             ->__invoke(new ServerRequest(), new Response(), $this->writingMiddleware());
 
-        self::assertTrue($this->getCookie($response)->getSecure());
+        $cookie = $this->getCookie($response);
+
+        self::assertTrue($cookie->getSecure());
+        self::assertTrue($cookie->getHttpOnly());
     }
 
     public function testFromAsymmetricKeyDefaultsUsesASecureCookie()
@@ -60,7 +63,10 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             )
             ->__invoke(new ServerRequest(), new Response(), $this->writingMiddleware());
 
-        self::assertTrue($this->getCookie($response)->getSecure());
+        $cookie = $this->getCookie($response);
+
+        self::assertTrue($cookie->getSecure());
+        self::assertTrue($cookie->getHttpOnly());
     }
 
     /**
