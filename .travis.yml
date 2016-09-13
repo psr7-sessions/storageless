@@ -6,11 +6,11 @@ php:
   - hhvm
 
 before_script:
-  - composer update --prefer-source
+  - composer update --prefer-source --ignore-platform-reqs
 
 script:
   - ./vendor/bin/phpunit --disallow-test-output --report-useless-tests --coverage-clover ./clover.xml
-  - ./vendor/bin/humbug
+  - if php -i |grep -qE xdebug; then ./vendor/bin/humbug; fi
 
 matrix:
   allow_failures:
