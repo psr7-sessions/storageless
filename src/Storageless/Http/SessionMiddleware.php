@@ -248,12 +248,13 @@ final class SessionMiddleware implements MiddlewareInterface
     private function appendToken(SessionInterface $sessionContainer, Response $response, Token $token = null) : Response
     {
         $sessionContainerChanged = $sessionContainer->hasChanged();
+        $sessionContainerEmpty   = $sessionContainer->isEmpty();
 
-        if ($sessionContainerChanged && $sessionContainer->isEmpty()) {
+        if ($sessionContainerChanged && $sessionContainerEmpty) {
             return FigResponseCookies::set($response, $this->getExpirationCookie());
         }
 
-        if ($sessionContainerChanged || ($this->shouldTokenBeRefreshed($token) && ! $sessionContainer->isEmpty())) {
+        if ($sessionContainerChanged || (! $sessionContainerEmpty && $token && $this->shouldTokenBeRefreshed($token))) {
             return FigResponseCookies::set($response, $this->getTokenCookie($sessionContainer));
         }
 
@@ -263,12 +264,8 @@ final class SessionMiddleware implements MiddlewareInterface
     /**
      * {@inheritDoc}
      */
-    private function shouldTokenBeRefreshed(Token $token = null) : bool
+    private function shouldTokenBeRefreshed(Token $token) : bool
     {
-        if (null === $token) {
-            return false;
-        }
-
         if (! $token->hasClaim(self::ISSUED_AT_CLAIM)) {
             return false;
         }
@@ -317,6 +314,6 @@ final class SessionMiddleware implements MiddlewareInterface
     {
         $currentTimeProvider = $this->currentTimeProvider;
 
-        return $currentTimeProvider()->getTimestamp();
+        return $currentTimeProvider->__invoke()->getTimestamp();
     }
 }
