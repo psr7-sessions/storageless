@@ -77,7 +77,7 @@ $sessionMiddleware = new SessionMiddleware(
     $cookieBlueprint,
     new \Lcobucci\JWT\Parser(),
     1200, // session lifetime, in seconds
-    new \PSR7Session\Storageless\Time\SystemCurrentTime(), // Current time provider implementation using current time system
+    new \PSR7Session\Storageless\Time\SystemCurrentTime(), // Current time provider implementation using current system time
     60    // session automatic refresh time, in seconds
 );
 ```
