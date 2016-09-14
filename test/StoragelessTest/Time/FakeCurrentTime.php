@@ -18,10 +18,10 @@
 
 declare(strict_types=1);
 
-namespace PSR7SessionTest\Storageless\Time;
+namespace PSR7SessionsTest\Storageless\Time;
 
 use DateTimeImmutable;
-use PSR7Session\Storageless\Time\CurrentTimeProviderInterface;
+use PSR7Sessions\Storageless\Time\CurrentTimeProviderInterface;
 
 final class FakeCurrentTime implements CurrentTimeProviderInterface
 {

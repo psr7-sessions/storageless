@@ -18,7 +18,7 @@
 
 declare(strict_types=1);
 
-namespace PSR7SessionTest\Storageless\Http;
+namespace PSR7SessionsTest\Storageless\Http;
 
 use DateTimeImmutable;
 use Dflydev\FigCookies\FigResponseCookies;
@@ -31,12 +31,12 @@ use Lcobucci\JWT\Token;
 use PHPUnit_Framework_TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use PSR7Session\Storageless\Http\SessionMiddleware;
-use PSR7Session\Storageless\Session\DefaultSessionData;
-use PSR7Session\Storageless\Session\SessionInterface;
-use PSR7Session\Storageless\Time\CurrentTimeProviderInterface;
-use PSR7Session\Storageless\Time\SystemCurrentTime;
-use PSR7SessionTest\Storageless\Time\FakeCurrentTime;
+use PSR7Sessions\Storageless\Http\SessionMiddleware;
+use PSR7Sessions\Storageless\Session\DefaultSessionData;
+use PSR7Sessions\Storageless\Session\SessionInterface;
+use PSR7Sessions\Storageless\Time\CurrentTimeProviderInterface;
+use PSR7Sessions\Storageless\Time\SystemCurrentTime;
+use PSR7SessionsTest\Storageless\Time\FakeCurrentTime;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
 use Zend\Stratigility\MiddlewareInterface;

@@ -18,7 +18,7 @@
 
 declare(strict_types=1);
 
-namespace PSR7Session\Storageless\Session;
+namespace PSR7Sessions\Storageless\Session;
 
 final class LazySession implements SessionInterface
 {

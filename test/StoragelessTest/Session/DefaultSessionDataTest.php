@@ -18,13 +18,13 @@
 
 declare(strict_types=1);
 
-namespace PSR7SessionTest\Storageless\Session;
+namespace PSR7SessionsTest\Storageless\Session;
 
 use PHPUnit_Framework_TestCase;
-use PSR7Session\Storageless\Session\DefaultSessionData;
+use PSR7Sessions\Storageless\Session\DefaultSessionData;
 
 /**
- * @covers \PSR7Session\Storageless\Session\DefaultSessionData
+ * @covers \PSR7Sessions\Storageless\Session\DefaultSessionData
  */
 final class DefaultSessionDataTest extends PHPUnit_Framework_TestCase
 {

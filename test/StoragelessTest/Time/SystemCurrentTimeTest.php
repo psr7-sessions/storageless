@@ -18,10 +18,10 @@
 
 declare(strict_types=1);
 
-namespace PSR7SessionTest\Storageless\Time;
+namespace PSR7SessionsTest\Storageless\Time;
 
 use DateTimeImmutable;
-use PSR7Session\Storageless\Time\SystemCurrentTime;
+use PSR7Sessions\Storageless\Time\SystemCurrentTime;
 
 class SystemCurrentTimeTest extends \PHPUnit_Framework_TestCase
 {
