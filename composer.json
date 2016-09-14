@@ -1,5 +1,6 @@
 {
     "name":     "psr7-sessions/storageless",
+    "description": "Storageless PSR-7 Session support",
     "license":  "MIT",
     "authors": [
         {
@@ -30,6 +31,9 @@
         "phpunit/phpunit":              "^5.0",
         "zendframework/zend-diactoros": "^1.1",
         "humbug/humbug":                "dev-master"
+    },
+    "replace": {
+        "ocramius/psr7-session": "self.version"
     },
     "autoload": {
         "psr-4": {
