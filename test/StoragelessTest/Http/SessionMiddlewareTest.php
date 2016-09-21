@@ -18,7 +18,7 @@
 
 declare(strict_types=1);
 
-namespace PSR7SessionTest\Http;
+namespace PSR7SessionsTest\Storageless\Http;
 
 use DateTimeImmutable;
 use Dflydev\FigCookies\FigResponseCookies;
@@ -31,17 +31,45 @@ use Lcobucci\JWT\Token;
 use PHPUnit_Framework_TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use PSR7Session\Http\SessionMiddleware;
-use PSR7Session\Session\DefaultSessionData;
-use PSR7Session\Session\SessionInterface;
-use PSR7Session\Time\SystemCurrentTime;
-use PSR7SessionTest\Time\FakeCurrentTime;
+use PSR7Sessions\Storageless\Http\SessionMiddleware;
+use PSR7Sessions\Storageless\Session\DefaultSessionData;
+use PSR7Sessions\Storageless\Session\SessionInterface;
+use PSR7Sessions\Storageless\Time\CurrentTimeProviderInterface;
+use PSR7Sessions\Storageless\Time\SystemCurrentTime;
+use PSR7SessionsTest\Storageless\Time\FakeCurrentTime;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
 use Zend\Stratigility\MiddlewareInterface;
 
 final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
 {
+    public function testFromSymmetricKeyDefaultsUsesASecureCookie()
+    {
+        $response = SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100)
+            ->__invoke(new ServerRequest(), new Response(), $this->writingMiddleware());
+
+        $cookie = $this->getCookie($response);
+
+        self::assertTrue($cookie->getSecure());
+        self::assertTrue($cookie->getHttpOnly());
+    }
+
+    public function testFromAsymmetricKeyDefaultsUsesASecureCookie()
+    {
+        $response = SessionMiddleware
+            ::fromAsymmetricKeyDefaults(
+                file_get_contents(__DIR__ . '/../../keys/private_key.pem'),
+                file_get_contents(__DIR__ . '/../../keys/public_key.pem'),
+                200
+            )
+            ->__invoke(new ServerRequest(), new Response(), $this->writingMiddleware());
+
+        $cookie = $this->getCookie($response);
+
+        self::assertTrue($cookie->getSecure());
+        self::assertTrue($cookie->getHttpOnly());
+    }
+
     /**
      * @dataProvider validMiddlewaresProvider
      */
@@ -173,12 +201,50 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
                     ->setExpiration((new \DateTime('+1 day'))->getTimestamp())
-                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::newEmptySession())
+                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
                     ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
                     ->getToken()
             ]);
 
-        $this->ensureSameResponse($middleware, $unsignedToken, $this->emptyValidationMiddleware());
+        $this->ensureSameResponse($middleware, $unsignedToken);
+    }
+
+    public function testWillRefreshTokenWithIssuedAtExactlyAtTokenRefreshTimeThreshold()
+    {
+        /* @var $currentTimeProvider CurrentTimeProviderInterface|\PHPUnit_Framework_MockObject_MockObject */
+        $currentTimeProvider = $this->createMock(CurrentTimeProviderInterface::class);
+
+        $middleware = new SessionMiddleware(
+            new Sha256(),
+            'foo',
+            'foo',
+            SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
+            new Parser(),
+            1000,
+            $currentTimeProvider,
+            100
+        );
+
+        // forcing ourselves to think of time as a mutable value:
+        $time = time() + random_int(-100, +100);
+
+        $currentTimeProvider->expects(self::any())->method('__invoke')->willReturn(new \DateTimeImmutable('@' . $time));
+
+        $requestWithTokenIssuedInThePast = (new ServerRequest())
+            ->withCookieParams([
+                SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
+                    ->setExpiration($time + 10000)
+                    ->setIssuedAt($time - 100)
+                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
+                    ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
+                    ->getToken()
+            ]);
+
+        $cookie = $this->getCookie($middleware->__invoke($requestWithTokenIssuedInThePast, new Response()));
+
+        $token = (new Parser())->parse($cookie->getValue());
+
+        self::assertEquals($time, $token->getClaim(SessionMiddleware::ISSUED_AT_CLAIM), 'Token was refreshed');
     }
 
     /**
@@ -304,7 +370,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     public function testSessionTokenParsingIsDelayedWhenSessionIsNotBeingUsed()
     {
         /* @var $signer Signer|\PHPUnit_Framework_MockObject_MockObject */
-        $signer = $this->getMock(Signer::class);
+        $signer = $this->createMock(Signer::class);
 
         $signer->expects($this->never())->method('verify');
 
@@ -562,7 +628,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
      */
     private function fakeMiddleware(callable $callback): MiddlewareInterface
     {
-        $middleware = $this->getMock(MiddlewareInterface::class);
+        $middleware = $this->createMock(MiddlewareInterface::class);
 
         $middleware->expects($this->once())
            ->method('__invoke')

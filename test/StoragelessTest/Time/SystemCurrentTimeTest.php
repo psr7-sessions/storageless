@@ -18,17 +18,22 @@
 
 declare(strict_types=1);
 
-namespace PSR7Session\Time;
+namespace PSR7SessionsTest\Storageless\Time;
 
 use DateTimeImmutable;
+use PSR7Sessions\Storageless\Time\SystemCurrentTime;
 
-final class SystemCurrentTime implements CurrentTimeProviderInterface
+class SystemCurrentTimeTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function __invoke() : DateTimeImmutable
+    public function testReturnCurrentSystemTime()
     {
-        return new DateTimeImmutable();
+        $currentTimeProvider = new SystemCurrentTime();
+
+        $beforeDateTime      = new DateTimeImmutable();
+        $currentTime         = $currentTimeProvider();
+        $afterDateTime       = new DateTimeImmutable();
+
+        self::assertGreaterThanOrEqual($beforeDateTime, $currentTime);
+        self::assertLessThanOrEqual($afterDateTime, $currentTime);
     }
 }

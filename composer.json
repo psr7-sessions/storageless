@@ -1,5 +1,6 @@
 {
-    "name":     "ocramius/psr7-session",
+    "name":     "psr7-sessions/storageless",
+    "description": "Storageless PSR-7 Session support",
     "license":  "MIT",
     "authors": [
         {
@@ -10,7 +11,8 @@
         },
         {
             "name":  "Jefersson Nathan",
-            "email": "malukenho@phpse.net"
+            "email": "malukenho@phpse.net",
+            "role":  "Developer"
         },
         {
             "name":  "Luís Otávio Cobucci Oblonczyk",
@@ -27,16 +29,20 @@
     },
     "require-dev": {
         "phpunit/phpunit":              "^5.0",
-        "zendframework/zend-diactoros": "^1.1"
+        "zendframework/zend-diactoros": "^1.1",
+        "humbug/humbug":                "dev-master"
+    },
+    "replace": {
+        "ocramius/psr7-session": "self.version"
     },
     "autoload": {
         "psr-4": {
-            "PSR7Session\\": "src/PSR7Session"
+            "PSR7Sessions\\Storageless\\": "src/Storageless"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "PSR7SessionTest\\": "test/PSR7SessionTest"
+            "PSR7SessionsTest\\Storageless\\": "test/StoragelessTest"
         }
     },
     "extra": {

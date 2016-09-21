@@ -18,7 +18,7 @@
 
 declare(strict_types=1);
 
-namespace PSR7Session\Time;
+namespace PSR7Sessions\Storageless\Time;
 
 use DateTimeImmutable;
 

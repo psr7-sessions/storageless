@@ -18,13 +18,13 @@
 
 declare(strict_types=1);
 
-namespace PSR7SessionTest\Session;
+namespace PSR7SessionsTest\Storageless\Session;
 
 use PHPUnit_Framework_TestCase;
-use PSR7Session\Session\DefaultSessionData;
+use PSR7Sessions\Storageless\Session\DefaultSessionData;
 
 /**
- * @covers \PSR7Session\Session\DefaultSessionData
+ * @covers \PSR7Sessions\Storageless\Session\DefaultSessionData
  */
 final class DefaultSessionDataTest extends PHPUnit_Framework_TestCase
 {
@@ -154,7 +154,7 @@ final class DefaultSessionDataTest extends PHPUnit_Framework_TestCase
     public function testContainerBuiltWithStdClassContainsData(string $key, $value)
     {
         if ("\0" === $key || "\0" === $value || '' === $key) {
-            $this->markTestSkipped('Null bytes or empty keys are not supported by PHP\'s stdClass');
+            self::markTestSkipped('Null bytes or empty keys are not supported by PHP\'s stdClass');
         }
 
         $session = DefaultSessionData::fromDecodedTokenData((object) [$key => $value]);

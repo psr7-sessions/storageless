@@ -1,7 +1,12 @@
 This is a list of changes/improvements that were introduced in PSR7Session
+ 
+## 3.0.0
+
+Moved namespace from `PSR7Session` to `PSR7Sessions\Storageless`.
+Package renamed from `ocramius/psr7-session` to `psr7-sessions/storageless`.
 
 ## 2.0.0
-
+  
 This release contains backwards compatibility breaks with previous releases.
 
 - `PSR7Session\Http\SessionMiddleware` has a new mandatory parameter on its
@@ -27,6 +32,6 @@ Total issues resolved: **5**
 - [50: Make the dependency on time explicit](https://github.com/Ocramius/PSR7Session/pull/50)
 
 ## 1.0.x
-
+ 
 This release is going to be maintained with security-related updates until
 2016-12-31: please consider upgrading to 2.0.x.
