@@ -2,15 +2,12 @@ before_commands:
     - "composer update --prefer-source"
 
 tools:
+    external_code_coverage:
+        timeout: 1800
     php_code_coverage:
         enabled: true
-        test_command: ./vendor/bin/phpunit
     php_code_sniffer:
-        enabled: true
-        config:
-            standard: PSR2
-        filter:
-            paths: ["src/*", "test/*"]
+        enabled: false
     php_cpd:
         enabled: true
         excluded_dirs: ["test", "vendor"]

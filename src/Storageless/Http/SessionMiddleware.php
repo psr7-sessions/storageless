@@ -18,9 +18,8 @@
 
 declare(strict_types=1);
 
-namespace PSR7Session\Http;
+namespace PSR7Sessions\Storageless\Http;
 
-use DateTime;
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\SetCookie;
 use Lcobucci\JWT\Builder;
@@ -30,9 +29,11 @@ use Lcobucci\JWT\Token;
 use Lcobucci\JWT\ValidationData;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use PSR7Session\Session\DefaultSessionData;
-use PSR7Session\Session\LazySession;
-use PSR7Session\Session\SessionInterface;
+use PSR7Sessions\Storageless\Time\CurrentTimeProviderInterface;
+use PSR7Sessions\Storageless\Time\SystemCurrentTime;
+use PSR7Sessions\Storageless\Session\DefaultSessionData;
+use PSR7Sessions\Storageless\Session\LazySession;
+use PSR7Sessions\Storageless\Session\SessionInterface;
 use Zend\Stratigility\MiddlewareInterface;
 
 final class SessionMiddleware implements MiddlewareInterface
@@ -79,13 +80,19 @@ final class SessionMiddleware implements MiddlewareInterface
     private $defaultCookie;
 
     /**
-     * @param Signer    $signer
-     * @param string    $signatureKey
-     * @param string    $verificationKey
-     * @param SetCookie $defaultCookie
-     * @param Parser    $tokenParser
-     * @param int       $expirationTime
-     * @param int       $refreshTime
+     * @var CurrentTimeProviderInterface
+     */
+    private $currentTimeProvider;
+
+    /**
+     * @param Signer                        $signer
+     * @param string                        $signatureKey
+     * @param string                        $verificationKey
+     * @param SetCookie                     $defaultCookie
+     * @param Parser                        $tokenParser
+     * @param int                           $expirationTime
+     * @param CurrentTimeProviderInterface  $currentTimeProvider
+     * @param int                           $refreshTime
      */
     public function __construct(
         Signer $signer,
@@ -94,15 +101,17 @@ final class SessionMiddleware implements MiddlewareInterface
         SetCookie $defaultCookie,
         Parser $tokenParser,
         int $expirationTime,
+        CurrentTimeProviderInterface $currentTimeProvider,
         int $refreshTime = self::DEFAULT_REFRESH_TIME
     ) {
-        $this->signer          = $signer;
-        $this->signatureKey    = $signatureKey;
-        $this->verificationKey = $verificationKey;
-        $this->tokenParser     = $tokenParser;
-        $this->defaultCookie   = clone $defaultCookie;
-        $this->expirationTime  = $expirationTime;
-        $this->refreshTime     = $refreshTime;
+        $this->signer              = $signer;
+        $this->signatureKey        = $signatureKey;
+        $this->verificationKey     = $verificationKey;
+        $this->tokenParser         = $tokenParser;
+        $this->defaultCookie       = clone $defaultCookie;
+        $this->expirationTime      = $expirationTime;
+        $this->currentTimeProvider = $currentTimeProvider;
+        $this->refreshTime         = $refreshTime;
     }
 
     /**
@@ -121,9 +130,11 @@ final class SessionMiddleware implements MiddlewareInterface
             $symmetricKey,
             SetCookie::create(self::DEFAULT_COOKIE)
                 ->withSecure(true)
-                ->withHttpOnly(true),
+                ->withHttpOnly(true)
+                ->withPath('/'),
             new Parser(),
-            $expirationTime
+            $expirationTime,
+            new SystemCurrentTime()
         );
     }
 
@@ -148,9 +159,11 @@ final class SessionMiddleware implements MiddlewareInterface
             $publicRsaKey,
             SetCookie::create(self::DEFAULT_COOKIE)
                 ->withSecure(true)
-                ->withHttpOnly(true),
+                ->withHttpOnly(true)
+                ->withPath('/'),
             new Parser(),
-            $expirationTime
+            $expirationTime,
+            new SystemCurrentTime()
         );
     }
 
@@ -235,12 +248,13 @@ final class SessionMiddleware implements MiddlewareInterface
     private function appendToken(SessionInterface $sessionContainer, Response $response, Token $token = null) : Response
     {
         $sessionContainerChanged = $sessionContainer->hasChanged();
+        $sessionContainerEmpty   = $sessionContainer->isEmpty();
 
-        if ($sessionContainerChanged && $sessionContainer->isEmpty()) {
+        if ($sessionContainerChanged && $sessionContainerEmpty) {
             return FigResponseCookies::set($response, $this->getExpirationCookie());
         }
 
-        if ($sessionContainerChanged || ($this->shouldTokenBeRefreshed($token) && ! $sessionContainer->isEmpty())) {
+        if ($sessionContainerChanged || (! $sessionContainerEmpty && $token && $this->shouldTokenBeRefreshed($token))) {
             return FigResponseCookies::set($response, $this->getTokenCookie($sessionContainer));
         }
 
@@ -250,19 +264,14 @@ final class SessionMiddleware implements MiddlewareInterface
     /**
      * {@inheritDoc}
      */
-    private function shouldTokenBeRefreshed(Token $token = null) : bool
+    private function shouldTokenBeRefreshed(Token $token) : bool
     {
-        if (null === $token) {
-            return false;
-        }
-
         if (! $token->hasClaim(self::ISSUED_AT_CLAIM)) {
             return false;
         }
 
-        return time() >= ($token->getClaim(self::ISSUED_AT_CLAIM) + $this->refreshTime);
+        return $this->timestamp() >= ($token->getClaim(self::ISSUED_AT_CLAIM) + $this->refreshTime);
     }
-
 
     /**
      * @param SessionInterface $sessionContainer
@@ -271,7 +280,7 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     private function getTokenCookie(SessionInterface $sessionContainer) : SetCookie
     {
-        $timestamp = (new \DateTime())->getTimestamp();
+        $timestamp = $this->timestamp();
 
         return $this
             ->defaultCookie
@@ -291,9 +300,20 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     private function getExpirationCookie() : SetCookie
     {
+        $currentTimeProvider = $this->currentTimeProvider;
+        $expirationDate      = $currentTimeProvider();
+        $expirationDate      = $expirationDate->modify('-30 days');
+
         return $this
             ->defaultCookie
             ->withValue(null)
-            ->withExpires((new \DateTime('-30 day'))->getTimestamp());
+            ->withExpires($expirationDate->getTimestamp());
+    }
+
+    private function timestamp() : int
+    {
+        $currentTimeProvider = $this->currentTimeProvider;
+
+        return $currentTimeProvider->__invoke()->getTimestamp();
     }
 }

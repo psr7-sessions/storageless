@@ -1,12 +1,12 @@
 <?php
 
-namespace PSR7SessionTest\Storage;
+namespace PSR7SessionsTest\Storage\Adapter;
 
 use PHPUnit_Framework_TestCase;
-use PSR7Session\Id\UuidSessionId;
-use PSR7Session\Session\StorableSession;
-use PSR7Session\Session\StorableSessionInterface;
-use PSR7Session\Storage\MemoryStorage;
+use PSR7Sessions\Storage\Adapter\MemoryStorage;
+use PSR7Sessions\Storage\Id\UuidSessionId;
+use PSR7Sessions\Storage\Session\StorableSession;
+use PSR7Sessions\Storage\Session\StorableSessionInterface;
 
 class MemoryStorageTest extends PHPUnit_Framework_TestCase
 {

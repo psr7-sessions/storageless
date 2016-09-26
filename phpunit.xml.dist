@@ -12,7 +12,7 @@
     syntaxCheck="true"
 >
     <testsuite name="PSR7Session tests">
-        <directory>./test/PSR7SessionTest</directory>
+        <directory>./test/StoragelessTest</directory>
     </testsuite>
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">

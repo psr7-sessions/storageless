@@ -18,7 +18,7 @@
 
 declare(strict_types=1);
 
-namespace PSR7Session\Session;
+namespace PSR7Sessions\Storageless\Session;
 
 final class LazySession implements SessionInterface
 {
@@ -34,6 +34,9 @@ final class LazySession implements SessionInterface
      */
     private $sessionLoader;
 
+    /**
+     * Instantiation via __construct is not allowed, use {@see LazySession::fromContainerBuildingCallback} instead
+     */
     private function __construct()
     {
     }

@@ -1,15 +1,15 @@
 <?php
 
-namespace PSR7SessionTest\Session;
+namespace PSR7SessionsTest\Storage\Session;
 
 use PHPUnit_Framework_TestCase;
-use PSR7Session\Id\SessionId;
-use PSR7Session\Session\DefaultSessionData;
-use PSR7Session\Session\SessionInterface;
-use PSR7Session\Session\StorableSession;
-use PSR7Session\Session\StorableSessionInterface;
-use PSR7Session\Storage\MemoryStorage;
-use PSR7Session\Storage\StorageInterface;
+use PSR7Sessions\Storage\Adapter\MemoryStorage;
+use PSR7Sessions\Storage\Adapter\StorageInterface;
+use PSR7Sessions\Storage\Id\SessionId;
+use PSR7Sessions\Storage\Session\StorableSession;
+use PSR7Sessions\Storage\Session\StorableSessionInterface;
+use PSR7Sessions\Storageless\Session\DefaultSessionData;
+use PSR7Sessions\Storageless\Session\SessionInterface;
 
 class StorableSessionTest extends PHPUnit_Framework_TestCase
 {
@@ -17,7 +17,7 @@ class StorableSessionTest extends PHPUnit_Framework_TestCase
     private $wrappedSession;
     /** @var StorageInterface */
     private $storage;
-    /** @var StorableSession */
+    /** @var \PSR7Sessions\Storage\Session\StorableSession */
     private $session;
 
     public function setUp()

@@ -23,7 +23,8 @@ use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Diactoros\Response;
-use PSR7Session\Http\SessionMiddleware;
+use PSR7Sessions\Storageless\Http\SessionMiddleware;
+use PSR7Sessions\Storageless\Time\SystemCurrentTime;
 use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Response\SapiEmitter;
 use Zend\Diactoros\ServerRequestFactory;
@@ -39,16 +40,18 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 $sessionMiddleware = new SessionMiddleware(
     new Sha256(),
-    'a very complex symmetric key',
-    'a very complex symmetric key',
+    'c9UA8QKLSmDEn4DhNeJIad/4JugZd/HvrjyKrS0jOes=', // signature key (important: change this to your own)
+    'c9UA8QKLSmDEn4DhNeJIad/4JugZd/HvrjyKrS0jOes=', // verification key (important: change this to your own)
     SetCookie::create('an-example-cookie-name')
         ->withSecure(false) // false on purpose, unless you have https locally
-        ->withHttpOnly(true),
+        ->withHttpOnly(true)
+        ->withPath('/'),
     new Parser(),
-    1200 // 20 minutes
+    1200, // 20 minutes
+    new SystemCurrentTime()
 );
 $myMiddleware = function (ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface {
-    /* @var \PSR7Session\Session\SessionInterface $session */
+    /* @var \PSR7Sessions\Storageless\Session\SessionInterface $session */
     $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
     $session->set('counter', $session->get('counter', 0) + 1);
 

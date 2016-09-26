@@ -2,15 +2,15 @@
 
 declare(strict_types = 1);
 
-namespace PSR7SessionTest\Storage;
+namespace PSR7SessionsTest\Storage\Adapter;
 
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit_Framework_TestCase;
-use PSR7Session\Session\DefaultSessionData;
-use PSR7Session\Session\StorableSession;
-use PSR7Session\Session\StorableSessionInterface;
-use PSR7Session\Storage\FileStorage;
+use PSR7Sessions\Storage\Adapter\FileStorage;
+use PSR7Sessions\Storage\Session\StorableSession;
+use PSR7Sessions\Storage\Session\StorableSessionInterface;
+use PSR7Sessions\Storageless\Session\DefaultSessionData;
 
 class FileStorageTest extends PHPUnit_Framework_TestCase
 {

@@ -18,14 +18,14 @@
 
 declare(strict_types=1);
 
-namespace PSR7SessionTest\Session;
+namespace PSR7SessionsTest\Storageless\Session;
 
 use PHPUnit_Framework_TestCase;
-use PSR7Session\Session\LazySession;
-use PSR7Session\Session\SessionInterface;
+use PSR7Sessions\Storageless\Session\LazySession;
+use PSR7Sessions\Storageless\Session\SessionInterface;
 
 /**
- * @covers \PSR7Session\Session\LazySession
+ * @covers \PSR7Sessions\Storageless\Session\LazySession
  */
 final class LazySessionTest extends PHPUnit_Framework_TestCase
 {
@@ -49,8 +49,8 @@ final class LazySessionTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->wrappedSession = $this->getMock(SessionInterface::class);
-        $this->sessionLoader  = $this->getMock(\stdClass::class, ['__invoke']);
+        $this->wrappedSession = $this->createMock(SessionInterface::class);
+        $this->sessionLoader  = $this->getMockBuilder(\stdClass::class)->setMethods(['__invoke'])->getMock();
         $this->lazySession    = LazySession::fromContainerBuildingCallback($this->sessionLoader);
     }
 
@@ -61,7 +61,7 @@ final class LazySessionTest extends PHPUnit_Framework_TestCase
 
     public function testLazyNonInitializedSessionIsAlwaysNotChanged()
     {
-        $this->sessionLoader->expects($this->never())->method('__invoke');
+        $this->sessionLoader->expects(self::never())->method('__invoke');
 
         self::assertFalse($this->lazySession->hasChanged());
     }
@@ -70,8 +70,8 @@ final class LazySessionTest extends PHPUnit_Framework_TestCase
     {
         $this->wrappedSessionWillBeLoaded();
 
-        $this->wrappedSession->expects($this->at(1))->method('hasChanged')->willReturn(true);
-        $this->wrappedSession->expects($this->at(2))->method('hasChanged')->willReturn(false);
+        $this->wrappedSession->expects(self::at(1))->method('hasChanged')->willReturn(true);
+        $this->wrappedSession->expects(self::at(2))->method('hasChanged')->willReturn(false);
 
         $this->forceWrappedSessionInitialization();
 
@@ -83,7 +83,7 @@ final class LazySessionTest extends PHPUnit_Framework_TestCase
     {
         $this->wrappedSessionWillBeLoaded();
 
-        $this->wrappedSession->expects($this->exactly(2))->method('has')->willReturnMap([
+        $this->wrappedSession->expects(self::exactly(2))->method('has')->willReturnMap([
             ['foo', false],
             ['bar', true],
         ]);
@@ -96,7 +96,7 @@ final class LazySessionTest extends PHPUnit_Framework_TestCase
     {
         $this->wrappedSessionWillBeLoaded();
 
-        $this->wrappedSession->expects($this->exactly(3))->method('get')->willReturnMap([
+        $this->wrappedSession->expects(self::exactly(3))->method('get')->willReturnMap([
             ['foo', null, 'bar'],
             ['baz', null, 'tab'],
             ['baz', 'default', 'taz'],
@@ -111,7 +111,7 @@ final class LazySessionTest extends PHPUnit_Framework_TestCase
     {
         $this->wrappedSessionWillBeLoaded();
 
-        $this->wrappedSession->expects($this->exactly(2))->method('remove')->with(self::logicalOr('foo', 'bar'));
+        $this->wrappedSession->expects(self::exactly(2))->method('remove')->with(self::logicalOr('foo', 'bar'));
 
         $this->lazySession->remove('foo');
         $this->lazySession->remove('bar');
@@ -121,7 +121,7 @@ final class LazySessionTest extends PHPUnit_Framework_TestCase
     {
         $this->wrappedSessionWillBeLoaded();
 
-        $this->wrappedSession->expects($this->exactly(2))->method('clear');
+        $this->wrappedSession->expects(self::exactly(2))->method('clear');
 
         $this->lazySession->clear();
         $this->lazySession->clear();
@@ -133,7 +133,7 @@ final class LazySessionTest extends PHPUnit_Framework_TestCase
 
         $this
             ->wrappedSession
-            ->expects($this->exactly(2))
+            ->expects(self::exactly(2))
             ->method('set')
             ->with(self::logicalOr('foo', 'baz'), self::logicalOr('bar', 'tab'));
 
@@ -145,8 +145,8 @@ final class LazySessionTest extends PHPUnit_Framework_TestCase
     {
         $this->wrappedSessionWillBeLoaded();
 
-        $this->wrappedSession->expects($this->at(0))->method('isEmpty')->willReturn(true);
-        $this->wrappedSession->expects($this->at(1))->method('isEmpty')->willReturn(false);
+        $this->wrappedSession->expects(self::at(0))->method('isEmpty')->willReturn(true);
+        $this->wrappedSession->expects(self::at(1))->method('isEmpty')->willReturn(false);
 
         self::assertTrue($this->lazySession->isEmpty());
         self::assertFalse($this->lazySession->isEmpty());
@@ -156,8 +156,8 @@ final class LazySessionTest extends PHPUnit_Framework_TestCase
     {
         $this->wrappedSessionWillBeLoaded();
 
-        $this->wrappedSession->expects($this->at(0))->method('jsonSerialize')->willReturn('foo');
-        $this->wrappedSession->expects($this->at(1))->method('jsonSerialize')->willReturn('bar');
+        $this->wrappedSession->expects(self::at(0))->method('jsonSerialize')->willReturn('foo');
+        $this->wrappedSession->expects(self::at(1))->method('jsonSerialize')->willReturn('bar');
 
         self::assertSame('foo', $this->lazySession->jsonSerialize());
         self::assertSame('bar', $this->lazySession->jsonSerialize());
@@ -165,7 +165,7 @@ final class LazySessionTest extends PHPUnit_Framework_TestCase
 
     private function wrappedSessionWillBeLoaded()
     {
-        $this->sessionLoader->expects($this->once())->method('__invoke')->willReturn($this->wrappedSession);
+        $this->sessionLoader->expects(self::once())->method('__invoke')->willReturn($this->wrappedSession);
     }
 
     private function forceWrappedSessionInitialization()

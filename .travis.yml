@@ -2,14 +2,15 @@ language: php
 
 php:
   - 7
-  - hhvm
+  - 7.1
 
 before_script:
-  - composer update --prefer-source
+  - composer update --prefer-source --ignore-platform-reqs
 
 script:
-  - ./vendor/bin/phpunit
+  - ./vendor/bin/phpunit --disallow-test-output --report-useless-tests --coverage-clover ./clover.xml
+  - if php -i |grep -qE xdebug; then ./vendor/bin/humbug; fi
 
-matrix:
-  allow_failures:
-    - php: hhvm
+after_script:
+  - wget https://scrutinizer-ci.com/ocular.phar
+  - php ocular.phar code-coverage:upload --format=php-clover ./clover.xml
