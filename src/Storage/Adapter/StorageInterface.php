@@ -1,9 +1,9 @@
 <?php
 
-namespace PSR7Session\Storage;
+namespace PSR7Sessions\Storage\Adapter;
 
-use PSR7Session\Id\SessionIdInterface;
-use PSR7Session\Session\StorableSessionInterface;
+use PSR7Sessions\Storage\Id\SessionIdInterface;
+use PSR7Sessions\Storage\Session\StorableSessionInterface;
 
 interface StorageInterface
 {

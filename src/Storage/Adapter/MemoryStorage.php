@@ -1,11 +1,11 @@
 <?php
 
-namespace PSR7Session\Storage;
+namespace PSR7Sessions\Storage\Adapter;
 
-use PSR7Session\Id\SessionIdInterface;
-use PSR7Session\Session\DefaultSessionData;
-use PSR7Session\Session\StorableSession;
-use PSR7Session\Session\StorableSessionInterface;
+use PSR7Sessions\Storage\Id\SessionIdInterface;
+use PSR7Sessions\Storage\Session\StorableSession;
+use PSR7Sessions\Storage\Session\StorableSessionInterface;
+use PSR7Sessions\Storageless\Session\DefaultSessionData;
 
 class MemoryStorage implements StorageInterface
 {

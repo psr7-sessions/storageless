@@ -13,6 +13,7 @@
 >
     <testsuite name="PSR7Session tests">
         <directory>./test/StoragelessTest</directory>
+        <directory>./test/StorageTest</directory>
     </testsuite>
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">

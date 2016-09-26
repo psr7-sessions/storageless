@@ -1,10 +1,12 @@
 <?php
 
-namespace PSR7Session\Session;
+namespace PSR7Sessions\Storage\Session;
 
-use PSR7Session\Id\SessionIdInterface;
-use PSR7Session\Id\UuidSessionId;
-use PSR7Session\Storage\StorageInterface;
+use PSR7Sessions\Storage\Adapter\StorageInterface;
+use PSR7Sessions\Storage\Id\SessionIdInterface;
+use PSR7Sessions\Storage\Id\UuidSessionId;
+use PSR7Sessions\Storageless\Session\DefaultSessionData;
+use PSR7Sessions\Storageless\Session\SessionInterface;
 
 class StorableSession implements StorableSessionInterface
 {
@@ -12,7 +14,7 @@ class StorableSession implements StorableSessionInterface
     private $id;
     /** @var SessionInterface */
     private $wrappedSession;
-    /** @var StorageInterface */
+    /** @var \PSR7Sessions\Storage\Adapter\StorageInterface */
     private $storage;
 
     public static function create(StorageInterface $storage):StorableSession

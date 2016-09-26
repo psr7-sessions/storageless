@@ -39,12 +39,13 @@
     },
     "autoload": {
         "psr-4": {
-            "PSR7Sessions\\Storageless\\": "src/Storageless"
+            "PSR7Sessions\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "PSR7SessionsTest\\Storageless\\": "test/StoragelessTest"
+            "PSR7SessionsTest\\Storageless\\": "test/StoragelessTest",
+            "PSR7SessionsTest\\Storage\\":     "test/StorageTest"
         }
     },
     "extra": {

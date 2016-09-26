@@ -1,6 +1,6 @@
 <?php
 
-namespace PSR7Session\Id;
+namespace PSR7Sessions\Storage\Id;
 
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
