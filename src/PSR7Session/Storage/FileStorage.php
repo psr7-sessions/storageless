@@ -4,23 +4,19 @@ declare(strict_types = 1);
 
 namespace PSR7Session\Storage;
 
-use PSR7Session\Id\Factory\SessionIdFactoryInterface;
 use PSR7Session\Id\SessionIdInterface;
 use PSR7Session\Session\DefaultSessionData;
-use PSR7Session\Session\SessionInterface;
+use PSR7Session\Session\StorableSession;
 use PSR7Session\Session\StorableSessionInterface;
 
 class FileStorage implements StorageInterface
 {
     /** @var string */
     private $directory;
-    /** @var SessionIdFactoryInterface */
-    private $idFactory;
 
-    public function __construct(string $directory, SessionIdFactoryInterface $idFactory)
+    public function __construct(string $directory)
     {
         $this->directory = $directory;
-        $this->idFactory = $idFactory;
     }
 
     public function save(StorableSessionInterface $session)
@@ -28,17 +24,14 @@ class FileStorage implements StorageInterface
         file_put_contents($this->buildPath($session->getId()), json_encode($session));
     }
 
-    /**
-     * @return SessionInterface|null
-     */
-    public function load(SessionIdInterface $id)
+    public function load(SessionIdInterface $id):StorableSessionInterface
     {
         $path = $this->buildPath($id);
         if (!file_exists($path)) {
-            return null;
+            return new StorableSession(DefaultSessionData::newEmptySession(), $this);
         }
         $json = file_get_contents($path);
-        return DefaultSessionData::fromTokenData(json_decode($json, true));
+        return StorableSession::fromId(DefaultSessionData::fromTokenData(json_decode($json, true)), $this, $id);
     }
 
     public function destroy(SessionIdInterface $id)

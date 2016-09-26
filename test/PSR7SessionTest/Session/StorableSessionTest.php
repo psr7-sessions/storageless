@@ -2,99 +2,75 @@
 
 namespace PSR7SessionTest\Session;
 
-use PHPUnit_Framework_MockObject_MockObject;
 use PHPUnit_Framework_TestCase;
 use PSR7Session\Id\SessionId;
 use PSR7Session\Session\DefaultSessionData;
 use PSR7Session\Session\SessionInterface;
 use PSR7Session\Session\StorableSession;
+use PSR7Session\Session\StorableSessionInterface;
+use PSR7Session\Storage\MemoryStorage;
 use PSR7Session\Storage\StorageInterface;
 
 class StorableSessionTest extends PHPUnit_Framework_TestCase
 {
-    /** @var SessionInterface|PHPUnit_Framework_MockObject_MockObject */
+    /** @var SessionInterface */
     private $wrappedSession;
-    /** @var StorageInterface|PHPUnit_Framework_MockObject_MockObject */
+    /** @var StorageInterface */
     private $storage;
     /** @var StorableSession */
     private $session;
 
     public function setUp()
     {
-        $this->wrappedSession = $this->getMock(SessionInterface::class);
-        $this->storage = $this->getMock(StorageInterface::class);
-        $this->session = StorableSession::create($this->wrappedSession, $this->storage);
+        $this->wrappedSession = DefaultSessionData::newEmptySession();
+        $this->storage = new MemoryStorage;
+        $this->session = new StorableSession($this->wrappedSession, $this->storage);
     }
 
     public function testGet()
     {
         $key = 'test';
         $val = 'foo';
-        $this->wrappedSession
-            ->expects($this->once())
-            ->method('get')
-            ->with($key)
-            ->willReturn($val);
+        $this->wrappedSession->set($key, $val);
 
         $this->assertSame($val, $this->session->get($key));
     }
 
-    public function testRemoveIsDelegated()
+    public function testRemove()
     {
         $key = 'test';
-        $this->wrappedSession
-            ->expects($this->once())
-            ->method('remove')
-            ->with($key);
+        $this->session->set($key, 'bar');
 
         $this->session->remove($key);
+
+        $this->assertFalse($this->session->has($key));
     }
 
-    public function testClearIsDelegated()
+    public function testClear()
     {
-        $this->wrappedSession
-            ->expects($this->once())
-            ->method('clear');
+        $this->session->set('foo', 'bar');
 
         $this->session->clear();
+
+        $this->assertFalse($this->session->has('foo'));
     }
 
-    public function testHasIsDelegated()
+    public function testHasChanged()
     {
-        $key = 'test';
-        $this->wrappedSession
-            ->expects($this->once())
-            ->method('has')
-            ->with($key)
-            ->willReturn(true);
+        $this->assertFalse($this->session->hasChanged());
 
-        $has = $this->session->has($key);
+        $this->session->set('foo', 'bar');
 
-        $this->assertTrue($has);
+        $this->assertTrue($this->session->hasChanged());
     }
 
-    public function testHasChangedIsDelegated()
+    public function testIsEmpty()
     {
-        $this->wrappedSession
-            ->expects($this->once())
-            ->method('hasChanged')
-            ->willReturn(true);
+        $this->assertTrue($this->session->isEmpty());
 
-        $hasChanged = $this->session->hasChanged();
+        $this->session->set('foo', 'bar');
 
-        $this->assertTrue($hasChanged);
-    }
-
-    public function testIsEmptyIsDelegated()
-    {
-        $this->wrappedSession
-            ->expects($this->once())
-            ->method('isEmpty')
-            ->willReturn(true);
-
-        $isEmpty = $this->session->isEmpty();
-
-        $this->assertTrue($isEmpty);
+        $this->assertFalse($this->session->isEmpty());
     }
 
     public function testFromStorage()
@@ -102,12 +78,8 @@ class StorableSessionTest extends PHPUnit_Framework_TestCase
         $id = new SessionId('test');
         $wrappedSession = DefaultSessionData::newEmptySession();
         $wrappedSession->set('foo', 'bar');
-        $this->storage
-            ->method('load')
-            ->with($id)
-            ->willReturn($wrappedSession);
 
-        $session = StorableSession::fromStorage($this->storage, $id);
+        $session = StorableSession::fromId($wrappedSession, $this->storage, $id);
 
         $this->assertSame($id, $session->getId());
         $this->assertSame('bar', $session->get('foo'));
@@ -115,33 +87,34 @@ class StorableSessionTest extends PHPUnit_Framework_TestCase
 
     public function testSaveOnSet()
     {
-        $this->storage
-            ->expects($this->once())
-            ->method('save')
-            ->with($this->session);
-
         $this->session->set('foo', 'bar');
+
+        $loaded = $this->reload($this->session);
+        $this->assertSame('bar', $loaded->get('foo'));
     }
 
     public function testSaveOnRemove()
     {
         $this->session->set('foo', 'bar');
-        $this->storage
-            ->expects($this->once())
-            ->method('save')
-            ->with($this->session);
 
         $this->session->remove('foo');
+
+        $loaded = $this->reload($this->session);
+        $this->assertFalse($loaded->has('foo'));
     }
 
     public function testSaveOnClear()
     {
         $this->session->set('foo', 'bar');
-        $this->storage
-            ->expects($this->once())
-            ->method('save')
-            ->with($this->session);
 
         $this->session->clear();
+
+        $loaded = $this->reload($this->session);
+        $this->assertFalse($loaded->has('foo'));
+    }
+
+    private function reload(StorableSessionInterface $session):StorableSessionInterface
+    {
+        return $this->storage->load($session->getId());
     }
 }

@@ -15,24 +15,30 @@ class StorableSession implements StorableSessionInterface
     /** @var StorageInterface */
     private $storage;
 
-    public static function create(
+    public static function create(StorageInterface $storage):StorableSession
+    {
+        return new self(DefaultSessionData::newEmptySession(), $storage);
+    }
+
+    /**
+     * @internal Should only be called by a storage
+     */
+    public static function fromId(
         SessionInterface $wrappedSession,
-        StorageInterface $storage
-    ) : StorableSessionInterface
+        StorageInterface $storage,
+        SessionIdInterface $id
+    ):StorableSession
     {
-        return new self($wrappedSession, $storage, new UuidSessionId());
+        $session = new self($wrappedSession, $storage);
+        $session->id = $id;
+        return $session;
     }
 
-    public static function fromStorage(StorageInterface $storage, SessionIdInterface $id) : StorableSessionInterface
+    public function __construct(SessionInterface $wrappedSession, StorageInterface $storage)
     {
-        return new self($storage->load($id), $storage, $id);
-    }
-
-    private function __construct(SessionInterface $wrappedSession, StorageInterface $storage, SessionIdInterface $id)
-    {
+        $this->id = new UuidSessionId;
         $this->wrappedSession = $wrappedSession;
         $this->storage = $storage;
-        $this->id = $id;
     }
 
     /**
