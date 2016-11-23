@@ -21,14 +21,13 @@ declare(strict_types = 1);
 namespace PSR7SessionsTest\Storageless\Session;
 
 use PHPUnit_Framework_TestCase;
-use PSR7Sessions\Storageless\Session\LazySession;
-use PSR7Sessions\Storageless\Session\ArrayAccessor;
+use PSR7Sessions\Storageless\Helper\ArrayAccessor;
 use PSR7Sessions\Storageless\Session\SessionInterface;
 
 /**
- * @covers \PSR7Sessions\Storageless\Session\ArrayAccessor
+ * @covers \PSR7Sessions\Storageless\Helper\ArrayAccessor
  */
-final class SessionArrayAccessorTest extends PHPUnit_Framework_TestCase
+final class ArrayAccessorTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @var SessionInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -36,35 +35,21 @@ final class SessionArrayAccessorTest extends PHPUnit_Framework_TestCase
     private $wrappedSession;
 
     /**
-     * @var callable|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $sessionLoader;
-
-    /**
      * @var ArrayAccessor
      */
     private $arrayAccess;
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function setUp()
     {
         $this->wrappedSession = $this->createMock(SessionInterface::class);
-        $this->sessionLoader = $this->getMockBuilder(\stdClass::class)->setMethods(['__invoke'])->getMock();
-        $session = LazySession::fromContainerBuildingCallback($this->sessionLoader);
-
-        $this->arrayAccess = new ArrayAccessor($session);
-    }
-
-    public function testIsAnSessionArrayAccessor()
-    {
-        self::assertInstanceOf(ArrayAccessor::class, $this->arrayAccess);
+        $this->arrayAccess = new ArrayAccessor($this->wrappedSession);
     }
 
     public function testOffsetExists()
     {
-        $this->wrappedSessionWillBeLoaded();
         $this->wrappedSession->expects(self::exactly(2))->method('has')->willReturnMap(
             [
                 ['foo', false],
@@ -81,7 +66,6 @@ final class SessionArrayAccessorTest extends PHPUnit_Framework_TestCase
      */
     public function testOffsetUnset()
     {
-        $this->wrappedSessionWillBeLoaded();
         $this->wrappedSession->expects(self::exactly(2))->method('remove')->with(self::logicalOr('foo', 'bar'));
 
         $this->arrayAccess->offsetUnset('foo');
@@ -90,7 +74,6 @@ final class SessionArrayAccessorTest extends PHPUnit_Framework_TestCase
 
     public function testOffsetGet()
     {
-        $this->wrappedSessionWillBeLoaded();
         $this->wrappedSession->expects(self::exactly(3))->method('get')->willReturnMap(
             [
                 ['foo', null, 'bar'],
@@ -106,7 +89,6 @@ final class SessionArrayAccessorTest extends PHPUnit_Framework_TestCase
 
     public function testOffsetSet()
     {
-        $this->wrappedSessionWillBeLoaded();
         $this->wrappedSession->expects(self::exactly(2))->method('set')->with(
             self::logicalOr('foo', 'baz'),
             self::logicalOr('bar', 'tab')
@@ -116,19 +98,8 @@ final class SessionArrayAccessorTest extends PHPUnit_Framework_TestCase
         $this->arrayAccess->offsetSet('baz', 'tab');
     }
 
-    public function testIsEmpty()
+    public function testGetSessionInterface()
     {
-        $this->wrappedSessionWillBeLoaded();
-
-        $this->wrappedSession->expects(self::at(0))->method('isEmpty')->willReturn(true);
-        $this->wrappedSession->expects(self::at(1))->method('isEmpty')->willReturn(false);
-
-        self::assertTrue($this->arrayAccess->isEmpty());
-        self::assertFalse($this->arrayAccess->isEmpty());
-    }
-
-    private function wrappedSessionWillBeLoaded()
-    {
-        $this->sessionLoader->expects(self::once())->method('__invoke')->willReturn($this->wrappedSession);
+        self::assertEquals($this->wrappedSession, $this->arrayAccess->getSession());
     }
 }

@@ -18,12 +18,14 @@
 
 declare(strict_types = 1);
 
-namespace PSR7Sessions\Storageless\Session;
+namespace PSR7Sessions\Storageless\Helper;
+
+use PSR7Sessions\Storageless\Session\SessionInterface;
 
 /**
- * Class ArrayAccessor
+ * Class ArrayAccessor.
  *
- * Wrapper class around SessionInterface with ArrayAccess Interface
+ * ArrayAccess Wrapper for SessionInterface
  */
 class ArrayAccessor implements \ArrayAccess
 {
@@ -43,22 +45,9 @@ class ArrayAccessor implements \ArrayAccess
     }
 
     /**
-     * Proxy function to SessionInterface
-     *
-     * @param string $method
-     * @param array  $args
-     *
-     * @return mixed
-     */
-    public function __call($method, $args)
-    {
-        return call_user_func_array([$this->session, $method], $args);
-    }
-
-    /**
      * {@inheritdoc}
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset) : bool
     {
         return $this->session->has($offset);
     }
@@ -92,5 +81,13 @@ class ArrayAccessor implements \ArrayAccess
     public function offsetUnset($offset)
     {
         return $this->session->remove($offset);
+    }
+
+    /**
+     * @return SessionInterface
+     */
+    public function getSession(): SessionInterface
+    {
+        return $this->session;
     }
 }
