@@ -647,12 +647,9 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     {
         $delegate = $this->createMock(DelegateInterface::class);
 
-        $delegate->expects($this->once())
-            ->method('process')
-            ->willReturnCallback($callback)
-            ->with(
-                self::isInstanceOf(ServerRequestInterface::class)
-            );
+        $delegate->expects($this->once())->method('process')->willReturnCallback($callback)->with(
+            self::isInstanceOf(ServerRequestInterface::class)
+        );
 
         return $delegate;
     }
