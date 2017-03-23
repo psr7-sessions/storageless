@@ -525,7 +525,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         SessionMiddleware $middleware,
         ServerRequestInterface $request,
         DelegateInterface $delegate
-    ): ResponseInterface {
+    ) : ResponseInterface {
         $initialResponse = new Response();
         $response = $middleware->process($request, $delegate);
 
@@ -538,7 +538,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         SessionMiddleware $middleware,
         ServerRequestInterface $request,
         DelegateInterface $delegate
-    ): ResponseInterface {
+    ) : ResponseInterface {
         $initialResponse = new Response();
         $response = $middleware->process($request, $delegate);
 
@@ -558,7 +558,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         SessionMiddleware $middleware,
         ServerRequestInterface $request,
         DelegateInterface $delegate
-    ): ResponseInterface {
+    ) : ResponseInterface {
         $initialResponse = new Response();
         $response = $middleware->process($request, $delegate);
 
@@ -579,7 +579,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
      *
      * @return string
      */
-    private function createToken(SessionMiddleware $middleware, \DateTime $issuedAt, \DateTime $expiration): string
+    private function createToken(SessionMiddleware $middleware, \DateTime $issuedAt, \DateTime $expiration) : string
     {
         return (string) (new Builder())
             ->setIssuedAt($issuedAt->getTimestamp())
@@ -592,10 +592,10 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @return DelegateInterface
      */
-    private function emptyValidationDelegate(): DelegateInterface
+    private function emptyValidationDelegate() : DelegateInterface
     {
         return $this->fakeDelegate(
-            function (ServerRequestInterface $request) {
+            function (ServerRequestInterface $request) : ResponseInterface {
                 /* @var $session SessionInterface */
                 $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
 
@@ -612,10 +612,10 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
      *
      * @return DelegateInterface
      */
-    private function writingDelegate($value = 'bar'): DelegateInterface
+    private function writingDelegate($value = 'bar') : DelegateInterface
     {
         return $this->fakeDelegate(
-            function (ServerRequestInterface $request) use ($value) {
+            function (ServerRequestInterface $request) use ($value) : ResponseInterface {
                 /* @var $session SessionInterface */
                 $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
                 $session->set('foo', $value);
@@ -628,10 +628,10 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @return DelegateInterface
      */
-    private function defaultDelegate(): DelegateInterface
+    private function defaultDelegate() : DelegateInterface
     {
         return $this->fakeDelegate(
-            function (ServerRequestInterface $request) {
+            function (ServerRequestInterface $request) : ResponseInterface {
                 return new Response();
             }
         );
@@ -642,13 +642,11 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
      *
      * @return DelegateInterface
      */
-    private function fakeDelegate(callable $callback): DelegateInterface
+    private function fakeDelegate(callable $callback) : DelegateInterface
     {
         $delegate = $this->createMock(DelegateInterface::class);
 
-        $delegate->expects($this->once())->method('process')->willReturnCallback($callback)->with(
-            self::isInstanceOf(ServerRequestInterface::class)
-        );
+        $delegate->expects($this->once())->method('process')->willReturnCallback($callback);
 
         return $delegate;
     }
@@ -656,9 +654,9 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @param ResponseInterface $response
      *
-     * @return \Zend\Diactoros\ServerRequest
+     * @return ServerRequestInterface
      */
-    private function requestWithResponseCookies(ResponseInterface $response): ServerRequestInterface
+    private function requestWithResponseCookies(ResponseInterface $response) : ServerRequestInterface
     {
         return (new ServerRequest())->withCookieParams([
             SessionMiddleware::DEFAULT_COOKIE => $this->getCookie($response)->getValue()
@@ -667,11 +665,14 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
 
     /**
      * @param ResponseInterface $response
+     * @param string            $name
      *
      * @return SetCookie
      */
-    private function getCookie(ResponseInterface $response, string $name = SessionMiddleware::DEFAULT_COOKIE): SetCookie
-    {
+    private function getCookie(
+        ResponseInterface $response,
+        string $name = SessionMiddleware::DEFAULT_COOKIE
+    ) : SetCookie {
         return FigResponseCookies::get($response, $name);
     }
 
@@ -680,7 +681,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
      *
      * @return Signer
      */
-    private function getSigner(SessionMiddleware $middleware): Signer
+    private function getSigner(SessionMiddleware $middleware) : Signer
     {
         return $this->getPropertyValue($middleware, 'signer');
     }
@@ -690,7 +691,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
      *
      * @return string
      */
-    private function getSignatureKey(SessionMiddleware $middleware): string
+    private function getSignatureKey(SessionMiddleware $middleware) : string
     {
         return $this->getPropertyValue($middleware, 'signatureKey');
     }
