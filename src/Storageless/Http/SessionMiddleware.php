@@ -22,6 +22,8 @@ namespace PSR7Sessions\Storageless\Http;
 
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\SetCookie;
+use Lcobucci\Clock\Clock;
+use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
@@ -29,8 +31,6 @@ use Lcobucci\JWT\Token;
 use Lcobucci\JWT\ValidationData;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use PSR7Sessions\Storageless\Time\CurrentTimeProviderInterface;
-use PSR7Sessions\Storageless\Time\SystemCurrentTime;
 use PSR7Sessions\Storageless\Session\DefaultSessionData;
 use PSR7Sessions\Storageless\Session\LazySession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
@@ -80,19 +80,19 @@ final class SessionMiddleware implements MiddlewareInterface
     private $defaultCookie;
 
     /**
-     * @var CurrentTimeProviderInterface
+     * @var Clock
      */
-    private $currentTimeProvider;
+    private $clock;
 
     /**
-     * @param Signer                        $signer
-     * @param string                        $signatureKey
-     * @param string                        $verificationKey
-     * @param SetCookie                     $defaultCookie
-     * @param Parser                        $tokenParser
-     * @param int                           $expirationTime
-     * @param CurrentTimeProviderInterface  $currentTimeProvider
-     * @param int                           $refreshTime
+     * @param Signer    $signer
+     * @param string    $signatureKey
+     * @param string    $verificationKey
+     * @param SetCookie $defaultCookie
+     * @param Parser    $tokenParser
+     * @param int       $expirationTime
+     * @param Clock     $clock
+     * @param int       $refreshTime
      */
     public function __construct(
         Signer $signer,
@@ -101,17 +101,17 @@ final class SessionMiddleware implements MiddlewareInterface
         SetCookie $defaultCookie,
         Parser $tokenParser,
         int $expirationTime,
-        CurrentTimeProviderInterface $currentTimeProvider,
+        Clock $clock,
         int $refreshTime = self::DEFAULT_REFRESH_TIME
     ) {
-        $this->signer              = $signer;
-        $this->signatureKey        = $signatureKey;
-        $this->verificationKey     = $verificationKey;
-        $this->tokenParser         = $tokenParser;
-        $this->defaultCookie       = clone $defaultCookie;
-        $this->expirationTime      = $expirationTime;
-        $this->currentTimeProvider = $currentTimeProvider;
-        $this->refreshTime         = $refreshTime;
+        $this->signer          = $signer;
+        $this->signatureKey    = $signatureKey;
+        $this->verificationKey = $verificationKey;
+        $this->tokenParser     = $tokenParser;
+        $this->defaultCookie   = clone $defaultCookie;
+        $this->expirationTime  = $expirationTime;
+        $this->clock           = $clock;
+        $this->refreshTime     = $refreshTime;
     }
 
     /**
@@ -134,7 +134,7 @@ final class SessionMiddleware implements MiddlewareInterface
                 ->withPath('/'),
             new Parser(),
             $expirationTime,
-            new SystemCurrentTime()
+            new SystemClock()
         );
     }
 
@@ -163,7 +163,7 @@ final class SessionMiddleware implements MiddlewareInterface
                 ->withPath('/'),
             new Parser(),
             $expirationTime,
-            new SystemCurrentTime()
+            new SystemClock()
         );
     }
 
@@ -296,9 +296,7 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     private function getExpirationCookie() : SetCookie
     {
-        $currentTimeProvider = $this->currentTimeProvider;
-        $expirationDate      = $currentTimeProvider();
-        $expirationDate      = $expirationDate->modify('-30 days');
+        $expirationDate = $this->clock->now()->modify('-30 days');
 
         return $this
             ->defaultCookie
@@ -308,8 +306,6 @@ final class SessionMiddleware implements MiddlewareInterface
 
     private function timestamp() : int
     {
-        $currentTimeProvider = $this->currentTimeProvider;
-
-        return $currentTimeProvider->__invoke()->getTimestamp();
+        return $this->clock->now()->getTimestamp();
     }
 }

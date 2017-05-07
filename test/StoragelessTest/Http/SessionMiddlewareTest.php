@@ -23,6 +23,8 @@ namespace PSR7SessionsTest\Storageless\Http;
 use DateTimeImmutable;
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\SetCookie;
+use Lcobucci\Clock\FrozenClock;
+use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
@@ -35,9 +37,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
 use PSR7Sessions\Storageless\Session\DefaultSessionData;
 use PSR7Sessions\Storageless\Session\SessionInterface;
-use PSR7Sessions\Storageless\Time\CurrentTimeProviderInterface;
-use PSR7Sessions\Storageless\Time\SystemCurrentTime;
-use PSR7SessionsTest\Storageless\Time\FakeCurrentTime;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
 use Zend\Stratigility\MiddlewareInterface;
@@ -212,8 +211,10 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
 
     public function testWillRefreshTokenWithIssuedAtExactlyAtTokenRefreshTimeThreshold() : void
     {
-        /* @var $currentTimeProvider CurrentTimeProviderInterface|\PHPUnit_Framework_MockObject_MockObject */
-        $currentTimeProvider = $this->createMock(CurrentTimeProviderInterface::class);
+        // forcing ourselves to think of time as a mutable value:
+        $time = time() + random_int(-100, +100);
+
+        $clock = new FrozenClock(new \DateTimeImmutable('@' . $time));
 
         $middleware = new SessionMiddleware(
             new Sha256(),
@@ -222,14 +223,9 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             new Parser(),
             1000,
-            $currentTimeProvider,
+            $clock,
             100
         );
-
-        // forcing ourselves to think of time as a mutable value:
-        $time = time() + random_int(-100, +100);
-
-        $currentTimeProvider->expects(self::any())->method('__invoke')->willReturn(new \DateTimeImmutable('@' . $time));
 
         $requestWithTokenIssuedInThePast = (new ServerRequest())
             ->withCookieParams([
@@ -318,7 +314,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             new Parser(),
             100,
-            new SystemCurrentTime()
+            new SystemClock()
         );
 
         $this->ensureSameResponse(
@@ -347,7 +343,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             $defaultCookie,
             new Parser(),
             123456,
-            new FakeCurrentTime($dateTime),
+            new FrozenClock($dateTime),
             123
         );
 
@@ -376,7 +372,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         $signer->expects($this->never())->method('verify');
         $signer->method('getAlgorithmId')->willReturn('HS256');
 
-        $currentTimeProvider = new SystemCurrentTime();
+        $currentTimeProvider = new SystemClock();
         $setCookie  = SetCookie::create(SessionMiddleware::DEFAULT_COOKIE);
         $middleware = new SessionMiddleware($signer, 'foo', 'foo', $setCookie, new Parser(), 100, $currentTimeProvider);
         $request    = (new ServerRequest())
@@ -412,7 +408,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             new Parser(),
             1000,
-            new FakeCurrentTime($dateTime),
+            new FrozenClock($dateTime),
             300
         );
 
@@ -446,7 +442,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             new Parser(),
             1000,
-            new SystemCurrentTime(),
+            new SystemClock(),
             300
         );
 
@@ -476,7 +472,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
                 SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
                 new Parser(),
                 100,
-                new SystemCurrentTime()
+                new SystemClock()
             )],
             [SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100)],
             [SessionMiddleware::fromAsymmetricKeyDefaults(

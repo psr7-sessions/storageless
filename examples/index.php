@@ -19,13 +19,13 @@
 declare(strict_types=1);
 
 use Dflydev\FigCookies\SetCookie;
+use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
-use Psr\Http\Message\ServerRequestInterface;
-use Zend\Diactoros\Response;
-use PSR7Sessions\Storageless\Http\SessionMiddleware;
-use PSR7Sessions\Storageless\Time\SystemCurrentTime;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use PSR7Sessions\Storageless\Http\SessionMiddleware;
+use Zend\Diactoros\Response;
 use Zend\Diactoros\Response\SapiEmitter;
 use Zend\Diactoros\ServerRequestFactory;
 
@@ -48,7 +48,7 @@ $sessionMiddleware = new SessionMiddleware(
         ->withPath('/'),
     new Parser(),
     1200, // 20 minutes
-    new SystemCurrentTime()
+    new SystemClock()
 );
 $myMiddleware = function (ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface {
     /* @var \PSR7Sessions\Storageless\Session\SessionInterface $session */
