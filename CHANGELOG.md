@@ -1,4 +1,15 @@
 This is a list of changes/improvements that were introduced in PSR7Session
+
+## 3.0.1
+
+This release fixes an issue that prevented effective lazy-loading of the
+session object. Specifically, crypto functionality was being started at
+each request dispatch, while it is not needed every time.
+
+Total issues resolved: **2**
+
+- [63: Signature validation is never delayed](https://github.com/psr7-sessions/storageless/issues/63) thanks to @lcobucci
+- [64: Delay signature verification properly](https://github.com/psr7-sessions/storageless/pull/64) thanks to @lcobucci
  
 ## 3.0.0
 
