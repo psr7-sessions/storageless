@@ -41,14 +41,13 @@ After this, you can access the session data inside any middleware that
 has access to the `Psr\Http\Message\ServerRequestInterface` attributes:
 
 ```php
-$app->get('/get', function (ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface {
+$app->get('/get', function (ServerRequestInterface $request, DelegateInterface $delegate) : ResponseInterface {
     /* @var \PSR7Sessions\Storageless\Session\Data $session */
     $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
     $session->set('counter', $session->get('counter', 0) + 1);
 
-    $response
-        ->getBody()
-        ->write('Counter Value: ' . $session->get('counter'));
+    $response = new Response();
+    $response->getBody()->write('Counter Value: ' . $session->get('counter'));
 
     return $response;
 });

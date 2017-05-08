@@ -22,6 +22,8 @@ namespace PSR7Sessions\Storageless\Http;
 
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\SetCookie;
+use Interop\Http\ServerMiddleware\DelegateInterface;
+use Interop\Http\ServerMiddleware\MiddlewareInterface;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
@@ -29,12 +31,11 @@ use Lcobucci\JWT\Token;
 use Lcobucci\JWT\ValidationData;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use PSR7Sessions\Storageless\Time\CurrentTimeProviderInterface;
-use PSR7Sessions\Storageless\Time\SystemCurrentTime;
 use PSR7Sessions\Storageless\Session\DefaultSessionData;
 use PSR7Sessions\Storageless\Session\LazySession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
-use Zend\Stratigility\MiddlewareInterface;
+use PSR7Sessions\Storageless\Time\CurrentTimeProviderInterface;
+use PSR7Sessions\Storageless\Time\SystemCurrentTime;
 
 final class SessionMiddleware implements MiddlewareInterface
 {
@@ -173,16 +174,14 @@ final class SessionMiddleware implements MiddlewareInterface
      * @throws \InvalidArgumentException
      * @throws \OutOfBoundsException
      */
-    public function __invoke(Request $request, Response $response, callable $out = null) : Response
+    public function process(Request $request, DelegateInterface $delegate) : Response
     {
         $token            = $this->parseToken($request);
         $sessionContainer = LazySession::fromContainerBuildingCallback(function () use ($token) : SessionInterface {
             return $this->extractSessionContainer($token);
         });
 
-        if (null !== $out) {
-            $response = $out($request->withAttribute(self::SESSION_ATTRIBUTE, $sessionContainer), $response);
-        }
+        $response = $delegate->process($request->withAttribute(self::SESSION_ATTRIBUTE, $sessionContainer));
 
         return $this->appendToken($sessionContainer, $response, $token);
     }
