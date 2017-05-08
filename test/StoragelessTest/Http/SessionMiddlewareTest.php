@@ -26,6 +26,7 @@ use Dflydev\FigCookies\SetCookie;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
+use Lcobucci\JWT\Signature;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Token;
 use PHPUnit_Framework_TestCase;
@@ -373,6 +374,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         $signer = $this->createMock(Signer::class);
 
         $signer->expects($this->never())->method('verify');
+        $signer->method('getAlgorithmId')->willReturn('HS256');
 
         $currentTimeProvider = new SystemCurrentTime();
         $setCookie  = SetCookie::create(SessionMiddleware::DEFAULT_COOKIE);
@@ -381,6 +383,8 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
                     ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
+                    ->setIssuedAt(time())
+                    ->sign(new Sha256(), 'foo')
                     ->getToken()
             ]);
 

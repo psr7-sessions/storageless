@@ -248,25 +248,21 @@ final class SessionMiddleware implements MiddlewareInterface
     private function appendToken(SessionInterface $sessionContainer, Response $response, Token $token = null) : Response
     {
         $sessionContainerChanged = $sessionContainer->hasChanged();
-        $sessionContainerEmpty   = $sessionContainer->isEmpty();
 
-        if ($sessionContainerChanged && $sessionContainerEmpty) {
+        if ($sessionContainerChanged && $sessionContainer->isEmpty()) {
             return FigResponseCookies::set($response, $this->getExpirationCookie());
         }
 
-        if ($sessionContainerChanged || (! $sessionContainerEmpty && $token && $this->shouldTokenBeRefreshed($token))) {
+        if ($sessionContainerChanged || ($this->shouldTokenBeRefreshed($token) && ! $sessionContainer->isEmpty())) {
             return FigResponseCookies::set($response, $this->getTokenCookie($sessionContainer));
         }
 
         return $response;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    private function shouldTokenBeRefreshed(Token $token) : bool
+    private function shouldTokenBeRefreshed(Token $token = null) : bool
     {
-        if (! $token->hasClaim(self::ISSUED_AT_CLAIM)) {
+        if (! $token || ! $token->hasClaim(self::ISSUED_AT_CLAIM)) {
             return false;
         }
 
