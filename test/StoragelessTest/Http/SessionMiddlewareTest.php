@@ -23,6 +23,8 @@ namespace PSR7SessionsTest\Storageless\Http;
 use DateTimeImmutable;
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\SetCookie;
+use Lcobucci\Clock\FrozenClock;
+use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
@@ -35,16 +37,13 @@ use Psr\Http\Message\ServerRequestInterface;
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
 use PSR7Sessions\Storageless\Session\DefaultSessionData;
 use PSR7Sessions\Storageless\Session\SessionInterface;
-use PSR7Sessions\Storageless\Time\CurrentTimeProviderInterface;
-use PSR7Sessions\Storageless\Time\SystemCurrentTime;
-use PSR7SessionsTest\Storageless\Time\FakeCurrentTime;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
 use Zend\Stratigility\MiddlewareInterface;
 
 final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
 {
-    public function testFromSymmetricKeyDefaultsUsesASecureCookie()
+    public function testFromSymmetricKeyDefaultsUsesASecureCookie() : void
     {
         $response = SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100)
             ->__invoke(new ServerRequest(), new Response(), $this->writingMiddleware());
@@ -55,7 +54,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         self::assertTrue($cookie->getHttpOnly());
     }
 
-    public function testFromAsymmetricKeyDefaultsUsesASecureCookie()
+    public function testFromAsymmetricKeyDefaultsUsesASecureCookie() : void
     {
         $response = SessionMiddleware
             ::fromAsymmetricKeyDefaults(
@@ -74,7 +73,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider validMiddlewaresProvider
      */
-    public function testSkipsInjectingSessionCookieOnEmptyContainer(SessionMiddleware $middleware)
+    public function testSkipsInjectingSessionCookieOnEmptyContainer(SessionMiddleware $middleware) : void
     {
         $response = $this->ensureSameResponse($middleware, new ServerRequest(), $this->emptyValidationMiddleware());
 
@@ -84,7 +83,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider validMiddlewaresProvider
      */
-    public function testExtractsSessionContainerFromEmptyRequest(SessionMiddleware $middleware)
+    public function testExtractsSessionContainerFromEmptyRequest(SessionMiddleware $middleware) : void
     {
         $this->ensureSameResponse($middleware, new ServerRequest(), $this->emptyValidationMiddleware());
     }
@@ -92,7 +91,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider validMiddlewaresProvider
      */
-    public function testInjectsSessionInResponseCookies(SessionMiddleware $middleware)
+    public function testInjectsSessionInResponseCookies(SessionMiddleware $middleware) : void
     {
         $initialResponse = new Response();
         $response = $middleware(new ServerRequest(), $initialResponse, $this->writingMiddleware());
@@ -105,7 +104,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider validMiddlewaresProvider
      */
-    public function testSessionContainerCanBeReusedOverMultipleRequests(SessionMiddleware $middleware)
+    public function testSessionContainerCanBeReusedOverMultipleRequests(SessionMiddleware $middleware) : void
     {
         $sessionValue = uniqid('', true);
 
@@ -145,7 +144,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider validMiddlewaresProvider
      */
-    public function testWillIgnoreRequestsWithExpiredTokens(SessionMiddleware $middleware)
+    public function testWillIgnoreRequestsWithExpiredTokens(SessionMiddleware $middleware) : void
     {
         $expiredToken = (new ServerRequest())
             ->withCookieParams([
@@ -162,7 +161,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider validMiddlewaresProvider
      */
-    public function testWillIgnoreRequestsWithTokensFromFuture(SessionMiddleware $middleware)
+    public function testWillIgnoreRequestsWithTokensFromFuture(SessionMiddleware $middleware) : void
     {
         $tokenInFuture = (new ServerRequest())
             ->withCookieParams([
@@ -179,7 +178,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider validMiddlewaresProvider
      */
-    public function testWillIgnoreUnSignedTokens(SessionMiddleware $middleware)
+    public function testWillIgnoreUnSignedTokens(SessionMiddleware $middleware) : void
     {
         $unsignedToken = (new ServerRequest())
             ->withCookieParams([
@@ -196,7 +195,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider validMiddlewaresProvider
      */
-    public function testWillNotRefreshSignedTokensWithoutIssuedAt(SessionMiddleware $middleware)
+    public function testWillNotRefreshSignedTokensWithoutIssuedAt(SessionMiddleware $middleware) : void
     {
         $unsignedToken = (new ServerRequest())
             ->withCookieParams([
@@ -210,10 +209,12 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         $this->ensureSameResponse($middleware, $unsignedToken);
     }
 
-    public function testWillRefreshTokenWithIssuedAtExactlyAtTokenRefreshTimeThreshold()
+    public function testWillRefreshTokenWithIssuedAtExactlyAtTokenRefreshTimeThreshold() : void
     {
-        /* @var $currentTimeProvider CurrentTimeProviderInterface|\PHPUnit_Framework_MockObject_MockObject */
-        $currentTimeProvider = $this->createMock(CurrentTimeProviderInterface::class);
+        // forcing ourselves to think of time as a mutable value:
+        $time = time() + random_int(-100, +100);
+
+        $clock = new FrozenClock(new \DateTimeImmutable('@' . $time));
 
         $middleware = new SessionMiddleware(
             new Sha256(),
@@ -222,14 +223,9 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             new Parser(),
             1000,
-            $currentTimeProvider,
+            $clock,
             100
         );
-
-        // forcing ourselves to think of time as a mutable value:
-        $time = time() + random_int(-100, +100);
-
-        $currentTimeProvider->expects(self::any())->method('__invoke')->willReturn(new \DateTimeImmutable('@' . $time));
 
         $requestWithTokenIssuedInThePast = (new ServerRequest())
             ->withCookieParams([
@@ -251,7 +247,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider validMiddlewaresProvider
      */
-    public function testWillSkipInjectingSessionCookiesWhenSessionIsNotChanged(SessionMiddleware $middleware)
+    public function testWillSkipInjectingSessionCookiesWhenSessionIsNotChanged(SessionMiddleware $middleware) : void
     {
         $this->ensureSameResponse(
             $middleware,
@@ -277,7 +273,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider validMiddlewaresProvider
      */
-    public function testWillSendExpirationCookieWhenSessionContentsAreCleared(SessionMiddleware $middleware)
+    public function testWillSendExpirationCookieWhenSessionContentsAreCleared(SessionMiddleware $middleware) : void
     {
         $this->ensureClearsSessionCookie(
             $middleware,
@@ -300,7 +296,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider validMiddlewaresProvider
      */
-    public function testWillIgnoreMalformedTokens(SessionMiddleware $middleware)
+    public function testWillIgnoreMalformedTokens(SessionMiddleware $middleware) : void
     {
         $this->ensureSameResponse(
             $middleware,
@@ -309,7 +305,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    public function testRejectsTokensWithInvalidSignature()
+    public function testRejectsTokensWithInvalidSignature() : void
     {
         $middleware = new SessionMiddleware(
             new Sha256(),
@@ -318,7 +314,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             new Parser(),
             100,
-            new SystemCurrentTime()
+            new SystemClock()
         );
 
         $this->ensureSameResponse(
@@ -330,7 +326,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    public function testAllowsModifyingCookieDetails()
+    public function testAllowsModifyingCookieDetails() : void
     {
         $defaultCookie = SetCookie::create('a-different-cookie-name')
             ->withDomain('foo.bar')
@@ -347,7 +343,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             $defaultCookie,
             new Parser(),
             123456,
-            new FakeCurrentTime($dateTime),
+            new FrozenClock($dateTime),
             123
         );
 
@@ -368,7 +364,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         self::assertEquals($dateTime->getTimestamp() + 123456, $tokenCookie->getExpires());
     }
 
-    public function testSessionTokenParsingIsDelayedWhenSessionIsNotBeingUsed()
+    public function testSessionTokenParsingIsDelayedWhenSessionIsNotBeingUsed() : void
     {
         /* @var $signer Signer|\PHPUnit_Framework_MockObject_MockObject */
         $signer = $this->createMock(Signer::class);
@@ -376,7 +372,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         $signer->expects($this->never())->method('verify');
         $signer->method('getAlgorithmId')->willReturn('HS256');
 
-        $currentTimeProvider = new SystemCurrentTime();
+        $currentTimeProvider = new SystemClock();
         $setCookie  = SetCookie::create(SessionMiddleware::DEFAULT_COOKIE);
         $middleware = new SessionMiddleware($signer, 'foo', 'foo', $setCookie, new Parser(), 100, $currentTimeProvider);
         $request    = (new ServerRequest())
@@ -402,7 +398,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    public function testShouldRegenerateTokenWhenRequestHasATokenThatIsAboutToExpire()
+    public function testShouldRegenerateTokenWhenRequestHasATokenThatIsAboutToExpire() : void
     {
         $dateTime   = new DateTimeImmutable();
         $middleware = new SessionMiddleware(
@@ -412,7 +408,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             new Parser(),
             1000,
-            new FakeCurrentTime($dateTime),
+            new FrozenClock($dateTime),
             300
         );
 
@@ -437,7 +433,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         self::assertEquals($dateTime->getTimestamp() + 1000, $tokenCookie->getExpires());
     }
 
-    public function testShouldNotRegenerateTokenWhenRequestHasATokenThatIsFarFromExpiration()
+    public function testShouldNotRegenerateTokenWhenRequestHasATokenThatIsFarFromExpiration() : void
     {
         $middleware = new SessionMiddleware(
             new Sha256(),
@@ -446,7 +442,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             new Parser(),
             1000,
-            new SystemCurrentTime(),
+            new SystemClock(),
             300
         );
 
@@ -466,7 +462,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @return SessionMiddleware[][]
      */
-    public function validMiddlewaresProvider()
+    public function validMiddlewaresProvider() : array
     {
         return [
             [new SessionMiddleware(
@@ -476,7 +472,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
                 SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
                 new Parser(),
                 100,
-                new SystemCurrentTime()
+                new SystemClock()
             )],
             [SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100)],
             [SessionMiddleware::fromAsymmetricKeyDefaults(
@@ -490,7 +486,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @group #46
      */
-    public function testFromSymmetricKeyDefaultsWillHaveADefaultSessionPath()
+    public function testFromSymmetricKeyDefaultsWillHaveADefaultSessionPath() : void
     {
         self::assertSame(
             '/',
@@ -509,7 +505,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
      * @throws \InvalidArgumentException
      * @throws \OutOfBoundsException
      */
-    public function testFromAsymmetricKeyDefaultsWillHaveADefaultSessionPath()
+    public function testFromAsymmetricKeyDefaultsWillHaveADefaultSessionPath() : void
     {
         self::assertSame(
             '/',
@@ -538,7 +534,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         SessionMiddleware $middleware,
         ServerRequestInterface $request,
         callable $next = null
-    ): ResponseInterface {
+    ) : ResponseInterface {
         $initialResponse = new Response();
         $response = $middleware($request, $initialResponse, $next);
 
@@ -558,7 +554,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         SessionMiddleware $middleware,
         ServerRequestInterface $request,
         callable $next = null
-    ): ResponseInterface {
+    ) : ResponseInterface {
         $initialResponse = new Response();
         $response = $middleware($request, $initialResponse, $next);
 
@@ -579,7 +575,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
      *
      * @return string
      */
-    private function createToken(SessionMiddleware $middleware, \DateTime $issuedAt, \DateTime $expiration): string
+    private function createToken(SessionMiddleware $middleware, \DateTime $issuedAt, \DateTime $expiration) : string
     {
         return (string) (new Builder())
             ->setIssuedAt($issuedAt->getTimestamp())
@@ -592,7 +588,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @return MiddlewareInterface
      */
-    private function emptyValidationMiddleware(): MiddlewareInterface
+    private function emptyValidationMiddleware() : MiddlewareInterface
     {
         return $this->fakeMiddleware(
             function (ServerRequestInterface $request, ResponseInterface $response) {
@@ -612,7 +608,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
      *
      * @return MiddlewareInterface
      */
-    private function writingMiddleware($value = 'bar'): MiddlewareInterface
+    private function writingMiddleware(string $value = 'bar') : MiddlewareInterface
     {
         return $this->fakeMiddleware(
             function (ServerRequestInterface $request, ResponseInterface $response) use ($value) {
@@ -630,7 +626,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
      *
      * @return MiddlewareInterface
      */
-    private function fakeMiddleware(callable $callback): MiddlewareInterface
+    private function fakeMiddleware(callable $callback) : MiddlewareInterface
     {
         $middleware = $this->createMock(MiddlewareInterface::class);
 
@@ -651,7 +647,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
      *
      * @return \Zend\Diactoros\ServerRequest
      */
-    private function requestWithResponseCookies(ResponseInterface $response): ServerRequestInterface
+    private function requestWithResponseCookies(ResponseInterface $response) : ServerRequestInterface
     {
         return (new ServerRequest())->withCookieParams([
             SessionMiddleware::DEFAULT_COOKIE => $this->getCookie($response)->getValue()
@@ -663,7 +659,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
      *
      * @return SetCookie
      */
-    private function getCookie(ResponseInterface $response, string $name = SessionMiddleware::DEFAULT_COOKIE): SetCookie
+    private function getCookie(ResponseInterface $response, string $name = SessionMiddleware::DEFAULT_COOKIE) : SetCookie
     {
         return FigResponseCookies::get($response, $name);
     }
@@ -673,7 +669,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
      *
      * @return Signer
      */
-    private function getSigner(SessionMiddleware $middleware): Signer
+    private function getSigner(SessionMiddleware $middleware) : Signer
     {
         return $this->getPropertyValue($middleware, 'signer');
     }
@@ -683,7 +679,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
      *
      * @return string
      */
-    private function getSignatureKey(SessionMiddleware $middleware): string
+    private function getSignatureKey(SessionMiddleware $middleware) : string
     {
         return $this->getPropertyValue($middleware, 'signatureKey');
     }

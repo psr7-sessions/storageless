@@ -52,7 +52,7 @@ final class DefaultSessionData implements SessionInterface
         return $instance;
     }
 
-    public static function fromTokenData(array $data): self
+    public static function fromTokenData(array $data) : self
     {
         $instance = new self();
 
@@ -67,7 +67,7 @@ final class DefaultSessionData implements SessionInterface
         return $instance;
     }
 
-    public static function newEmptySession(): self
+    public static function newEmptySession() : self
     {
         $instance = new self();
 
@@ -79,7 +79,7 @@ final class DefaultSessionData implements SessionInterface
     /**
      * {@inheritDoc}
      */
-    public function set(string $key, $value)
+    public function set(string $key, $value) : void
     {
         $this->data[$key] = self::convertValueToScalar($value);
     }
@@ -99,7 +99,7 @@ final class DefaultSessionData implements SessionInterface
     /**
      * {@inheritDoc}
      */
-    public function remove(string $key)
+    public function remove(string $key) : void
     {
         unset($this->data[$key]);
     }
@@ -107,7 +107,7 @@ final class DefaultSessionData implements SessionInterface
     /**
      * {@inheritDoc}
      */
-    public function clear()
+    public function clear() : void
     {
         $this->data = [];
     }
@@ -115,7 +115,7 @@ final class DefaultSessionData implements SessionInterface
     /**
      * {@inheritDoc}
      */
-    public function has(string $key): bool
+    public function has(string $key) : bool
     {
         return array_key_exists($key, $this->data);
     }
