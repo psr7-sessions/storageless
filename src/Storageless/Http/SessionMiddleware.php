@@ -221,7 +221,7 @@ final class SessionMiddleware implements MiddlewareInterface
      *
      * @return SessionInterface
      */
-    public function extractSessionContainer(?Token $token) : SessionInterface
+    private function extractSessionContainer(?Token $token) : SessionInterface
     {
         try {
             if (null === $token || ! $token->verify($this->signer, $this->verificationKey)) {
