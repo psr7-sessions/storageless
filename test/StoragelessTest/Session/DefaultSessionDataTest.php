@@ -28,32 +28,32 @@ use PSR7Sessions\Storageless\Session\DefaultSessionData;
  */
 final class DefaultSessionDataTest extends PHPUnit_Framework_TestCase
 {
-    public function testFromFromTokenDataBuildsADataContainer()
+    public function testFromFromTokenDataBuildsADataContainer() : void
     {
         self::assertInstanceOf(DefaultSessionData::class, DefaultSessionData::fromTokenData([]));
     }
 
-    public function testNewEmptySessionProducesAContainer()
+    public function testNewEmptySessionProducesAContainer() : void
     {
         self::assertInstanceOf(DefaultSessionData::class, DefaultSessionData::newEmptySession());
     }
 
-    public function testContainerIsEmptyWhenCreatedExplicitlyAsEmpty()
+    public function testContainerIsEmptyWhenCreatedExplicitlyAsEmpty() : void
     {
         self::assertTrue(DefaultSessionData::newEmptySession()->isEmpty());
     }
 
-    public function testContainerIsEmptyWhenCreatedWithoutData()
+    public function testContainerIsEmptyWhenCreatedWithoutData() : void
     {
         self::assertTrue(DefaultSessionData::fromTokenData([])->isEmpty());
     }
 
-    public function testContainerIsNotEmptyWhenDataIsProvided()
+    public function testContainerIsNotEmptyWhenDataIsProvided() : void
     {
         self::assertFalse(DefaultSessionData::fromTokenData(['foo' => 'bar'])->isEmpty());
     }
 
-    public function testContainerIsNotEmptyWhenDataIsPassedToItAfterwards()
+    public function testContainerIsNotEmptyWhenDataIsPassedToItAfterwards() : void
     {
         $session = DefaultSessionData::newEmptySession();
 
@@ -62,7 +62,7 @@ final class DefaultSessionDataTest extends PHPUnit_Framework_TestCase
         self::assertFalse($session->isEmpty());
     }
 
-    public function testContainerIsEmptyWhenDataIsRemovedFromIt()
+    public function testContainerIsEmptyWhenDataIsRemovedFromIt() : void
     {
         $session = DefaultSessionData::fromTokenData(['foo' => 'bar']);
 
@@ -71,7 +71,7 @@ final class DefaultSessionDataTest extends PHPUnit_Framework_TestCase
         self::assertTrue($session->isEmpty());
     }
 
-    public function testClearWillRemoveEverythingFromTheSessionContainer()
+    public function testClearWillRemoveEverythingFromTheSessionContainer() : void
     {
         $session = DefaultSessionData::fromTokenData([
             'foo' => 'bar',
@@ -89,7 +89,7 @@ final class DefaultSessionDataTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider storageScalarDataProvider
      */
-    public function testContainerDataIsStoredAndRetrieved(string $key, $value)
+    public function testContainerDataIsStoredAndRetrieved(string $key, $value) : void
     {
         $session = DefaultSessionData::newEmptySession();
 
@@ -100,7 +100,7 @@ final class DefaultSessionDataTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider storageScalarDataProvider
      */
-    public function testSettingDataInAContainerMarksTheContainerAsMutated(string $key, $value)
+    public function testSettingDataInAContainerMarksTheContainerAsMutated(string $key, $value) : void
     {
         $session = DefaultSessionData::newEmptySession();
 
@@ -112,7 +112,7 @@ final class DefaultSessionDataTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider storageScalarDataProvider
      */
-    public function testContainerIsNotChangedWhenScalarDataIsSetAndOverwrittenInIt(string $key, $value)
+    public function testContainerIsNotChangedWhenScalarDataIsSetAndOverwrittenInIt(string $key, $value) : void
     {
         $session = DefaultSessionData::fromTokenData([$key => $value]);
 
@@ -126,7 +126,7 @@ final class DefaultSessionDataTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider storageNonScalarDataProvider
      */
-    public function testContainerIsNotChangedWhenNonScalarDataIsSetAndOverwrittenInIt($nonScalarValue)
+    public function testContainerIsNotChangedWhenNonScalarDataIsSetAndOverwrittenInIt($nonScalarValue) : void
     {
         $session = DefaultSessionData::fromTokenData(['key' => $nonScalarValue]);
 
@@ -140,7 +140,7 @@ final class DefaultSessionDataTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider storageScalarDataProvider
      */
-    public function testContainerBuiltWithDataContainsData(string $key, $value)
+    public function testContainerBuiltWithDataContainsData(string $key, $value) : void
     {
         $session = DefaultSessionData::fromTokenData([$key => $value]);
 
@@ -151,7 +151,7 @@ final class DefaultSessionDataTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider storageScalarDataProvider
      */
-    public function testContainerBuiltWithStdClassContainsData(string $key, $value)
+    public function testContainerBuiltWithStdClassContainsData(string $key, $value) : void
     {
         if ("\0" === $key || "\0" === $value || '' === $key) {
             self::markTestSkipped('Null bytes or empty keys are not supported by PHP\'s stdClass');
@@ -166,7 +166,7 @@ final class DefaultSessionDataTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider storageNonScalarDataProvider
      */
-    public function testContainerStoresScalarValueFromNestedObjects($nonScalar, $expectedScalar)
+    public function testContainerStoresScalarValueFromNestedObjects($nonScalar, $expectedScalar) : void
     {
         $session = DefaultSessionData::fromTokenData(['key' => $nonScalar]);
 
@@ -180,7 +180,7 @@ final class DefaultSessionDataTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider storageScalarDataProvider
      */
-    public function testGetWillReturnDefaultValueOnNonExistingKey(string $key, $value)
+    public function testGetWillReturnDefaultValueOnNonExistingKey(string $key, $value) : void
     {
         $session = DefaultSessionData::newEmptySession();
 
@@ -191,12 +191,12 @@ final class DefaultSessionDataTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider storageNonScalarDataProvider
      */
-    public function testGetWillReturnScalarCastDefaultValueOnNonExistingKey($nonScalar, $expectedScalar)
+    public function testGetWillReturnScalarCastDefaultValueOnNonExistingKey($nonScalar, $expectedScalar) : void
     {
         self::assertSame($expectedScalar, DefaultSessionData::newEmptySession()->get('key', $nonScalar));
     }
 
-    public function testAllMethodsAreCoveredByAnInterfacedMethod()
+    public function testAllMethodsAreCoveredByAnInterfacedMethod() : void
     {
         $reflection = new \ReflectionClass(DefaultSessionData::class);
         $interfaces = $reflection->getInterfaces();

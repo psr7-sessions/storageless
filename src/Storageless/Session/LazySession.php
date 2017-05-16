@@ -58,7 +58,7 @@ final class LazySession implements SessionInterface
     /**
      * {@inheritDoc}
      */
-    public function set(string $key, $value)
+    public function set(string $key, $value) : void
     {
         $this->getRealSession()->set($key, $value);
     }
@@ -74,7 +74,7 @@ final class LazySession implements SessionInterface
     /**
      * {@inheritDoc}
      */
-    public function remove(string $key)
+    public function remove(string $key) : void
     {
         $this->getRealSession()->remove($key);
     }
@@ -82,7 +82,7 @@ final class LazySession implements SessionInterface
     /**
      * {@inheritDoc}
      */
-    public function clear()
+    public function clear() : void
     {
         $this->getRealSession()->clear();
     }
@@ -90,7 +90,7 @@ final class LazySession implements SessionInterface
     /**
      * {@inheritDoc}
      */
-    public function has(string $key): bool
+    public function has(string $key) : bool
     {
         return $this->getRealSession()->has($key);
     }

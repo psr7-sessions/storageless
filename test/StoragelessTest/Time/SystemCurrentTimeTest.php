@@ -25,7 +25,7 @@ use PSR7Sessions\Storageless\Time\SystemCurrentTime;
 
 class SystemCurrentTimeTest extends \PHPUnit_Framework_TestCase
 {
-    public function testReturnCurrentSystemTime()
+    public function testReturnCurrentSystemTime() : void
     {
         $currentTimeProvider = new SystemCurrentTime();
 

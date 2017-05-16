@@ -194,7 +194,7 @@ final class SessionMiddleware implements MiddlewareInterface
      *
      * @return Token|null
      */
-    private function parseToken(Request $request)
+    private function parseToken(Request $request) : ?Token
     {
         $cookies    = $request->getCookieParams();
         $cookieName = $this->defaultCookie->getName();
@@ -221,7 +221,7 @@ final class SessionMiddleware implements MiddlewareInterface
      *
      * @return SessionInterface
      */
-    public function extractSessionContainer(Token $token = null) : SessionInterface
+    public function extractSessionContainer(?Token $token) : SessionInterface
     {
         try {
             if (null === $token || ! $token->verify($this->signer, $this->verificationKey)) {
@@ -245,7 +245,7 @@ final class SessionMiddleware implements MiddlewareInterface
      *
      * @throws \InvalidArgumentException
      */
-    private function appendToken(SessionInterface $sessionContainer, Response $response, Token $token = null) : Response
+    private function appendToken(SessionInterface $sessionContainer, Response $response, ?Token $token) : Response
     {
         $sessionContainerChanged = $sessionContainer->hasChanged();
 
@@ -260,7 +260,7 @@ final class SessionMiddleware implements MiddlewareInterface
         return $response;
     }
 
-    private function shouldTokenBeRefreshed(Token $token = null) : bool
+    private function shouldTokenBeRefreshed(?Token $token) : bool
     {
         if (! $token || ! $token->hasClaim(self::ISSUED_AT_CLAIM)) {
             return false;

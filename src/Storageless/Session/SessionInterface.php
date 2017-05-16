@@ -31,7 +31,7 @@ interface SessionInterface extends \JsonSerializable
      *
      * @return void
      */
-    public function set(string $key, $value);
+    public function set(string $key, $value) : void;
 
     /**
      * Retrieves a value from the session - if the value doesn't exist, then it uses the given $default, but transformed
@@ -51,14 +51,14 @@ interface SessionInterface extends \JsonSerializable
      *
      * @return void
      */
-    public function remove(string $key);
+    public function remove(string $key) : void;
 
     /**
      * Clears the contents of the session
      *
      * @return void
      */
-    public function clear();
+    public function clear() : void;
 
     /**
      * Checks whether a given key exists in the session
@@ -67,7 +67,7 @@ interface SessionInterface extends \JsonSerializable
      *
      * @return bool
      */
-    public function has(string $key): bool;
+    public function has(string $key) : bool;
 
     /**
      * Checks whether the session has changed its contents since its lifecycle start
