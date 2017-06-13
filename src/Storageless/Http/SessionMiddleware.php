@@ -22,6 +22,8 @@ namespace PSR7Sessions\Storageless\Http;
 
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\SetCookie;
+use Interop\Http\ServerMiddleware\DelegateInterface;
+use Interop\Http\ServerMiddleware\MiddlewareInterface as ServerMiddlewareInterface;
 use Lcobucci\Clock\Clock;
 use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Builder;
@@ -31,12 +33,13 @@ use Lcobucci\JWT\Token;
 use Lcobucci\JWT\ValidationData;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use PSR7Sessions\Storageless\Http\Delegate\CallableDelegate;
 use PSR7Sessions\Storageless\Session\DefaultSessionData;
 use PSR7Sessions\Storageless\Session\LazySession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
 use Zend\Stratigility\MiddlewareInterface;
 
-final class SessionMiddleware implements MiddlewareInterface
+final class SessionMiddleware implements MiddlewareInterface, ServerMiddlewareInterface
 {
     const ISSUED_AT_CLAIM      = 'iat';
     const SESSION_CLAIM        = 'session-data';
@@ -173,18 +176,27 @@ final class SessionMiddleware implements MiddlewareInterface
      * @throws \InvalidArgumentException
      * @throws \OutOfBoundsException
      */
-    public function __invoke(Request $request, Response $response, callable $out = null) : Response
+    public function process(Request $request, DelegateInterface $delegate) : Response
     {
         $token            = $this->parseToken($request);
         $sessionContainer = LazySession::fromContainerBuildingCallback(function () use ($token) : SessionInterface {
             return $this->extractSessionContainer($token);
         });
 
-        if (null !== $out) {
-            $response = $out($request->withAttribute(self::SESSION_ATTRIBUTE, $sessionContainer), $response);
-        }
+        $response = $delegate->process($request->withAttribute(self::SESSION_ATTRIBUTE, $sessionContainer));
 
         return $this->appendToken($sessionContainer, $response, $token);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @throws \InvalidArgumentException
+     * @throws \OutOfBoundsException
+     */
+    public function __invoke(Request $request, Response $response, callable $out = null) : Response
+    {
+        return $this->process($request, new CallableDelegate($out, $response));
     }
 
     /**
