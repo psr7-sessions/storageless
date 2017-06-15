@@ -22,8 +22,6 @@ namespace PSR7Sessions\Storageless\Http;
 
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\SetCookie;
-use Interop\Http\ServerMiddleware\DelegateInterface;
-use Interop\Http\ServerMiddleware\MiddlewareInterface as ServerMiddlewareInterface;
 use Lcobucci\Clock\Clock;
 use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Builder;
@@ -36,10 +34,9 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use PSR7Sessions\Storageless\Session\DefaultSessionData;
 use PSR7Sessions\Storageless\Session\LazySession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
-use Zend\Stratigility\Delegate\CallableDelegateDecorator;
 use Zend\Stratigility\MiddlewareInterface;
 
-final class SessionMiddleware implements MiddlewareInterface, ServerMiddlewareInterface
+final class SessionMiddleware implements MiddlewareInterface
 {
     const ISSUED_AT_CLAIM      = 'iat';
     const SESSION_CLAIM        = 'session-data';
@@ -176,27 +173,16 @@ final class SessionMiddleware implements MiddlewareInterface, ServerMiddlewareIn
      * @throws \InvalidArgumentException
      * @throws \OutOfBoundsException
      */
-    public function process(Request $request, DelegateInterface $delegate) : Response
+    public function __invoke(Request $request, Response $response, callable $out) : Response
     {
         $token            = $this->parseToken($request);
         $sessionContainer = LazySession::fromContainerBuildingCallback(function () use ($token) : SessionInterface {
             return $this->extractSessionContainer($token);
         });
 
-        $response = $delegate->process($request->withAttribute(self::SESSION_ATTRIBUTE, $sessionContainer));
+        $response = $out($request->withAttribute(self::SESSION_ATTRIBUTE, $sessionContainer), $response);
 
         return $this->appendToken($sessionContainer, $response, $token);
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \InvalidArgumentException
-     * @throws \OutOfBoundsException
-     */
-    public function __invoke(Request $request, Response $response, callable $out) : Response
-    {
-        return $this->process($request, new CallableDelegateDecorator($out, $response));
     }
 
     /**
