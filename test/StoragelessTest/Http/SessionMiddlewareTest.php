@@ -41,6 +41,7 @@ use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
 use Zend\Stratigility\MiddlewareInterface;
 use Zend\Stratigility\Next;
+use Zend\Stratigility\NoopFinalHandler;
 
 final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
 {
@@ -207,7 +208,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
                     ->getToken()
             ]);
 
-        $this->ensureSameResponse($middleware, $unsignedToken);
+        $this->ensureSameResponse($middleware, $unsignedToken, new NoopFinalHandler());
     }
 
     public function testWillRefreshTokenWithIssuedAtExactlyAtTokenRefreshTimeThreshold() : void
@@ -238,7 +239,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
                     ->getToken()
             ]);
 
-        $cookie = $this->getCookie($middleware->__invoke($requestWithTokenIssuedInThePast, new Response()));
+        $cookie = $this->getCookie($middleware->__invoke($requestWithTokenIssuedInThePast, new Response(), new NoopFinalHandler()));
 
         $token = (new Parser())->parse($cookie->getValue());
 
@@ -424,7 +425,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             ]);
 
         $initialResponse = new Response();
-        $response = $middleware($expiringToken, $initialResponse);
+        $response = $middleware($expiringToken, $initialResponse, new NoopFinalHandler());
 
         self::assertNotSame($initialResponse, $response);
 
@@ -457,7 +458,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
                     ->getToken()
             ]);
 
-        $this->ensureSameResponse($middleware, $validToken);
+        $this->ensureSameResponse($middleware, $validToken, new NoopFinalHandler());
     }
 
     /**

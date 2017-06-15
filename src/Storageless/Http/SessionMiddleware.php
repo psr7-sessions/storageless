@@ -33,10 +33,10 @@ use Lcobucci\JWT\Token;
 use Lcobucci\JWT\ValidationData;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use PSR7Sessions\Storageless\Http\Delegate\CallableDelegate;
 use PSR7Sessions\Storageless\Session\DefaultSessionData;
 use PSR7Sessions\Storageless\Session\LazySession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
+use Zend\Stratigility\Delegate\CallableDelegateDecorator;
 use Zend\Stratigility\MiddlewareInterface;
 
 final class SessionMiddleware implements MiddlewareInterface, ServerMiddlewareInterface
@@ -194,9 +194,9 @@ final class SessionMiddleware implements MiddlewareInterface, ServerMiddlewareIn
      * @throws \InvalidArgumentException
      * @throws \OutOfBoundsException
      */
-    public function __invoke(Request $request, Response $response, callable $out = null) : Response
+    public function __invoke(Request $request, Response $response, callable $out) : Response
     {
-        return $this->process($request, new CallableDelegate($out, $response));
+        return $this->process($request, new CallableDelegateDecorator($out, $response));
     }
 
     /**
