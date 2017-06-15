@@ -28,7 +28,6 @@ use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
-use Lcobucci\JWT\Signature;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Token;
 use PHPUnit_Framework_TestCase;
@@ -588,7 +587,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return MiddlewareInterface
+     * @return Next
      */
     private function emptyValidationNext() : Next
     {
@@ -608,7 +607,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @param string $value
      *
-     * @return MiddlewareInterface
+     * @return Next
      */
     private function writingNext(string $value = 'bar') : Next
     {
@@ -626,13 +625,13 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @param callable $callback
      *
-     * @return MiddlewareInterface
+     * @return Next
      */
     private function fakeNext(callable $callback) : Next
     {
-        $middleware = $this->createMock(Next::class);
+        $next = $this->createMock(Next::class);
 
-        $middleware->expects($this->once())
+        $next->expects($this->once())
            ->method('__invoke')
            ->willReturnCallback($callback)
            ->with(
@@ -640,7 +639,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
                self::isInstanceOf(ResponseInterface::class)
            );
 
-        return $middleware;
+        return $next;
     }
 
     /**
