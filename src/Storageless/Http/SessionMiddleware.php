@@ -173,16 +173,14 @@ final class SessionMiddleware implements MiddlewareInterface
      * @throws \InvalidArgumentException
      * @throws \OutOfBoundsException
      */
-    public function __invoke(Request $request, Response $response, callable $out = null) : Response
+    public function __invoke(Request $request, Response $response, callable $out) : Response
     {
         $token            = $this->parseToken($request);
         $sessionContainer = LazySession::fromContainerBuildingCallback(function () use ($token) : SessionInterface {
             return $this->extractSessionContainer($token);
         });
 
-        if (null !== $out) {
-            $response = $out($request->withAttribute(self::SESSION_ATTRIBUTE, $sessionContainer), $response);
-        }
+        $response = $out($request->withAttribute(self::SESSION_ATTRIBUTE, $sessionContainer), $response);
 
         return $this->appendToken($sessionContainer, $response, $token);
     }
