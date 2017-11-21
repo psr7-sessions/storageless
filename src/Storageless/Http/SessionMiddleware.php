@@ -115,7 +115,7 @@ final class SessionMiddleware implements MiddlewareInterface
     }
 
     /**
-     * This constructor simplifies instantiation when using HTTPS (REQUIRED!) and symmetric key encription
+     * This constructor simplifies instantiation when using HTTPS (REQUIRED!) and symmetric key encryption
      *
      * @param string $symmetricKey
      * @param int    $expirationTime
@@ -139,7 +139,7 @@ final class SessionMiddleware implements MiddlewareInterface
     }
 
     /**
-     * This constructor simplifies instantiation when using HTTPS (REQUIRED!) and asymmetric key encription
+     * This constructor simplifies instantiation when using HTTPS (REQUIRED!) and asymmetric key encryption
      * based on RSA keys
      *
      * @param string $privateRsaKey
