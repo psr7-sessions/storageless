@@ -20,13 +20,13 @@ declare(strict_types=1);
 
 namespace PSR7SessionsTest\Storageless\Session;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use PSR7Sessions\Storageless\Session\DefaultSessionData;
 
 /**
  * @covers \PSR7Sessions\Storageless\Session\DefaultSessionData
  */
-final class DefaultSessionDataTest extends PHPUnit_Framework_TestCase
+final class DefaultSessionDataTest extends TestCase
 {
     public function testFromFromTokenDataBuildsADataContainer() : void
     {

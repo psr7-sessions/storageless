@@ -28,25 +28,25 @@ use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
-use Lcobucci\JWT\Signature;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Token;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
 use PSR7Sessions\Storageless\Session\DefaultSessionData;
 use PSR7Sessions\Storageless\Session\SessionInterface;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
-use Zend\Stratigility\MiddlewareInterface;
 
-final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
+final class SessionMiddlewareTest extends TestCase
 {
     public function testFromSymmetricKeyDefaultsUsesASecureCookie() : void
     {
         $response = SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100)
-            ->__invoke(new ServerRequest(), new Response(), $this->writingMiddleware());
+            ->process(new ServerRequest(), $this->writingMiddleware());
 
         $cookie = $this->getCookie($response);
 
@@ -62,7 +62,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
                 file_get_contents(__DIR__ . '/../../keys/public_key.pem'),
                 200
             )
-            ->__invoke(new ServerRequest(), new Response(), $this->writingMiddleware());
+            ->process(new ServerRequest(), $this->writingMiddleware());
 
         $cookie = $this->getCookie($response);
 
@@ -94,7 +94,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     public function testInjectsSessionInResponseCookies(SessionMiddleware $middleware) : void
     {
         $initialResponse = new Response();
-        $response = $middleware(new ServerRequest(), $initialResponse, $this->writingMiddleware());
+        $response = $middleware->process(new ServerRequest(), $this->writingMiddleware());
 
         self::assertNotSame($initialResponse, $response);
         self::assertEmpty($this->getCookie($response, 'non-existing')->getValue());
@@ -108,8 +108,8 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
     {
         $sessionValue = uniqid('', true);
 
-        $checkingMiddleware = $this->fakeMiddleware(
-            function (ServerRequestInterface $request, ResponseInterface $response) use ($sessionValue) {
+        $checkingMiddleware = $this->fakeDelegate(
+            function (ServerRequestInterface $request) use ($sessionValue) {
                 /* @var $session SessionInterface */
                 $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
 
@@ -124,21 +124,18 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
                     . 'non-modified session containers are not to be re-serialized into a token'
                 );
 
-                return $response;
+                return new Response();
             }
         );
 
-        $firstResponse = $middleware(new ServerRequest(), new Response(), $this->writingMiddleware($sessionValue));
+        $firstResponse = $middleware->process(new ServerRequest(), $this->writingMiddleware($sessionValue));
 
-        $initialResponse = new Response();
-
-        $response = $middleware(
+        $response = $middleware->process(
             $this->requestWithResponseCookies($firstResponse),
-            $initialResponse,
             $checkingMiddleware
         );
 
-        self::assertNotSame($initialResponse, $response);
+        self::assertNotSame($response, $firstResponse);
     }
 
     /**
@@ -237,7 +234,9 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
                     ->getToken()
             ]);
 
-        $cookie = $this->getCookie($middleware->__invoke($requestWithTokenIssuedInThePast, new Response()));
+        $cookie = $this->getCookie($middleware->process($requestWithTokenIssuedInThePast, $this->fakeDelegate(function () {
+            return new Response();
+        })));
 
         $token = (new Parser())->parse($cookie->getValue());
 
@@ -252,10 +251,10 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         $this->ensureSameResponse(
             $middleware,
             $this->requestWithResponseCookies(
-                $middleware(new ServerRequest(), new Response(), $this->writingMiddleware())
+                $middleware->process(new ServerRequest(), $this->writingMiddleware())
             ),
-            $this->fakeMiddleware(
-                function (ServerRequestInterface $request, ResponseInterface $response) {
+            $this->fakeDelegate(
+                function (ServerRequestInterface $request) {
                     /* @var $session SessionInterface */
                     $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
 
@@ -264,7 +263,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
 
                     self::assertFalse($session->hasChanged());
 
-                    return $response;
+                    return new Response();
                 }
             )
         );
@@ -278,16 +277,16 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         $this->ensureClearsSessionCookie(
             $middleware,
             $this->requestWithResponseCookies(
-                $middleware(new ServerRequest(), new Response(), $this->writingMiddleware())
+                $middleware->process(new ServerRequest(), $this->writingMiddleware())
             ),
-            $this->fakeMiddleware(
-                function (ServerRequestInterface $request, ResponseInterface $response) {
+            $this->fakeDelegate(
+                function (ServerRequestInterface $request) {
                     /* @var $session SessionInterface */
                     $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
 
                     $session->clear();
 
-                    return $response;
+                    return new Response();
                 }
             )
         );
@@ -320,7 +319,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
         $this->ensureSameResponse(
             $middleware,
             $this->requestWithResponseCookies(
-                $middleware(new ServerRequest(), new Response(), $this->writingMiddleware())
+                $middleware->process(new ServerRequest(), $this->writingMiddleware())
             ),
             $this->emptyValidationMiddleware()
         );
@@ -347,10 +346,8 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             123
         );
 
-        $initialResponse = new Response();
-        $response = $middleware(new ServerRequest(), $initialResponse, $this->writingMiddleware());
+        $response = $middleware->process(new ServerRequest(), $this->writingMiddleware());
 
-        self::assertNotSame($initialResponse, $response);
         self::assertNull($this->getCookie($response)->getValue());
 
         $tokenCookie = $this->getCookie($response, 'a-different-cookie-name');
@@ -384,16 +381,15 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
                     ->getToken()
             ]);
 
-        $middleware(
+        $middleware->process(
             $request,
-            new Response(),
-            $this->fakeMiddleware(function (ServerRequestInterface $request, ResponseInterface $response) {
+            $this->fakeDelegate(function (ServerRequestInterface $request) {
                 self::assertInstanceOf(
                     SessionInterface::class,
                     $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE)
                 );
 
-                return $response;
+                return new Response();
             })
         );
     }
@@ -423,7 +419,10 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             ]);
 
         $initialResponse = new Response();
-        $response = $middleware($expiringToken, $initialResponse);
+
+        $response = $middleware->process($expiringToken, $this->fakeDelegate(function () use ($initialResponse) {
+            return $initialResponse;
+        }));
 
         self::assertNotSame($initialResponse, $response);
 
@@ -493,7 +492,7 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             $this
                 ->getCookie(
                     SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100)
-                        ->__invoke(new ServerRequest(), new Response(), $this->writingMiddleware())
+                        ->process(new ServerRequest(), $this->writingMiddleware())
                 )
                 ->getPath()
         );
@@ -517,48 +516,51 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
                             file_get_contents(__DIR__ . '/../../keys/public_key.pem'),
                             200
                         )
-                        ->__invoke(new ServerRequest(), new Response(), $this->writingMiddleware())
+                        ->process(new ServerRequest(), $this->writingMiddleware())
                 )
                 ->getPath()
         );
     }
 
-    /**
-     * @param SessionMiddleware $middleware
-     * @param ServerRequestInterface $request
-     * @param callable $next
-     *
-     * @return ResponseInterface
-     */
     private function ensureSameResponse(
         SessionMiddleware $middleware,
         ServerRequestInterface $request,
-        callable $next = null
+        RequestHandlerInterface $next = null
     ) : ResponseInterface {
         $initialResponse = new Response();
-        $response = $middleware($request, $initialResponse, $next);
+
+        $handleRequest = $this->createMock(RequestHandlerInterface::class);
+
+        if ($next) {
+            // capturing `$initialResponse` from the `$next` handler
+            $handleRequest
+                ->expects(self::once())
+                ->method('handle')
+                ->willReturnCallback(function (ServerRequestInterface $serverRequest) use ($next, & $initialResponse) {
+                    $initialResponse = $next->handle($serverRequest);
+
+                    return $initialResponse;
+                });
+        } else {
+            $handleRequest
+                ->expects(self::once())
+                ->method('handle')
+                ->willReturn($initialResponse);
+        }
+
+        $response = $middleware->process($request, $handleRequest);
 
         self::assertSame($initialResponse, $response);
 
         return $response;
     }
 
-    /**
-     * @param SessionMiddleware $middleware
-     * @param ServerRequestInterface $request
-     * @param callable $next
-     *
-     * @return ResponseInterface
-     */
     private function ensureClearsSessionCookie(
         SessionMiddleware $middleware,
         ServerRequestInterface $request,
-        callable $next = null
+        RequestHandlerInterface $next
     ) : ResponseInterface {
-        $initialResponse = new Response();
-        $response = $middleware($request, $initialResponse, $next);
-
-        self::assertNotSame($initialResponse, $response);
+        $response = $middleware->process($request, $next);
 
         $cookie = $this->getCookie($response);
 
@@ -585,59 +587,43 @@ final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
             ->getToken();
     }
 
-    /**
-     * @return MiddlewareInterface
-     */
-    private function emptyValidationMiddleware() : MiddlewareInterface
+    private function emptyValidationMiddleware() : RequestHandlerInterface
     {
-        return $this->fakeMiddleware(
-            function (ServerRequestInterface $request, ResponseInterface $response) {
+        return $this->fakeDelegate(
+            function (ServerRequestInterface $request) {
                 /* @var $session SessionInterface */
                 $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
 
                 self::assertInstanceOf(SessionInterface::class, $session);
                 self::assertTrue($session->isEmpty());
 
-                return $response;
+                return new Response();
             }
         );
     }
 
-    /**
-     * @param string $value
-     *
-     * @return MiddlewareInterface
-     */
-    private function writingMiddleware(string $value = 'bar') : MiddlewareInterface
+    private function writingMiddleware(string $value = 'bar') : RequestHandlerInterface
     {
-        return $this->fakeMiddleware(
-            function (ServerRequestInterface $request, ResponseInterface $response) use ($value) {
+        return $this->fakeDelegate(
+            function (ServerRequestInterface $request) use ($value) {
                 /* @var $session SessionInterface */
                 $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
                 $session->set('foo', $value);
 
-                return $response;
+                return new Response();
             }
         );
     }
 
-    /**
-     * @param callable $callback
-     *
-     * @return MiddlewareInterface
-     */
-    private function fakeMiddleware(callable $callback) : MiddlewareInterface
+    private function fakeDelegate(callable $callback) : RequestHandlerInterface
     {
-        $middleware = $this->createMock(MiddlewareInterface::class);
+        $middleware = $this->createMock(RequestHandlerInterface::class);
 
-        $middleware->expects($this->once())
-           ->method('__invoke')
+        $middleware
+            ->expects(self::once())
+           ->method('handle')
            ->willReturnCallback($callback)
-           ->with(
-               self::isInstanceOf(ServerRequestInterface::class),
-               self::isInstanceOf(ResponseInterface::class),
-               self::logicalOr(self::isNull(), self::isType('callable'))
-           );
+           ->with(self::isInstanceOf(RequestInterface::class));
 
         return $middleware;
     }

@@ -20,14 +20,14 @@ declare(strict_types=1);
 
 namespace PSR7SessionsTest\Storageless\Session;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use PSR7Sessions\Storageless\Session\LazySession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
 
 /**
  * @covers \PSR7Sessions\Storageless\Session\LazySession
  */
-final class LazySessionTest extends PHPUnit_Framework_TestCase
+final class LazySessionTest extends TestCase
 {
     /**
      * @var SessionInterface|\PHPUnit_Framework_MockObject_MockObject
