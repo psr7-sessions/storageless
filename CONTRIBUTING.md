@@ -11,13 +11,13 @@
 To install the project and run the tests, you need to clone it first:
 
 ```sh
-$ git clone git://github.com/Ocramius/PSR7Session.git
+$ git clone git://github.com/psr7-sessions/storageless.git
 ```
 
 You will then need to run a composer installation:
 
 ```sh
-$ cd PSR7Session
+$ cd storageless
 $ curl -s https://getcomposer.org/installer | php
 $ php composer.phar update
 ```
