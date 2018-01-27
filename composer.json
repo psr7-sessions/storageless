@@ -29,9 +29,10 @@
         "lcobucci/clock":                  "^1.0"
     },
     "require-dev": {
-        "phpunit/phpunit":              "^5.0",
+        "phpunit/phpunit":              "^6.0",
         "zendframework/zend-diactoros": "^1.1",
-        "humbug/humbug":                "dev-master"
+        "humbug/humbug":                "dev-master",
+        "padraic/phpunit-accelerator":  "dev-master"
     },
     "replace": {
         "ocramius/psr7-session": "self.version"

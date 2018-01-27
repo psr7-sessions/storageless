@@ -31,7 +31,7 @@ use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signature;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Token;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
@@ -41,7 +41,7 @@ use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
 use Zend\Stratigility\MiddlewareInterface;
 
-final class SessionMiddlewareTest extends PHPUnit_Framework_TestCase
+final class SessionMiddlewareTest extends TestCase
 {
     public function testFromSymmetricKeyDefaultsUsesASecureCookie() : void
     {
