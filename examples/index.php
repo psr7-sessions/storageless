@@ -24,6 +24,7 @@ use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\Response\SapiEmitter;
@@ -50,17 +51,22 @@ $sessionMiddleware = new SessionMiddleware(
     1200, // 20 minutes
     new SystemClock()
 );
-$myMiddleware = function (ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface {
-    /* @var \PSR7Sessions\Storageless\Session\SessionInterface $session */
-    $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
-    $session->set('counter', $session->get('counter', 0) + 1);
 
-    $response
-        ->getBody()
-        ->write('Counter Value: ' . $session->get('counter'));
+$myMiddleware = new class implements RequestHandlerInterface {
+    public function handle(ServerRequestInterface $request) : ResponseInterface {
+        /* @var \PSR7Sessions\Storageless\Session\SessionInterface $session */
+        $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+        $session->set('counter', $session->get('counter', 0) + 1);
 
-    return $response;
+        $response = new Response();
+
+        $response
+            ->getBody()
+            ->write('Counter Value: ' . $session->get('counter'));
+
+        return $response;
+    }
 };
 
 (new SapiEmitter())
-    ->emit($sessionMiddleware(ServerRequestFactory::fromGlobals(), new Response(), $myMiddleware));
+    ->emit($sessionMiddleware->process(ServerRequestFactory::fromGlobals(), $myMiddleware));
