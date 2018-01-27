@@ -6,8 +6,9 @@
 [![Packagist](https://img.shields.io/packagist/v/psr7-sessions/storageless.svg)](https://packagist.org/packages/psr7-sessions/storageless)
 [![Packagist](https://img.shields.io/packagist/vpre/psr7-sessions/storageless.svg)](https://packagist.org/packages/psr7-sessions/storageless)
 
-**PSR7Session** is a [PSR-7](http://www.php-fig.org/psr/psr-7/)
-[middleware](https://mwop.net/blog/2015-01-08-on-http-middleware-and-psr-7.html) that enables
+**PSR7Session** is a [PSR-7](http://www.php-fig.org/psr/psr-7/) and 
+[PSR-15](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-15-request-handlers.md)
+compatible [middleware](https://mwop.net/blog/2015-01-08-on-http-middleware-and-psr-7.html) that enables
 session without I/O usage in PSR-7 based applications.
 
 Proudly brought to you by [ocramius](https://github.com/Ocramius), [malukenho](https://github.com/malukenho) and [lcobucci](https://github.com/lcobucci).
@@ -21,9 +22,8 @@ composer require psr7-sessions/storageless
 ### Usage
 
 You can use the `PSR7Sessions\Storageless\Http\SessionMiddleware` in any 
-[`zendframework/zend-stratigility`](https://github.com/zendframework/zend-stratigility)
-compatible [PSR-7](http://www.php-fig.org/psr/psr-7/)
-[middleware](https://github.com/zendframework/zend-stratigility/blob/1.1.2/src/MiddlewareInterface.php).
+[PSR-15](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-15-request-handlers.md)
+compatible middleware.
 
 In a [`zendframework/zend-expressive`](https://github.com/zendframework/zend-expressive)
 application, this would look like following:
