@@ -31,18 +31,19 @@ use Lcobucci\JWT\Token;
 use Lcobucci\JWT\ValidationData;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use PSR7Sessions\Storageless\Session\DefaultSessionData;
 use PSR7Sessions\Storageless\Session\LazySession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
-use Zend\Stratigility\MiddlewareInterface;
 
 final class SessionMiddleware implements MiddlewareInterface
 {
-    const ISSUED_AT_CLAIM      = 'iat';
-    const SESSION_CLAIM        = 'session-data';
-    const SESSION_ATTRIBUTE    = 'session';
-    const DEFAULT_COOKIE       = 'slsession';
-    const DEFAULT_REFRESH_TIME = 60;
+    public const ISSUED_AT_CLAIM      = 'iat';
+    public const SESSION_CLAIM        = 'session-data';
+    public const SESSION_ATTRIBUTE    = 'session';
+    public const DEFAULT_COOKIE       = 'slsession';
+    public const DEFAULT_REFRESH_TIME = 60;
 
     /**
      * @var Signer
@@ -116,13 +117,8 @@ final class SessionMiddleware implements MiddlewareInterface
 
     /**
      * This constructor simplifies instantiation when using HTTPS (REQUIRED!) and symmetric key encryption
-     *
-     * @param string $symmetricKey
-     * @param int    $expirationTime
-     *
-     * @return self
      */
-    public static function fromSymmetricKeyDefaults(string $symmetricKey, int $expirationTime) : SessionMiddleware
+    public static function fromSymmetricKeyDefaults(string $symmetricKey, int $expirationTime) : self
     {
         return new self(
             new Signer\Hmac\Sha256(),
@@ -141,18 +137,12 @@ final class SessionMiddleware implements MiddlewareInterface
     /**
      * This constructor simplifies instantiation when using HTTPS (REQUIRED!) and asymmetric key encryption
      * based on RSA keys
-     *
-     * @param string $privateRsaKey
-     * @param string $publicRsaKey
-     * @param int    $expirationTime
-     *
-     * @return self
      */
     public static function fromAsymmetricKeyDefaults(
         string $privateRsaKey,
         string $publicRsaKey,
         int $expirationTime
-    ) : SessionMiddleware {
+    ) : self {
         return new self(
             new Signer\Rsa\Sha256(),
             $privateRsaKey,
@@ -170,29 +160,25 @@ final class SessionMiddleware implements MiddlewareInterface
     /**
      * {@inheritdoc}
      *
+     * @throws \BadMethodCallException
      * @throws \InvalidArgumentException
-     * @throws \OutOfBoundsException
      */
-    public function __invoke(Request $request, Response $response, callable $out = null) : Response
+    public function process(Request $request, RequestHandlerInterface $delegate) : Response
     {
         $token            = $this->parseToken($request);
         $sessionContainer = LazySession::fromContainerBuildingCallback(function () use ($token) : SessionInterface {
             return $this->extractSessionContainer($token);
         });
 
-        if (null !== $out) {
-            $response = $out($request->withAttribute(self::SESSION_ATTRIBUTE, $sessionContainer), $response);
-        }
-
-        return $this->appendToken($sessionContainer, $response, $token);
+        return $this->appendToken(
+            $sessionContainer,
+            $delegate->handle($request->withAttribute(self::SESSION_ATTRIBUTE, $sessionContainer)),
+            $token
+        );
     }
 
     /**
      * Extract the token from the given request object
-     *
-     * @param Request $request
-     *
-     * @return Token|null
      */
     private function parseToken(Request $request) : ?Token
     {
@@ -217,9 +203,7 @@ final class SessionMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @param Token|null $token
-     *
-     * @return SessionInterface
+     * @throws \OutOfBoundsException
      */
     private function extractSessionContainer(?Token $token) : SessionInterface
     {
@@ -237,12 +221,7 @@ final class SessionMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @param SessionInterface $sessionContainer
-     * @param Response         $response
-     * @param Token            $token
-     *
-     * @return Response
-     *
+     * @throws \BadMethodCallException
      * @throws \InvalidArgumentException
      */
     private function appendToken(SessionInterface $sessionContainer, Response $response, ?Token $token) : Response
@@ -270,9 +249,7 @@ final class SessionMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @param SessionInterface $sessionContainer
-     *
-     * @return SetCookie
+     * @throws \BadMethodCallException
      */
     private function getTokenCookie(SessionInterface $sessionContainer) : SetCookie
     {
@@ -291,9 +268,6 @@ final class SessionMiddleware implements MiddlewareInterface
             ->withExpires($timestamp + $this->expirationTime);
     }
 
-    /**
-     * @return SetCookie
-     */
     private function getExpirationCookie() : SetCookie
     {
         $expirationDate = $this->clock->now()->modify('-30 days');
