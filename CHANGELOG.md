@@ -1,5 +1,18 @@
 This is a list of changes/improvements that were introduced in PSR7Session
 
+## 4.0.0
+
+This release aligns the `PSR7Sessions\Storageless\Http\SessionMiddleware` to
+the [PSR-15 `php-fig/http-server-middleware`](https://github.com/php-fig/http-server-middleware/tree/1.0.0)
+specification.
+
+This means that the signature of `PSR7Sessions\Storageless\Http\SessionMiddleware`
+changed, and therefore you need to look for usages of this class and verify
+if the new signature is compatible with your API
+
+Specifically, `PSR7Sessions\Storageless\Http\SessionMiddleware#__invoke()`
+was removed.
+
 ## 3.0.1
 
 This release fixes an issue that prevented effective lazy-loading of the
