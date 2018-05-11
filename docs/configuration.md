@@ -51,13 +51,16 @@ needed, therefore performance shouldn't be a problem for most setups.
 
 ### Fine-tuning
 
-Since `PSR7Session` depends on [`lcobucci/jwt`](https://packagist.org/packages/lcobucci/jwt)
-and [`dflydev/fig-cookies`](https://packagist.org/packages/dflydev/fig-cookies),
+Since `PSR7Session` depends on 
+[`lcobucci/jwt`](https://packagist.org/packages/lcobucci/jwt), 
+[`lcobucci/clock`](https://packagist.org/packages/lcobucci/clock), and 
+[`dflydev/fig-cookies`](https://packagist.org/packages/dflydev/fig-cookies),
 you need to require them as well, since with this sort of setup you are explicitly using
 those components:
 
 ```sh
 composer require "lcobucci/jwt:~3.1"
+composer require "lcobucci/clock:^1.1.0"
 composer require "dflydev/fig-cookies:^1.0.1"
 ```
 
@@ -77,7 +80,7 @@ $sessionMiddleware = new SessionMiddleware(
     $cookieBlueprint,
     new \Lcobucci\JWT\Parser(),
     1200, // session lifetime, in seconds
-    new \PSR7Sessions\Storageless\Time\SystemCurrentTime(), // Current time provider implementation using current system time
+    new \Lcobucci\Clock\SystemClock(),
     60    // session automatic refresh time, in seconds
 );
 ```
