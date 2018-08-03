@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace PSR7SessionsTest\Storageless\Session;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use PSR7Sessions\Storageless\Session\LazySession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
@@ -30,12 +31,12 @@ use PSR7Sessions\Storageless\Session\SessionInterface;
 final class LazySessionTest extends TestCase
 {
     /**
-     * @var SessionInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var SessionInterface|MockObject
      */
     private $wrappedSession;
 
     /**
-     * @var callable|\PHPUnit_Framework_MockObject_MockObject
+     * @var callable|MockObject
      */
     private $sessionLoader;
 
@@ -50,7 +51,9 @@ final class LazySessionTest extends TestCase
     protected function setUp() : void
     {
         $this->wrappedSession = $this->createMock(SessionInterface::class);
-        $this->sessionLoader  = $this->getMockBuilder(\stdClass::class)->setMethods(['__invoke'])->getMock();
+        /** @var callable|MockObject $sessionLoader */
+        $sessionLoader        = $this->getMockBuilder(\stdClass::class)->setMethods(['__invoke'])->getMock();
+        $this->sessionLoader  = $sessionLoader;
         $this->lazySession    = LazySession::fromContainerBuildingCallback($this->sessionLoader);
     }
 

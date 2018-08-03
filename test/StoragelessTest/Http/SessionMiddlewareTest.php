@@ -31,6 +31,7 @@ use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Token;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -59,8 +60,8 @@ final class SessionMiddlewareTest extends TestCase
     {
         $response = SessionMiddleware
             ::fromAsymmetricKeyDefaults(
-                file_get_contents(__DIR__ . '/../../keys/private_key.pem'),
-                file_get_contents(__DIR__ . '/../../keys/public_key.pem'),
+                self::privateKey(),
+                self::publicKey(),
                 200
             )
             ->process(new ServerRequest(), $this->writingMiddleware());
@@ -99,7 +100,11 @@ final class SessionMiddlewareTest extends TestCase
 
         self::assertNotSame($initialResponse, $response);
         self::assertEmpty($this->getCookie($response, 'non-existing')->getValue());
-        self::assertInstanceOf(Token::class, (new Parser())->parse($this->getCookie($response)->getValue()));
+
+        $token = $this->getCookie($response)->getValue();
+
+        self::assertInternalType('string', $token);
+        self::assertInstanceOf(Token::class, (new Parser())->parse($token));
     }
 
     /**
@@ -275,11 +280,15 @@ final class SessionMiddlewareTest extends TestCase
                     ->getToken()
             ]);
 
-        $cookie = $this->getCookie($middleware->process($requestWithTokenIssuedInThePast, $this->fakeDelegate(function () {
-            return new Response();
-        })));
+        $tokenString = $this
+            ->getCookie($middleware->process($requestWithTokenIssuedInThePast, $this->fakeDelegate(function () {
+                return new Response();
+            })))
+            ->getValue();
 
-        $token = (new Parser())->parse($cookie->getValue());
+        self::assertInternalType('string', $tokenString);
+
+        $token = (new Parser())->parse($tokenString);
 
         self::assertEquals($time, $token->getClaim(SessionMiddleware::ISSUED_AT_CLAIM), 'Token was refreshed');
     }
@@ -404,10 +413,10 @@ final class SessionMiddlewareTest extends TestCase
 
     public function testSessionTokenParsingIsDelayedWhenSessionIsNotBeingUsed() : void
     {
-        /* @var $signer Signer|\PHPUnit_Framework_MockObject_MockObject */
+        /* @var Signer|MockObject $signer */
         $signer = $this->createMock(Signer::class);
 
-        $signer->expects($this->never())->method('verify');
+        $signer->expects(self::never())->method('verify');
         $signer->method('getAlgorithmId')->willReturn('HS256');
 
         $currentTimeProvider = new SystemClock();
@@ -516,8 +525,8 @@ final class SessionMiddlewareTest extends TestCase
             )],
             [SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100)],
             [SessionMiddleware::fromAsymmetricKeyDefaults(
-                file_get_contents(__DIR__ . '/../../keys/private_key.pem'),
-                file_get_contents(__DIR__ . '/../../keys/public_key.pem'),
+                self::privateKey(),
+                self::publicKey(),
                 200
             )],
         ];
@@ -567,8 +576,8 @@ final class SessionMiddlewareTest extends TestCase
                 ->getCookie(
                     SessionMiddleware
                         ::fromAsymmetricKeyDefaults(
-                            file_get_contents(__DIR__ . '/../../keys/private_key.pem'),
-                            file_get_contents(__DIR__ . '/../../keys/public_key.pem'),
+                            self::privateKey(),
+                            self::publicKey(),
                             200
                         )
                         ->process(new ServerRequest(), $this->writingMiddleware())
@@ -585,8 +594,8 @@ final class SessionMiddlewareTest extends TestCase
                 ->getCookie(
                     SessionMiddleware
                         ::fromAsymmetricKeyDefaults(
-                            file_get_contents(__DIR__ . '/../../keys/private_key.pem'),
-                            file_get_contents(__DIR__ . '/../../keys/public_key.pem'),
+                            self::privateKey(),
+                            self::publicKey(),
                             200
                         )
                         ->process(new ServerRequest(), $this->writingMiddleware())
@@ -745,7 +754,7 @@ final class SessionMiddlewareTest extends TestCase
      */
     private function getSigner(SessionMiddleware $middleware) : Signer
     {
-        return $this->getPropertyValue($middleware, 'signer');
+        return self::getObjectAttribute($middleware, 'signer');
     }
 
     /**
@@ -755,20 +764,24 @@ final class SessionMiddlewareTest extends TestCase
      */
     private function getSignatureKey(SessionMiddleware $middleware) : string
     {
-        return $this->getPropertyValue($middleware, 'signatureKey');
+        return self::getObjectAttribute($middleware, 'signatureKey');
     }
 
-    /**
-     * @param object $object
-     * @param string $name
-     *
-     * @return mixed
-     */
-    private function getPropertyValue($object, string $name)
+    private static function privateKey() : string
     {
-        $propertyReflection = new \ReflectionProperty($object, $name);
-        $propertyReflection->setAccessible(true);
+        $key = file_get_contents(__DIR__ . '/../../keys/private_key.pem');
 
-        return $propertyReflection->getValue($object);
+        self::assertInternalType('string', $key);
+
+        return $key;
+    }
+
+    private static function publicKey() : string
+    {
+        $key = file_get_contents(__DIR__ . '/../../keys/public_key.pem');
+
+        self::assertInternalType('string', $key);
+
+        return $key;
     }
 }
