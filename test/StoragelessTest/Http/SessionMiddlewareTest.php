@@ -142,6 +142,46 @@ final class SessionMiddlewareTest extends TestCase
     /**
      * @dataProvider validMiddlewaresProvider
      */
+    public function testSessionContainerCanBeCreatedEvenIfTokenDataIsMalformed(SessionMiddleware $middleware) : void
+    {
+        $sessionValue = uniqid('not valid session data', true);
+
+        $checkingMiddleware = $this->fakeDelegate(
+            function (ServerRequestInterface $request) use ($sessionValue) {
+                /* @var $session SessionInterface */
+                $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+
+                self::assertSame($sessionValue, $session->get('scalar'));
+                self::assertFalse($session->hasChanged());
+
+                return new Response();
+            }
+        );
+
+        $this->createTokenWithCustomClaim(
+            $middleware,
+            new \DateTime('-1 day'),
+            new \DateTime('+1 day'),
+            'not valid session data'
+        );
+
+        $middleware->process(
+            (new ServerRequest())
+                ->withCookieParams([
+                    SessionMiddleware::DEFAULT_COOKIE => $this->createTokenWithCustomClaim(
+                        $middleware,
+                        new \DateTime('-1 day'),
+                        new \DateTime('+1 day'),
+                        $sessionValue
+                    )
+                ]),
+            $checkingMiddleware
+        );
+    }
+
+    /**
+     * @dataProvider validMiddlewaresProvider
+     */
     public function testWillIgnoreRequestsWithExpiredTokens(SessionMiddleware $middleware) : void
     {
         $expiredToken = (new ServerRequest())
@@ -616,6 +656,21 @@ final class SessionMiddlewareTest extends TestCase
             ->setIssuedAt($issuedAt->getTimestamp())
             ->setExpiration($expiration->getTimestamp())
             ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
+            ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
+            ->getToken();
+    }
+
+    /** @param mixed $claim */
+    private function createTokenWithCustomClaim(
+        SessionMiddleware $middleware,
+        \DateTime $issuedAt,
+        \DateTime $expiration,
+        $claim
+    ) : string {
+        return (string) (new Builder())
+            ->setIssuedAt($issuedAt->getTimestamp())
+            ->setExpiration($expiration->getTimestamp())
+            ->set(SessionMiddleware::SESSION_CLAIM, $claim)
             ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
             ->getToken();
     }
