@@ -57,11 +57,6 @@ final class LazySessionTest extends TestCase
         $this->lazySession    = LazySession::fromContainerBuildingCallback($this->sessionLoader);
     }
 
-    public function testIsALazySession() : void
-    {
-        self::assertInstanceOf(LazySession::class, $this->lazySession);
-    }
-
     public function testLazyNonInitializedSessionIsAlwaysNotChanged() : void
     {
         $this->sessionLoader->expects(self::never())->method('__invoke');
@@ -159,11 +154,11 @@ final class LazySessionTest extends TestCase
     {
         $this->wrappedSessionWillBeLoaded();
 
-        $this->wrappedSession->expects(self::at(0))->method('jsonSerialize')->willReturn('foo');
-        $this->wrappedSession->expects(self::at(1))->method('jsonSerialize')->willReturn('bar');
+        $this->wrappedSession->expects(self::at(0))->method('jsonSerialize')->willReturn((object) ['foo' => 'bar']);
+        $this->wrappedSession->expects(self::at(1))->method('jsonSerialize')->willReturn((object) ['baz' => 'tab']);
 
-        self::assertSame('foo', $this->lazySession->jsonSerialize());
-        self::assertSame('bar', $this->lazySession->jsonSerialize());
+        self::assertEquals((object) ['foo' => 'bar'], $this->lazySession->jsonSerialize());
+        self::assertEquals((object) ['baz' => 'tab'], $this->lazySession->jsonSerialize());
     }
 
     private function wrappedSessionWillBeLoaded() : void

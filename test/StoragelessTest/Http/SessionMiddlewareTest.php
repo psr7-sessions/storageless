@@ -104,7 +104,7 @@ final class SessionMiddlewareTest extends TestCase
         $token = $this->getCookie($response)->getValue();
 
         self::assertInternalType('string', $token);
-        self::assertInstanceOf(Token::class, (new Parser())->parse($token));
+        self::assertEquals((object) ['foo' => 'bar'], (new Parser())->parse($token)->getClaim('session-data'));
     }
 
     /**
@@ -613,7 +613,12 @@ final class SessionMiddlewareTest extends TestCase
 
         $handleRequest = $this->createMock(RequestHandlerInterface::class);
 
-        if ($next) {
+        if (null === $next) {
+            $handleRequest
+                ->expects(self::once())
+                ->method('handle')
+                ->willReturn($initialResponse);
+        } else {
             // capturing `$initialResponse` from the `$next` handler
             $handleRequest
                 ->expects(self::once())
@@ -623,11 +628,6 @@ final class SessionMiddlewareTest extends TestCase
 
                     return $initialResponse;
                 });
-        } else {
-            $handleRequest
-                ->expects(self::once())
-                ->method('handle')
-                ->willReturn($initialResponse);
         }
 
         $response = $middleware->process($request, $handleRequest);

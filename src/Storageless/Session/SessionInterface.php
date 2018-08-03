@@ -25,9 +25,9 @@ interface SessionInterface extends \JsonSerializable
     /**
      * Stores a given value in the session
      *
-     * @param string                                               $key
-     * @param int|bool|string|float|array|object|\JsonSerializable $value allows any nested combination of the previous
-     *                                                                    types as well
+     * @param string                                                    $key
+     * @param int|bool|string|float|array|object|\JsonSerializable|null $value allows any nested combination of the previous
+     *                                                                         types as well
      *
      * @return void
      */
@@ -40,7 +40,7 @@ interface SessionInterface extends \JsonSerializable
      * @param string                                                    $key
      * @param int|bool|string|float|array|object|\JsonSerializable|null $default
      *
-     * @return int|bool|string|float|array
+     * @return int|bool|string|float|array|null
      */
     public function get(string $key, $default = null);
 
@@ -82,4 +82,7 @@ interface SessionInterface extends \JsonSerializable
      * @return bool
      */
     public function isEmpty() : bool;
+
+    /** {@inheritDoc} */
+    public function jsonSerialize() : object;
 }

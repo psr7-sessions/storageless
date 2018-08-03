@@ -248,7 +248,7 @@ final class SessionMiddleware implements MiddlewareInterface
 
     private function shouldTokenBeRefreshed(?Token $token) : bool
     {
-        if (! $token || ! $token->hasClaim(self::ISSUED_AT_CLAIM)) {
+        if (! ($token && $token->hasClaim(self::ISSUED_AT_CLAIM))) {
             return false;
         }
 

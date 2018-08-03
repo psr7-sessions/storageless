@@ -138,7 +138,7 @@ final class DefaultSessionData implements SessionInterface
      */
     public function isEmpty() : bool
     {
-        return empty($this->data);
+        return ! count($this->data);
     }
 
     /**

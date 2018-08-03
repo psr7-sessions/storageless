@@ -114,7 +114,7 @@ final class LazySession implements SessionInterface
     /**
      * {@inheritDoc}
      */
-    public function jsonSerialize()
+    public function jsonSerialize() : object
     {
         return $this->getRealSession()->jsonSerialize();
     }

@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace PSR7SessionsTest\Storageless\Session;
 
 use InvalidArgumentException;
+use JsonSerializable;
 use PHPUnit\Framework\TestCase;
 use PSR7Sessions\Storageless\Session\DefaultSessionData;
 
@@ -29,14 +30,16 @@ use PSR7Sessions\Storageless\Session\DefaultSessionData;
  */
 final class DefaultSessionDataTest extends TestCase
 {
-    public function testFromFromTokenDataBuildsADataContainer() : void
+    public function testEqualityOfEmptySessions() : void
     {
-        self::assertInstanceOf(DefaultSessionData::class, DefaultSessionData::fromTokenData([]));
-    }
-
-    public function testNewEmptySessionProducesAContainer() : void
-    {
-        self::assertInstanceOf(DefaultSessionData::class, DefaultSessionData::newEmptySession());
+        self::assertEquals(
+            DefaultSessionData::fromTokenData([]),
+            DefaultSessionData::newEmptySession()
+        );
+        self::assertEquals(
+            DefaultSessionData::fromDecodedTokenData((object) []),
+            DefaultSessionData::newEmptySession()
+        );
     }
 
     public function testContainerIsEmptyWhenCreatedExplicitlyAsEmpty() : void
@@ -97,6 +100,8 @@ final class DefaultSessionDataTest extends TestCase
 
     /**
      * @dataProvider storageScalarDataProvider
+     *
+     * @param int|bool|string|float|array|object|JsonSerializable|null $value
      */
     public function testContainerDataIsStoredAndRetrieved(string $key, $value) : void
     {
@@ -108,6 +113,8 @@ final class DefaultSessionDataTest extends TestCase
 
     /**
      * @dataProvider storageScalarDataProvider
+     *
+     * @param int|bool|string|float|array|object|JsonSerializable|null $value
      */
     public function testSettingDataInAContainerMarksTheContainerAsMutated(string $key, $value) : void
     {
@@ -135,6 +142,8 @@ final class DefaultSessionDataTest extends TestCase
 
     /**
      * @dataProvider storageScalarDataProvider
+     *
+     * @param int|bool|string|float|array|object|JsonSerializable|null $value
      */
     public function testContainerIsNotChangedWhenScalarDataIsSetAndOverwrittenInIt(string $key, $value) : void
     {
@@ -149,6 +158,8 @@ final class DefaultSessionDataTest extends TestCase
 
     /**
      * @dataProvider storageNonScalarDataProvider
+     *
+     * @param int|bool|string|float|array|object|JsonSerializable|null $nonScalarValue
      */
     public function testContainerIsNotChangedWhenNonScalarDataIsSetAndOverwrittenInIt($nonScalarValue) : void
     {
@@ -163,6 +174,8 @@ final class DefaultSessionDataTest extends TestCase
 
     /**
      * @dataProvider storageScalarDataProvider
+     *
+     * @param int|bool|string|float|array|object|JsonSerializable|null $value
      */
     public function testContainerBuiltWithDataContainsData(string $key, $value) : void
     {
@@ -174,6 +187,8 @@ final class DefaultSessionDataTest extends TestCase
 
     /**
      * @dataProvider storageScalarDataProvider
+     *
+     * @param int|bool|string|float|array|object|JsonSerializable|null $value
      */
     public function testContainerBuiltWithStdClassContainsData(string $key, $value) : void
     {
@@ -189,6 +204,9 @@ final class DefaultSessionDataTest extends TestCase
 
     /**
      * @dataProvider storageNonScalarDataProvider
+     *
+     * @param int|bool|string|float|array|object|JsonSerializable|null $nonScalar
+     * @param int|bool|string|float|array|null                         $expectedScalar
      */
     public function testContainerStoresScalarValueFromNestedObjects($nonScalar, $expectedScalar) : void
     {
@@ -203,6 +221,8 @@ final class DefaultSessionDataTest extends TestCase
 
     /**
      * @dataProvider storageScalarDataProvider
+     *
+     * @param int|bool|string|float|array|object|JsonSerializable|null $value
      */
     public function testGetWillReturnDefaultValueOnNonExistingKey(string $key, $value) : void
     {
@@ -214,6 +234,9 @@ final class DefaultSessionDataTest extends TestCase
 
     /**
      * @dataProvider storageNonScalarDataProvider
+     *
+     * @param int|bool|string|float|array|object|JsonSerializable|null $nonScalar
+     * @param int|bool|string|float|array|null                         $expectedScalar
      */
     public function testGetWillReturnScalarCastDefaultValueOnNonExistingKey($nonScalar, $expectedScalar) : void
     {
@@ -253,6 +276,7 @@ final class DefaultSessionDataTest extends TestCase
             'class' => [
                 new class
                 {
+                    /** @var string */
                     public $foo = 'bar';
                 },
                 ['foo' => 'bar'],
@@ -270,9 +294,9 @@ final class DefaultSessionDataTest extends TestCase
                 [['a', 'b', 'c']],
             ],
             'jsonSerializable' => [
-                new class implements \JsonSerializable
+                new class implements JsonSerializable
                 {
-                    public function jsonSerialize()
+                    public function jsonSerialize() : object
                     {
                         return (object) ['war' => 'zip'];
                     }
