@@ -117,6 +117,21 @@ final class DefaultSessionDataTest extends TestCase
         self::assertTrue($session->hasChanged());
     }
 
+    public function testChangingTheDataTypeOfAValueIsConsideredAsAChange() : void
+    {
+        $session = DefaultSessionData::fromDecodedTokenData((object) ['a' => 1]);
+
+        self::assertFalse($session->hasChanged());
+
+        $session->set('a', '1');
+
+        self::assertTrue($session->hasChanged());
+
+        $session->set('a', 1);
+
+        self::assertFalse($session->hasChanged());
+    }
+
     /**
      * @dataProvider storageScalarDataProvider
      */
