@@ -139,9 +139,9 @@ final class DefaultSessionData implements SessionInterface
     /**
      * {@inheritDoc}
      */
-    public function jsonSerialize()
+    public function jsonSerialize() : object
     {
-        return $this->data;
+        return (object) $this->data;
     }
 
     /**

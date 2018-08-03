@@ -86,6 +86,14 @@ final class DefaultSessionDataTest extends TestCase
         self::assertFalse($session->has('baz'));
     }
 
+    public function testStorageKeysAreConvertedToStringKeys() : void
+    {
+        self::assertSame(
+            '{"0":"a","1":"b","2":"c"}',
+            json_encode(DefaultSessionData::fromTokenData(['a', 'b', 'c']))
+        );
+    }
+
     /**
      * @dataProvider storageScalarDataProvider
      */
@@ -232,6 +240,10 @@ final class DefaultSessionDataTest extends TestCase
             'array'  => [
                 [(object) ['tar' => 'tan']],
                 [['tar' => 'tan']],
+            ],
+            'array with numeric keys'  => [
+                [['a', 'b', 'c']],
+                [['a', 'b', 'c']],
             ],
             'jsonSerializable' => [
                 new class implements \JsonSerializable
