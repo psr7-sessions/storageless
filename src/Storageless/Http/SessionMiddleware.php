@@ -210,8 +210,12 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     private function extractSessionContainer(?Token $token) : SessionInterface
     {
+        if (! $token) {
+            return DefaultSessionData::newEmptySession();
+        }
+
         try {
-            if (null === $token || ! $token->verify($this->signer, $this->verificationKey)) {
+            if (! $token->verify($this->signer, $this->verificationKey)) {
                 return DefaultSessionData::newEmptySession();
             }
 
