@@ -331,7 +331,7 @@ final class SessionMiddlewareTest extends TestCase
             ->withDomain('foo.bar')
             ->withPath('/yadda')
             ->withHttpOnly(false)
-            ->withMaxAge('123123')
+            ->withMaxAge(123123)
             ->withValue('a-random-value');
 
         $dateTime   = new DateTimeImmutable();

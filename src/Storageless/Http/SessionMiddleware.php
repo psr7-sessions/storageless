@@ -264,6 +264,7 @@ final class SessionMiddleware implements MiddlewareInterface
                     ->set(self::SESSION_CLAIM, $sessionContainer)
                     ->sign($this->signer, $this->signatureKey)
                     ->getToken()
+                    ->__toString()
             )
             ->withExpires($timestamp + $this->expirationTime);
     }
