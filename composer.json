@@ -22,6 +22,7 @@
     ],
     "require": {
         "php":                             "^7.1",
+        "ext-json":                        "*",
         "psr/http-message":                "^1.0.1",
         "psr/http-server-handler":         "^1.0.0",
         "psr/http-server-middleware":      "^1.0.0",
