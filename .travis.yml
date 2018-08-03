@@ -23,3 +23,7 @@ script:
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
   - if [ -f clover.xml ]; then php ocular.phar code-coverage:upload --format=php-clover ./clover.xml; fi
+
+matrix:
+  allow_failures:
+  - php: nightly
