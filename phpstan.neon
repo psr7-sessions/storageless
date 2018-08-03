@@ -3,3 +3,6 @@ parameters:
 	paths:
 	    - src
 	    - test
+includes:
+	- vendor/phpstan/phpstan-phpunit/extension.neon
+	- vendor/phpstan/phpstan-phpunit/rules.neon
