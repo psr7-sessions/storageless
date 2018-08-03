@@ -20,6 +20,8 @@ declare(strict_types=1);
 
 namespace PSR7Sessions\Storageless\Session;
 
+use InvalidArgumentException;
+
 final class DefaultSessionData implements SessionInterface
 {
     /**
@@ -47,7 +49,10 @@ final class DefaultSessionData implements SessionInterface
     {
         $instance = new self();
 
-        $instance->originalData = $instance->data = self::convertValueToScalar($data);
+        /** @var array $arrayShapedData */
+        $arrayShapedData = self::convertValueToScalar($data);
+
+        $instance->originalData = $instance->data = $arrayShapedData;
 
         return $instance;
     }
@@ -145,12 +150,24 @@ final class DefaultSessionData implements SessionInterface
     }
 
     /**
-     * @param int|bool|string|float|array|object|\JsonSerializable $value
+     * @param int|bool|string|float|array|object|\JsonSerializable|null $value
      *
      * @return int|bool|string|float|array
      */
     private static function convertValueToScalar($value)
     {
+        $jsonScalar = json_encode($value, \JSON_PRESERVE_ZERO_FRACTION);
+
+        if (! is_string($jsonScalar)) {
+            // @TODO use PHP 7.3 and JSON_THROW_ON_ERROR instead? https://wiki.php.net/rfc/json_throw_on_error
+            throw new InvalidArgumentException(sprintf(
+                'Could not serialise given value %s due to %s (%s)',
+                var_export($value, true),
+                json_last_error_msg(),
+                json_last_error()
+            ));
+        }
+
         return json_decode(json_encode($value, \JSON_PRESERVE_ZERO_FRACTION), true);
     }
 }

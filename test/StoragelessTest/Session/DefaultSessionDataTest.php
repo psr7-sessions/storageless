@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace PSR7SessionsTest\Storageless\Session;
 
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use PSR7Sessions\Storageless\Session\DefaultSessionData;
 
@@ -236,6 +237,14 @@ final class DefaultSessionDataTest extends TestCase
                 }
             ), $method->getName());
         }
+    }
+
+    public function testRejectsNonJsonSerializableData() : void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Could not serialise given value '\x80' due to Malformed UTF-8 characters, possibly incorrectly encoded (5)");
+
+        DefaultSessionData::fromTokenData(['foo' => "\x80"]);
     }
 
     public function storageNonScalarDataProvider() : array

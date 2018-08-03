@@ -37,8 +37,8 @@ interface SessionInterface extends \JsonSerializable
      * Retrieves a value from the session - if the value doesn't exist, then it uses the given $default, but transformed
      * into a immutable and safely manipulated scalar or array
      *
-     * @param string                                               $key
-     * @param int|bool|string|float|array|object|\JsonSerializable $default
+     * @param string                                                    $key
+     * @param int|bool|string|float|array|object|\JsonSerializable|null $default
      *
      * @return int|bool|string|float|array
      */
