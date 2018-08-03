@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace PSR7Sessions\Storageless\Http;
 
 use Dflydev\FigCookies\FigResponseCookies;
+use Dflydev\FigCookies\Modifier\SameSite;
 use Dflydev\FigCookies\SetCookie;
 use Lcobucci\Clock\Clock;
 use Lcobucci\Clock\SystemClock;
@@ -127,6 +128,7 @@ final class SessionMiddleware implements MiddlewareInterface
             SetCookie::create(self::DEFAULT_COOKIE)
                 ->withSecure(true)
                 ->withHttpOnly(true)
+                ->withSameSite(SameSite::lax())
                 ->withPath('/'),
             new Parser(),
             $expirationTime,
@@ -150,6 +152,7 @@ final class SessionMiddleware implements MiddlewareInterface
             SetCookie::create(self::DEFAULT_COOKIE)
                 ->withSecure(true)
                 ->withHttpOnly(true)
+                ->withSameSite(SameSite::lax())
                 ->withPath('/'),
             new Parser(),
             $expirationTime,

@@ -22,6 +22,7 @@ namespace PSR7SessionsTest\Storageless\Http;
 
 use DateTimeImmutable;
 use Dflydev\FigCookies\FigResponseCookies;
+use Dflydev\FigCookies\Modifier\SameSite;
 use Dflydev\FigCookies\SetCookie;
 use Lcobucci\Clock\FrozenClock;
 use Lcobucci\Clock\SystemClock;
@@ -498,6 +499,20 @@ final class SessionMiddlewareTest extends TestCase
         );
     }
 
+    public function testFromSymmetricKeyDefaultsWillHaveALaxSameSitePolicy() : void
+    {
+        self::assertEquals(
+            SameSite::lax(),
+            $this
+                ->getCookie(
+                    SessionMiddleware
+                        ::fromSymmetricKeyDefaults('not relevant', 100)
+                        ->process(new ServerRequest(), $this->writingMiddleware())
+                )
+                ->getSameSite()
+        );
+    }
+
     /**
      * @group #46
      *
@@ -519,6 +534,24 @@ final class SessionMiddlewareTest extends TestCase
                         ->process(new ServerRequest(), $this->writingMiddleware())
                 )
                 ->getPath()
+        );
+    }
+
+    public function testFromAsymmetricKeyDefaultsWillHaveALaxSameSitePolicy() : void
+    {
+        self::assertEquals(
+            SameSite::lax(),
+            $this
+                ->getCookie(
+                    SessionMiddleware
+                        ::fromAsymmetricKeyDefaults(
+                            file_get_contents(__DIR__ . '/../../keys/private_key.pem'),
+                            file_get_contents(__DIR__ . '/../../keys/public_key.pem'),
+                            200
+                        )
+                        ->process(new ServerRequest(), $this->writingMiddleware())
+                )
+                ->getSameSite()
         );
     }
 
