@@ -25,11 +25,9 @@ interface SessionInterface extends \JsonSerializable
     /**
      * Stores a given value in the session
      *
-     * @param string                                                    $key
-     * @param int|bool|string|float|array|object|\JsonSerializable|null $value allows any nested combination of the previous
-     *                                                                         types as well
+     * @param int|bool|string|float|mixed[]|object|\JsonSerializable|null $value allows any nested combination of the previous
+     *                                                                           types as well
      *
-     * @return void
      */
     public function set(string $key, $value) : void;
 
@@ -37,49 +35,34 @@ interface SessionInterface extends \JsonSerializable
      * Retrieves a value from the session - if the value doesn't exist, then it uses the given $default, but transformed
      * into a immutable and safely manipulated scalar or array
      *
-     * @param string                                                    $key
-     * @param int|bool|string|float|array|object|\JsonSerializable|null $default
+     * @param int|bool|string|float|mixed[]|object|\JsonSerializable|null $default
      *
-     * @return int|bool|string|float|array|null
+     * @return int|bool|string|float|mixed[]|null
      */
     public function get(string $key, $default = null);
 
     /**
      * Removes an item from the session
-     *
-     * @param string $key
-     *
-     * @return void
      */
     public function remove(string $key) : void;
 
     /**
      * Clears the contents of the session
-     *
-     * @return void
      */
     public function clear() : void;
 
     /**
      * Checks whether a given key exists in the session
-     *
-     * @param string $key
-     *
-     * @return bool
      */
     public function has(string $key) : bool;
 
     /**
      * Checks whether the session has changed its contents since its lifecycle start
-     *
-     * @return bool
      */
     public function hasChanged() : bool;
 
     /**
      * Checks whether the session contains any data
-     *
-     * @return bool
      */
     public function isEmpty() : bool;
 

@@ -46,56 +46,30 @@ final class SessionMiddleware implements MiddlewareInterface
     public const DEFAULT_COOKIE       = 'slsession';
     public const DEFAULT_REFRESH_TIME = 60;
 
-    /**
-     * @var Signer
-     */
+    /** @var Signer */
     private $signer;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $signatureKey;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $verificationKey;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $expirationTime;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $refreshTime;
 
-    /**
-     * @var Parser
-     */
+    /** @var Parser */
     private $tokenParser;
 
-    /**
-     * @var SetCookie
-     */
+    /** @var SetCookie */
     private $defaultCookie;
 
-    /**
-     * @var Clock
-     */
+    /** @var Clock */
     private $clock;
 
-    /**
-     * @param Signer    $signer
-     * @param string    $signatureKey
-     * @param string    $verificationKey
-     * @param SetCookie $defaultCookie
-     * @param Parser    $tokenParser
-     * @param int       $expirationTime
-     * @param Clock     $clock
-     * @param int       $refreshTime
-     */
     public function __construct(
         Signer $signer,
         string $signatureKey,

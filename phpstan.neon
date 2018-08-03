@@ -1,6 +1,7 @@
 parameters:
 	level: 7
 	paths:
+	    - examples
 	    - src
 	    - test
 	polluteScopeWithLoopInitialAssignments: false
