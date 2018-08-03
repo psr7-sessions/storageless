@@ -26,7 +26,7 @@
         "psr/http-server-handler":         "^1.0.0",
         "psr/http-server-middleware":      "^1.0.0",
         "lcobucci/jwt":                    "^3.2.2",
-        "dflydev/fig-cookies":             "^1.0.2",
+        "dflydev/fig-cookies":             "^2.0.0",
         "lcobucci/clock":                  "^1.1.0"
     },
     "require-dev": {
