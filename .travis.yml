@@ -17,7 +17,7 @@ before_script:
 script:
   - ./vendor/bin/phpunit $PHPUNIT_FLAGS
   - php examples/index.php > /dev/null
-  - if php -i |grep -qE xdebug; then ./vendor/bin/humbug; fi
+  - if php -i |grep -qE xdebug; then ./vendor/bin/infection --threads=4 --log-verbosity=none; fi
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
