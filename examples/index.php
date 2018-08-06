@@ -26,6 +26,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
+use PSR7Sessions\Storageless\Session\SessionInterface;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\Response\SapiEmitter;
 use Zend\Diactoros\ServerRequestFactory;
@@ -53,16 +54,24 @@ $sessionMiddleware = new SessionMiddleware(
 );
 
 $myMiddleware = new class implements RequestHandlerInterface {
-    public function handle(ServerRequestInterface $request) : ResponseInterface {
-        /* @var \PSR7Sessions\Storageless\Session\SessionInterface $session */
+    public function handle(ServerRequestInterface $request) : ResponseInterface
+    {
+        /** @var SessionInterface $session */
         $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
-        $session->set('counter', $session->get('counter', 0) + 1);
+
+        $counterValue = $session->get('counter', 0);
+
+        assert(is_int($counterValue));
+
+        $counterValue += 1;
+
+        $session->set('counter', $counterValue);
 
         $response = new Response();
 
         $response
             ->getBody()
-            ->write('Counter Value: ' . $session->get('counter'));
+            ->write('Counter Value: ' . $counterValue);
 
         return $response;
     }

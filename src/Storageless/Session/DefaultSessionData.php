@@ -20,16 +20,24 @@ declare(strict_types=1);
 
 namespace PSR7Sessions\Storageless\Session;
 
+use InvalidArgumentException;
+use const JSON_PRESERVE_ZERO_FRACTION;
+use function array_key_exists;
+use function count;
+use function is_string;
+use function json_decode;
+use function json_encode;
+use function json_last_error;
+use function json_last_error_msg;
+use function sprintf;
+use function var_export;
+
 final class DefaultSessionData implements SessionInterface
 {
-    /**
-     * @var array
-     */
+    /** @var array<string, int|bool|string|float|mixed[]|null> */
     private $data;
 
-    /**
-     * @var array
-     */
+    /** @var array<string, int|bool|string|float|mixed[]|null> */
     private $originalData;
 
     /**
@@ -47,11 +55,15 @@ final class DefaultSessionData implements SessionInterface
     {
         $instance = new self();
 
-        $instance->originalData = $instance->data = self::convertValueToScalar($data);
+        /** @var array $arrayShapedData */
+        $arrayShapedData = self::convertValueToScalar($data);
+
+        $instance->originalData = $instance->data = $arrayShapedData;
 
         return $instance;
     }
 
+    /** @param mixed[] $data */
     public static function fromTokenData(array $data) : self
     {
         $instance = new self();
@@ -133,24 +145,36 @@ final class DefaultSessionData implements SessionInterface
      */
     public function isEmpty() : bool
     {
-        return empty($this->data);
+        return ! count($this->data);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function jsonSerialize()
+    public function jsonSerialize() : object
     {
-        return $this->data;
+        return (object) $this->data;
     }
 
     /**
-     * @param int|bool|string|float|array|object|\JsonSerializable $value
+     * @param int|bool|string|float|mixed[]|object|\JsonSerializable|null $value
      *
-     * @return int|bool|string|float|array
+     * @return int|bool|string|float|mixed[]
      */
     private static function convertValueToScalar($value)
     {
-        return json_decode(json_encode($value, \JSON_PRESERVE_ZERO_FRACTION), true);
+        $jsonScalar = json_encode($value, JSON_PRESERVE_ZERO_FRACTION);
+
+        if (! is_string($jsonScalar)) {
+            // @TODO use PHP 7.3 and JSON_THROW_ON_ERROR instead? https://wiki.php.net/rfc/json_throw_on_error
+            throw new InvalidArgumentException(sprintf(
+                'Could not serialise given value %s due to %s (%s)',
+                var_export($value, true),
+                json_last_error_msg(),
+                json_last_error()
+            ));
+        }
+
+        return json_decode($jsonScalar, true);
     }
 }

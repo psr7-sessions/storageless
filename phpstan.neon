@@ -1,0 +1,47 @@
+parameters:
+	level: 7
+	paths:
+	    - examples
+	    - src
+	    - test
+	polluteScopeWithLoopInitialAssignments: false
+	checkAlwaysTrueCheckTypeFunctionCall: true
+	checkAlwaysTrueInstanceof: true
+	checkAlwaysTrueStrictComparison: true
+	checkFunctionNameCase: true
+includes:
+	- vendor/phpstan/phpstan-phpunit/extension.neon
+	- vendor/phpstan/phpstan-phpunit/rules.neon
+
+rules:
+	- PHPStan\Rules\BooleansInConditions\BooleanInBooleanOrRule
+	- PHPStan\Rules\BooleansInConditions\BooleanInElseIfConditionRule
+	- PHPStan\Rules\BooleansInConditions\BooleanInIfConditionRule
+	- PHPStan\Rules\BooleansInConditions\BooleanInTernaryOperatorRule
+	- PHPStan\Rules\DisallowedConstructs\DisallowedEmptyRule
+	- PHPStan\Rules\DisallowedConstructs\DisallowedImplicitArrayCreationRule
+	- PHPStan\Rules\Functions\MissingFunctionParameterTypehintRule
+	- PHPStan\Rules\Functions\MissingFunctionReturnTypehintRule
+	- PHPStan\Rules\Methods\MissingMethodParameterTypehintRule
+	- PHPStan\Rules\Methods\MissingMethodReturnTypehintRule
+	- PHPStan\Rules\Methods\WrongCaseOfInheritedMethodRule
+	- PHPStan\Rules\Operators\OperandInArithmeticPostDecrementRule
+	- PHPStan\Rules\Operators\OperandInArithmeticPostIncrementRule
+	- PHPStan\Rules\Operators\OperandInArithmeticPreDecrementRule
+	- PHPStan\Rules\Operators\OperandInArithmeticPreIncrementRule
+	- PHPStan\Rules\Operators\OperandsInArithmeticAdditionRule
+	- PHPStan\Rules\Operators\OperandsInArithmeticDivisionRule
+	- PHPStan\Rules\Operators\OperandsInArithmeticExponentiationRule
+	- PHPStan\Rules\Operators\OperandsInArithmeticModuloRule
+	- PHPStan\Rules\Operators\OperandsInArithmeticMultiplicationRule
+	- PHPStan\Rules\Operators\OperandsInArithmeticSubtractionRule
+	- PHPStan\Rules\Properties\MissingPropertyTypehintRule
+	- PHPStan\Rules\StrictCalls\DynamicCallOnStaticMethodsRule
+	- PHPStan\Rules\StrictCalls\StrictFunctionCallsRule
+	- PHPStan\Rules\SwitchConditions\MatchingTypeInSwitchCaseConditionRule
+
+services:
+	-
+		class: PHPStan\Rules\BooleansInConditions\BooleanRuleHelper
+	-
+		class: PHPStan\Rules\Operators\OperatorRuleHelper

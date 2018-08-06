@@ -2,5 +2,4 @@ vendor
 composer.lock
 composer.phar
 clover.xml
-humbuglog.txt
-humbuglog.json
+infectionlog.txt

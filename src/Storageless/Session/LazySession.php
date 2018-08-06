@@ -29,9 +29,7 @@ final class LazySession implements SessionInterface
      */
     private $realSession;
 
-    /**
-     * @var callable
-     */
+    /** @var callable */
     private $sessionLoader;
 
     /**
@@ -41,11 +39,6 @@ final class LazySession implements SessionInterface
     {
     }
 
-    /**
-     * @param callable $sessionLoader
-     *
-     * @return self
-     */
     public static function fromContainerBuildingCallback(callable $sessionLoader) : self
     {
         $instance = new self();
@@ -114,7 +107,7 @@ final class LazySession implements SessionInterface
     /**
      * {@inheritDoc}
      */
-    public function jsonSerialize()
+    public function jsonSerialize() : object
     {
         return $this->getRealSession()->jsonSerialize();
     }
@@ -122,7 +115,6 @@ final class LazySession implements SessionInterface
     /**
      * Get or initialize the session
      *
-     * @return SessionInterface
      */
     private function getRealSession() : SessionInterface
     {
@@ -132,7 +124,6 @@ final class LazySession implements SessionInterface
     /**
      * Type-safe wrapper that ensures that the given callback returns the expected type of object, when called
      *
-     * @return SessionInterface
      */
     private function loadSession() : SessionInterface
     {

@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace PSR7Sessions\Storageless\Http;
 
 use Dflydev\FigCookies\FigResponseCookies;
+use Dflydev\FigCookies\Modifier\SameSite;
 use Dflydev\FigCookies\SetCookie;
 use Lcobucci\Clock\Clock;
 use Lcobucci\Clock\SystemClock;
@@ -45,56 +46,30 @@ final class SessionMiddleware implements MiddlewareInterface
     public const DEFAULT_COOKIE       = 'slsession';
     public const DEFAULT_REFRESH_TIME = 60;
 
-    /**
-     * @var Signer
-     */
+    /** @var Signer */
     private $signer;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $signatureKey;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $verificationKey;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $expirationTime;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $refreshTime;
 
-    /**
-     * @var Parser
-     */
+    /** @var Parser */
     private $tokenParser;
 
-    /**
-     * @var SetCookie
-     */
+    /** @var SetCookie */
     private $defaultCookie;
 
-    /**
-     * @var Clock
-     */
+    /** @var Clock */
     private $clock;
 
-    /**
-     * @param Signer    $signer
-     * @param string    $signatureKey
-     * @param string    $verificationKey
-     * @param SetCookie $defaultCookie
-     * @param Parser    $tokenParser
-     * @param int       $expirationTime
-     * @param Clock     $clock
-     * @param int       $refreshTime
-     */
     public function __construct(
         Signer $signer,
         string $signatureKey,
@@ -127,6 +102,7 @@ final class SessionMiddleware implements MiddlewareInterface
             SetCookie::create(self::DEFAULT_COOKIE)
                 ->withSecure(true)
                 ->withHttpOnly(true)
+                ->withSameSite(SameSite::lax())
                 ->withPath('/'),
             new Parser(),
             $expirationTime,
@@ -150,6 +126,7 @@ final class SessionMiddleware implements MiddlewareInterface
             SetCookie::create(self::DEFAULT_COOKIE)
                 ->withSecure(true)
                 ->withHttpOnly(true)
+                ->withSameSite(SameSite::lax())
                 ->withPath('/'),
             new Parser(),
             $expirationTime,
@@ -207,8 +184,12 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     private function extractSessionContainer(?Token $token) : SessionInterface
     {
+        if (! $token) {
+            return DefaultSessionData::newEmptySession();
+        }
+
         try {
-            if (null === $token || ! $token->verify($this->signer, $this->verificationKey)) {
+            if (! $token->verify($this->signer, $this->verificationKey)) {
                 return DefaultSessionData::newEmptySession();
             }
 
@@ -241,7 +222,7 @@ final class SessionMiddleware implements MiddlewareInterface
 
     private function shouldTokenBeRefreshed(?Token $token) : bool
     {
-        if (! $token || ! $token->hasClaim(self::ISSUED_AT_CLAIM)) {
+        if (! ($token && $token->hasClaim(self::ISSUED_AT_CLAIM))) {
             return false;
         }
 
@@ -264,6 +245,7 @@ final class SessionMiddleware implements MiddlewareInterface
                     ->set(self::SESSION_CLAIM, $sessionContainer)
                     ->sign($this->signer, $this->signatureKey)
                     ->getToken()
+                    ->__toString()
             )
             ->withExpires($timestamp + $this->expirationTime);
     }

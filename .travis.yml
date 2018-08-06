@@ -2,7 +2,6 @@ language: php
 sudo: false
 
 php:
-  - 7.1
   - 7.2
   - nightly
 
@@ -15,10 +14,16 @@ before_script:
   - composer update --prefer-source --ignore-platform-reqs
 
 script:
+  - ./vendor/bin/phpstan analyse
   - ./vendor/bin/phpunit $PHPUNIT_FLAGS
   - php examples/index.php > /dev/null
-  - if php -i |grep -qE xdebug; then ./vendor/bin/humbug; fi
+  - if php -i |grep -qE xdebug; then ./vendor/bin/infection --log-verbosity=none --threads=4; fi
+  - ./vendor/bin/phpcs
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
   - if [ -f clover.xml ]; then php ocular.phar code-coverage:upload --format=php-clover ./clover.xml; fi
+
+matrix:
+  allow_failures:
+  - php: nightly
