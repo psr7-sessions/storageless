@@ -38,10 +38,17 @@
         "phpstan/phpstan-phpunit":      "^0.10",
         "phpstan/phpstan-strict-rules": "^0.10.1",
         "squizlabs/php_codesniffer":    "^3.3.1",
-        "doctrine/coding-standard":     "^4.0.0"
+        "doctrine/coding-standard":     "^4.0.0",
+        "zendframework/zend-expressive-session": "^1.2.1"
     },
     "replace": {
         "ocramius/psr7-session": "self.version"
+    },
+    "conflict": {
+        "zendframework/zend-expressive-session": "<1.2,>2.0"
+    },
+    "suggest": {
+        "zendframework/zend-expressive-session": "Integrates storageless with dependencies on zend-expressive-session"
     },
     "autoload": {
         "psr-4": {
@@ -55,7 +62,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "5.0.x-dev"
+            "dev-master": "5.1.x-dev"
         }
     }
 }
