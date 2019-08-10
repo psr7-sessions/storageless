@@ -20,9 +20,11 @@ declare(strict_types=1);
 
 namespace PSR7Sessions\Storageless\Http;
 
+use BadMethodCallException;
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\Modifier\SameSite;
 use Dflydev\FigCookies\SetCookie;
+use InvalidArgumentException;
 use Lcobucci\Clock\Clock;
 use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Builder;
@@ -30,6 +32,7 @@ use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\ValidationData;
+use OutOfBoundsException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\MiddlewareInterface;
@@ -37,6 +40,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use PSR7Sessions\Storageless\Session\DefaultSessionData;
 use PSR7Sessions\Storageless\Session\LazySession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
+use stdClass;
 
 final class SessionMiddleware implements MiddlewareInterface
 {
@@ -137,8 +141,8 @@ final class SessionMiddleware implements MiddlewareInterface
     /**
      * {@inheritdoc}
      *
-     * @throws \BadMethodCallException
-     * @throws \InvalidArgumentException
+     * @throws BadMethodCallException
+     * @throws InvalidArgumentException
      */
     public function process(Request $request, RequestHandlerInterface $delegate) : Response
     {
@@ -168,7 +172,7 @@ final class SessionMiddleware implements MiddlewareInterface
 
         try {
             $token = $this->tokenParser->parse($cookies[$cookieName]);
-        } catch (\InvalidArgumentException $invalidToken) {
+        } catch (InvalidArgumentException $invalidToken) {
             return null;
         }
 
@@ -180,7 +184,7 @@ final class SessionMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @throws \OutOfBoundsException
+     * @throws OutOfBoundsException
      */
     private function extractSessionContainer(?Token $token) : SessionInterface
     {
@@ -194,16 +198,16 @@ final class SessionMiddleware implements MiddlewareInterface
             }
 
             return DefaultSessionData::fromDecodedTokenData(
-                (object) $token->getClaim(self::SESSION_CLAIM, new \stdClass())
+                (object) $token->getClaim(self::SESSION_CLAIM, new stdClass())
             );
-        } catch (\BadMethodCallException $invalidToken) {
+        } catch (BadMethodCallException $invalidToken) {
             return DefaultSessionData::newEmptySession();
         }
     }
 
     /**
-     * @throws \BadMethodCallException
-     * @throws \InvalidArgumentException
+     * @throws BadMethodCallException
+     * @throws InvalidArgumentException
      */
     private function appendToken(SessionInterface $sessionContainer, Response $response, ?Token $token) : Response
     {
@@ -230,7 +234,7 @@ final class SessionMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @throws \BadMethodCallException
+     * @throws BadMethodCallException
      */
     private function getTokenCookie(SessionInterface $sessionContainer) : SetCookie
     {

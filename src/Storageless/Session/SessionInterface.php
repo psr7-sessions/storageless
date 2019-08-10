@@ -20,14 +20,15 @@ declare(strict_types=1);
 
 namespace PSR7Sessions\Storageless\Session;
 
-interface SessionInterface extends \JsonSerializable
+use JsonSerializable;
+
+interface SessionInterface extends JsonSerializable
 {
     /**
      * Stores a given value in the session
      *
-     * @param int|bool|string|float|mixed[]|object|\JsonSerializable|null $value allows any nested combination of the previous
-     *                                                                           types as well
-     *
+     * @param int|bool|string|float|mixed[]|object|JsonSerializable|null $value allows any nested combination of the previous
+     * types as well
      */
     public function set(string $key, $value) : void;
 
@@ -35,7 +36,7 @@ interface SessionInterface extends \JsonSerializable
      * Retrieves a value from the session - if the value doesn't exist, then it uses the given $default, but transformed
      * into a immutable and safely manipulated scalar or array
      *
-     * @param int|bool|string|float|mixed[]|object|\JsonSerializable|null $default
+     * @param int|bool|string|float|mixed[]|object|JsonSerializable|null $default
      *
      * @return int|bool|string|float|mixed[]|null
      */

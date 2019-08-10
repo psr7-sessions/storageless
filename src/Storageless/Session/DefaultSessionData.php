@@ -21,6 +21,8 @@ declare(strict_types=1);
 namespace PSR7Sessions\Storageless\Session;
 
 use InvalidArgumentException;
+use JsonSerializable;
+use stdClass;
 use const JSON_PRESERVE_ZERO_FRACTION;
 use function array_key_exists;
 use function count;
@@ -51,7 +53,7 @@ final class DefaultSessionData implements SessionInterface
     {
     }
 
-    public static function fromDecodedTokenData(\stdClass $data) : self
+    public static function fromDecodedTokenData(stdClass $data) : self
     {
         $instance = new self();
 
@@ -157,7 +159,7 @@ final class DefaultSessionData implements SessionInterface
     }
 
     /**
-     * @param int|bool|string|float|mixed[]|object|\JsonSerializable|null $value
+     * @param int|bool|string|float|mixed[]|object|JsonSerializable|null $value
      *
      * @return int|bool|string|float|mixed[]
      */

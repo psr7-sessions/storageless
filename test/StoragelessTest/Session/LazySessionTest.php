@@ -24,6 +24,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use PSR7Sessions\Storageless\Session\LazySession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
+use stdClass;
 use function uniqid;
 
 /**
@@ -47,7 +48,7 @@ final class LazySessionTest extends TestCase
     {
         $this->wrappedSession = $this->createMock(SessionInterface::class);
         /** @var callable|MockObject $sessionLoader */
-        $sessionLoader       = $this->getMockBuilder(\stdClass::class)->setMethods(['__invoke'])->getMock();
+        $sessionLoader       = $this->getMockBuilder(stdClass::class)->setMethods(['__invoke'])->getMock();
         $this->sessionLoader = $sessionLoader;
         $this->lazySession   = LazySession::fromContainerBuildingCallback($this->sessionLoader);
     }
