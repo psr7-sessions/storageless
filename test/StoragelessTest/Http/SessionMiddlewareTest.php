@@ -39,6 +39,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
 use PSR7Sessions\Storageless\Session\DefaultSessionData;
 use PSR7Sessions\Storageless\Session\SessionInterface;
+use ReflectionProperty;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
 use function file_get_contents;
@@ -105,7 +106,7 @@ final class SessionMiddlewareTest extends TestCase
 
         $token = $this->getCookie($response)->getValue();
 
-        self::assertInternalType('string', $token);
+        self::assertIsString($token);
         self::assertEquals((object) ['foo' => 'bar'], (new Parser())->parse($token)->getClaim('session-data'));
     }
 
@@ -288,7 +289,7 @@ final class SessionMiddlewareTest extends TestCase
             })))
             ->getValue();
 
-        self::assertInternalType('string', $tokenString);
+        self::assertIsString($tokenString);
 
         $token = (new Parser())->parse($tokenString);
 
@@ -736,19 +737,27 @@ final class SessionMiddlewareTest extends TestCase
 
     private function getSigner(SessionMiddleware $middleware) : Signer
     {
-        return self::getObjectAttribute($middleware, 'signer');
+        $property = new ReflectionProperty(SessionMiddleware::class, 'signer');
+
+        $property->setAccessible(true);
+
+        return $property->getValue($middleware);
     }
 
     private function getSignatureKey(SessionMiddleware $middleware) : string
     {
-        return self::getObjectAttribute($middleware, 'signatureKey');
+        $property = new ReflectionProperty(SessionMiddleware::class, 'signatureKey');
+
+        $property->setAccessible(true);
+
+        return $property->getValue($middleware);
     }
 
     private static function privateKey() : string
     {
         $key = file_get_contents(__DIR__ . '/../../keys/private_key.pem');
 
-        self::assertInternalType('string', $key);
+        self::assertIsString($key);
 
         return $key;
     }
@@ -757,7 +766,7 @@ final class SessionMiddlewareTest extends TestCase
     {
         $key = file_get_contents(__DIR__ . '/../../keys/public_key.pem');
 
-        self::assertInternalType('string', $key);
+        self::assertIsString($key);
 
         return $key;
     }
