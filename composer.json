@@ -24,7 +24,7 @@
         "php":                             "^7.2",
         "ext-json":                        "*",
         "psr/http-message":                "^1.0.1",
-        "psr/http-server-handler":         "^1.0.0",
+        "psr/http-server-handler":         "^1.0.1",
         "psr/http-server-middleware":      "^1.0.0",
         "lcobucci/jwt":                    "^3.2.4",
         "dflydev/fig-cookies":             "^2.0.0",
