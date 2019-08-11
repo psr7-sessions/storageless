@@ -20,16 +20,19 @@ declare(strict_types=1);
 
 namespace PSR7SessionsTest\Storageless\Http;
 
+use DateTime;
 use DateTimeImmutable;
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\Modifier\SameSite;
 use Dflydev\FigCookies\SetCookie;
+use InvalidArgumentException;
 use Lcobucci\Clock\FrozenClock;
 use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
+use OutOfBoundsException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
@@ -118,7 +121,7 @@ final class SessionMiddlewareTest extends TestCase
         $sessionValue = uniqid('', true);
 
         $checkingMiddleware = $this->fakeDelegate(
-            function (ServerRequestInterface $request) use ($sessionValue) {
+            static function (ServerRequestInterface $request) use ($sessionValue) {
                 /** @var SessionInterface $session */
                 $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
 
@@ -155,7 +158,7 @@ final class SessionMiddlewareTest extends TestCase
         $sessionValue = uniqid('not valid session data', true);
 
         $checkingMiddleware = $this->fakeDelegate(
-            function (ServerRequestInterface $request) use ($sessionValue) {
+            static function (ServerRequestInterface $request) use ($sessionValue) {
                 /** @var SessionInterface $session */
                 $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
 
@@ -168,8 +171,8 @@ final class SessionMiddlewareTest extends TestCase
 
         $this->createTokenWithCustomClaim(
             $middleware,
-            new \DateTime('-1 day'),
-            new \DateTime('+1 day'),
+            new DateTime('-1 day'),
+            new DateTime('+1 day'),
             'not valid session data'
         );
 
@@ -178,8 +181,8 @@ final class SessionMiddlewareTest extends TestCase
                 ->withCookieParams([
                     SessionMiddleware::DEFAULT_COOKIE => $this->createTokenWithCustomClaim(
                         $middleware,
-                        new \DateTime('-1 day'),
-                        new \DateTime('+1 day'),
+                        new DateTime('-1 day'),
+                        new DateTime('+1 day'),
                         $sessionValue
                     ),
                 ]),
@@ -196,8 +199,8 @@ final class SessionMiddlewareTest extends TestCase
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => $this->createToken(
                     $middleware,
-                    new \DateTime('-1 day'),
-                    new \DateTime('-2 day')
+                    new DateTime('-1 day'),
+                    new DateTime('-2 day')
                 ),
             ]);
 
@@ -213,8 +216,8 @@ final class SessionMiddlewareTest extends TestCase
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => $this->createToken(
                     $middleware,
-                    new \DateTime('+1 day'),
-                    new \DateTime('-2 day')
+                    new DateTime('+1 day'),
+                    new DateTime('-2 day')
                 ),
             ]);
 
@@ -229,8 +232,8 @@ final class SessionMiddlewareTest extends TestCase
         $unsignedToken = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
-                    ->setIssuedAt((new \DateTime('-1 day'))->getTimestamp())
-                    ->setExpiration((new \DateTime('+1 day'))->getTimestamp())
+                    ->setIssuedAt((new DateTime('-1 day'))->getTimestamp())
+                    ->setExpiration((new DateTime('+1 day'))->getTimestamp())
                     ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
                     ->getToken(),
             ]);
@@ -246,7 +249,7 @@ final class SessionMiddlewareTest extends TestCase
         $unsignedToken = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
-                    ->setExpiration((new \DateTime('+1 day'))->getTimestamp())
+                    ->setExpiration((new DateTime('+1 day'))->getTimestamp())
                     ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
                     ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
                     ->getToken(),
@@ -260,7 +263,7 @@ final class SessionMiddlewareTest extends TestCase
         // forcing ourselves to think of time as a mutable value:
         $time = time() + random_int(-100, +100);
 
-        $clock = new FrozenClock(new \DateTimeImmutable('@' . $time));
+        $clock = new FrozenClock(new DateTimeImmutable('@' . $time));
 
         $middleware = new SessionMiddleware(
             new Sha256(),
@@ -284,7 +287,7 @@ final class SessionMiddlewareTest extends TestCase
             ]);
 
         $tokenString = $this
-            ->getCookie($middleware->process($requestWithTokenIssuedInThePast, $this->fakeDelegate(function () {
+            ->getCookie($middleware->process($requestWithTokenIssuedInThePast, $this->fakeDelegate(static function () {
                 return new Response();
             })))
             ->getValue();
@@ -307,7 +310,7 @@ final class SessionMiddlewareTest extends TestCase
                 $middleware->process(new ServerRequest(), $this->writingMiddleware())
             ),
             $this->fakeDelegate(
-                function (ServerRequestInterface $request) {
+                static function (ServerRequestInterface $request) {
                     /** @var SessionInterface $session */
                     $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
 
@@ -333,7 +336,7 @@ final class SessionMiddlewareTest extends TestCase
                 $middleware->process(new ServerRequest(), $this->writingMiddleware())
             ),
             $this->fakeDelegate(
-                function (ServerRequestInterface $request) {
+                static function (ServerRequestInterface $request) {
                     /** @var SessionInterface $session */
                     $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
 
@@ -436,7 +439,7 @@ final class SessionMiddlewareTest extends TestCase
 
         $middleware->process(
             $request,
-            $this->fakeDelegate(function (ServerRequestInterface $request) {
+            $this->fakeDelegate(static function (ServerRequestInterface $request) {
                 self::assertInstanceOf(
                     SessionInterface::class,
                     $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE)
@@ -464,8 +467,8 @@ final class SessionMiddlewareTest extends TestCase
         $expiringToken = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
-                    ->setIssuedAt((new \DateTime('-800 second'))->getTimestamp())
-                    ->setExpiration((new \DateTime('+200 second'))->getTimestamp())
+                    ->setIssuedAt((new DateTime('-800 second'))->getTimestamp())
+                    ->setExpiration((new DateTime('+200 second'))->getTimestamp())
                     ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
                     ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
                     ->getToken(),
@@ -473,7 +476,7 @@ final class SessionMiddlewareTest extends TestCase
 
         $initialResponse = new Response();
 
-        $response = $middleware->process($expiringToken, $this->fakeDelegate(function () use ($initialResponse) {
+        $response = $middleware->process($expiringToken, $this->fakeDelegate(static function () use ($initialResponse) {
             return $initialResponse;
         }));
 
@@ -501,8 +504,8 @@ final class SessionMiddlewareTest extends TestCase
         $validToken = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
-                    ->setIssuedAt((new \DateTime('-100 second'))->getTimestamp())
-                    ->setExpiration((new \DateTime('+900 second'))->getTimestamp())
+                    ->setIssuedAt((new DateTime('-100 second'))->getTimestamp())
+                    ->setExpiration((new DateTime('+900 second'))->getTimestamp())
                     ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
                     ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
                     ->getToken(),
@@ -567,10 +570,10 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     /**
-     * @group #46
+     * @throws InvalidArgumentException
+     * @throws OutOfBoundsException
      *
-     * @throws \InvalidArgumentException
-     * @throws \OutOfBoundsException
+     * @group #46
      */
     public function testFromAsymmetricKeyDefaultsWillHaveADefaultSessionPath() : void
     {
@@ -625,10 +628,12 @@ final class SessionMiddlewareTest extends TestCase
             $handleRequest
                 ->expects(self::once())
                 ->method('handle')
-                ->willReturnCallback(function (ServerRequestInterface $serverRequest) use ($next, & $initialResponse) {
-                    $initialResponse = $next->handle($serverRequest);
+                ->willReturnCallback(static function (ServerRequestInterface $serverRequest) use ($next, & $initialResponse) {
+                    $response = $next->handle($serverRequest);
 
-                    return $initialResponse;
+                    $initialResponse = $response;
+
+                    return $response;
                 });
         }
 
@@ -648,13 +653,13 @@ final class SessionMiddlewareTest extends TestCase
 
         $cookie = $this->getCookie($response);
 
-        self::assertLessThan((new \DateTime('-29 day'))->getTimestamp(), $cookie->getExpires());
+        self::assertLessThan((new DateTime('-29 day'))->getTimestamp(), $cookie->getExpires());
         self::assertEmpty($cookie->getValue());
 
         return $response;
     }
 
-    private function createToken(SessionMiddleware $middleware, \DateTime $issuedAt, \DateTime $expiration) : string
+    private function createToken(SessionMiddleware $middleware, DateTime $issuedAt, DateTime $expiration) : string
     {
         return (string) (new Builder())
             ->setIssuedAt($issuedAt->getTimestamp())
@@ -667,8 +672,8 @@ final class SessionMiddlewareTest extends TestCase
     /** @param mixed $claim */
     private function createTokenWithCustomClaim(
         SessionMiddleware $middleware,
-        \DateTime $issuedAt,
-        \DateTime $expiration,
+        DateTime $issuedAt,
+        DateTime $expiration,
         $claim
     ) : string {
         return (string) (new Builder())
@@ -682,7 +687,7 @@ final class SessionMiddlewareTest extends TestCase
     private function emptyValidationMiddleware() : RequestHandlerInterface
     {
         return $this->fakeDelegate(
-            function (ServerRequestInterface $request) {
+            static function (ServerRequestInterface $request) {
                 $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
 
                 self::assertInstanceOf(SessionInterface::class, $session);
@@ -696,7 +701,7 @@ final class SessionMiddlewareTest extends TestCase
     private function writingMiddleware(string $value = 'bar') : RequestHandlerInterface
     {
         return $this->fakeDelegate(
-            function (ServerRequestInterface $request) use ($value) {
+            static function (ServerRequestInterface $request) use ($value) {
                 /** @var SessionInterface $session */
                 $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
                 $session->set('foo', $value);
@@ -720,7 +725,6 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     /**
-     *
      * @return ServerRequest
      */
     private function requestWithResponseCookies(ResponseInterface $response) : ServerRequestInterface

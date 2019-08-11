@@ -114,7 +114,6 @@ final class LazySession implements SessionInterface
 
     /**
      * Get or initialize the session
-     *
      */
     private function getRealSession() : SessionInterface
     {
@@ -123,7 +122,6 @@ final class LazySession implements SessionInterface
 
     /**
      * Type-safe wrapper that ensures that the given callback returns the expected type of object, when called
-     *
      */
     private function loadSession() : SessionInterface
     {

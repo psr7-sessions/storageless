@@ -24,6 +24,7 @@ use InvalidArgumentException;
 use JsonSerializable;
 use PHPUnit\Framework\TestCase;
 use PSR7Sessions\Storageless\Session\DefaultSessionData;
+use ReflectionClass;
 use stdClass;
 use const PHP_INT_MAX;
 use const PHP_INT_MIN;
@@ -104,9 +105,9 @@ final class DefaultSessionDataTest extends TestCase
     }
 
     /**
-     * @dataProvider storageScalarDataProvider
-     *
      * @param int|bool|string|float|mixed[]|object|JsonSerializable|null $value
+     *
+     * @dataProvider storageScalarDataProvider
      */
     public function testContainerDataIsStoredAndRetrieved(string $key, $value) : void
     {
@@ -117,9 +118,9 @@ final class DefaultSessionDataTest extends TestCase
     }
 
     /**
-     * @dataProvider storageScalarDataProvider
-     *
      * @param int|bool|string|float|mixed[]|object|JsonSerializable|null $value
+     *
+     * @dataProvider storageScalarDataProvider
      */
     public function testSettingDataInAContainerMarksTheContainerAsMutated(string $key, $value) : void
     {
@@ -146,9 +147,9 @@ final class DefaultSessionDataTest extends TestCase
     }
 
     /**
-     * @dataProvider storageScalarDataProvider
-     *
      * @param int|bool|string|float|mixed[]|object|JsonSerializable|null $value
+     *
+     * @dataProvider storageScalarDataProvider
      */
     public function testContainerIsNotChangedWhenScalarDataIsSetAndOverwrittenInIt(string $key, $value) : void
     {
@@ -162,9 +163,9 @@ final class DefaultSessionDataTest extends TestCase
     }
 
     /**
-     * @dataProvider storageNonScalarDataProvider
-     *
      * @param int|bool|string|float|mixed[]|object|JsonSerializable|null $nonScalarValue
+     *
+     * @dataProvider storageNonScalarDataProvider
      */
     public function testContainerIsNotChangedWhenNonScalarDataIsSetAndOverwrittenInIt($nonScalarValue) : void
     {
@@ -178,9 +179,9 @@ final class DefaultSessionDataTest extends TestCase
     }
 
     /**
-     * @dataProvider storageScalarDataProvider
-     *
      * @param int|bool|string|float|mixed[]|object|JsonSerializable|null $value
+     *
+     * @dataProvider storageScalarDataProvider
      */
     public function testContainerBuiltWithDataContainsData(string $key, $value) : void
     {
@@ -191,9 +192,9 @@ final class DefaultSessionDataTest extends TestCase
     }
 
     /**
-     * @dataProvider storageScalarDataProvider
-     *
      * @param int|bool|string|float|mixed[]|object|JsonSerializable|null $value
+     *
+     * @dataProvider storageScalarDataProvider
      */
     public function testContainerBuiltWithStdClassContainsData(string $key, $value) : void
     {
@@ -208,10 +209,10 @@ final class DefaultSessionDataTest extends TestCase
     }
 
     /**
-     * @dataProvider storageNonScalarDataProvider
-     *
      * @param int|bool|string|float|mixed[]|object|JsonSerializable|null $nonScalar
      * @param int|bool|string|float|mixed[]|null                         $expectedScalar
+     *
+     * @dataProvider storageNonScalarDataProvider
      */
     public function testContainerStoresScalarValueFromNestedObjects($nonScalar, $expectedScalar) : void
     {
@@ -225,9 +226,9 @@ final class DefaultSessionDataTest extends TestCase
     }
 
     /**
-     * @dataProvider storageScalarDataProvider
-     *
      * @param int|bool|string|float|mixed[]|object|JsonSerializable|null $value
+     *
+     * @dataProvider storageScalarDataProvider
      */
     public function testGetWillReturnDefaultValueOnNonExistingKey(string $key, $value) : void
     {
@@ -238,10 +239,10 @@ final class DefaultSessionDataTest extends TestCase
     }
 
     /**
-     * @dataProvider storageNonScalarDataProvider
-     *
      * @param int|bool|string|float|mixed[]|object|JsonSerializable|null $nonScalar
      * @param int|bool|string|float|mixed[]|null                         $expectedScalar
+     *
+     * @dataProvider storageNonScalarDataProvider
      */
     public function testGetWillReturnScalarCastDefaultValueOnNonExistingKey($nonScalar, $expectedScalar) : void
     {
@@ -250,7 +251,7 @@ final class DefaultSessionDataTest extends TestCase
 
     public function testAllMethodsAreCoveredByAnInterfacedMethod() : void
     {
-        $reflection = new \ReflectionClass(DefaultSessionData::class);
+        $reflection = new ReflectionClass(DefaultSessionData::class);
         $interfaces = $reflection->getInterfaces();
 
         foreach ($reflection->getMethods() as $method) {
@@ -260,7 +261,7 @@ final class DefaultSessionDataTest extends TestCase
 
             self::assertNotEmpty(array_filter(
                 $interfaces,
-                function (\ReflectionClass $interface) use ($method) {
+                static function (ReflectionClass $interface) use ($method) {
                     return $interface->hasMethod($method->getName());
                 }
             ), $method->getName());
