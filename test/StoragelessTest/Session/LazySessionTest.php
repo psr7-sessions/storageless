@@ -25,6 +25,8 @@ use PHPUnit\Framework\TestCase;
 use PSR7Sessions\Storageless\Session\LazySession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
 use stdClass;
+use function assert;
+use function is_callable;
 use function uniqid;
 
 /**
@@ -32,23 +34,19 @@ use function uniqid;
  */
 final class LazySessionTest extends TestCase
 {
-    /** @var SessionInterface|MockObject */
-    private $wrappedSession;
+    /** @var SessionInterface&MockObject */
+    private SessionInterface $wrappedSession;
 
-    /** @var callable|MockObject */
-    private $sessionLoader;
+    /** @var callable&MockObject */
+    private MockObject $sessionLoader;
 
-    /** @var LazySession */
-    private $lazySession;
+    private LazySession $lazySession;
 
-    /**
-     * {@inheritDoc}
-     */
     protected function setUp() : void
     {
         $this->wrappedSession = $this->createMock(SessionInterface::class);
-        /** @var callable|MockObject $sessionLoader */
-        $sessionLoader       = $this->getMockBuilder(stdClass::class)->setMethods(['__invoke'])->getMock();
+        $sessionLoader        = $this->getMockBuilder(stdClass::class)->setMethods(['__invoke'])->getMock();
+        assert(is_callable($sessionLoader));
         $this->sessionLoader = $sessionLoader;
         $this->lazySession   = LazySession::fromContainerBuildingCallback($this->sessionLoader);
     }

@@ -50,29 +50,21 @@ final class SessionMiddleware implements MiddlewareInterface
     public const DEFAULT_COOKIE       = 'slsession';
     public const DEFAULT_REFRESH_TIME = 60;
 
-    /** @var Signer */
-    private $signer;
+    private Signer $signer;
 
-    /** @var string */
-    private $signatureKey;
+    private string $signatureKey;
 
-    /** @var string */
-    private $verificationKey;
+    private string $verificationKey;
 
-    /** @var int */
-    private $expirationTime;
+    private int $expirationTime;
 
-    /** @var int */
-    private $refreshTime;
+    private int $refreshTime;
 
-    /** @var Parser */
-    private $tokenParser;
+    private Parser $tokenParser;
 
-    /** @var SetCookie */
-    private $defaultCookie;
+    private SetCookie $defaultCookie;
 
-    /** @var Clock */
-    private $clock;
+    private Clock $clock;
 
     public function __construct(
         Signer $signer,
@@ -230,7 +222,7 @@ final class SessionMiddleware implements MiddlewareInterface
             return false;
         }
 
-        return $this->timestamp() >= ($token->getClaim(self::ISSUED_AT_CLAIM) + $this->refreshTime);
+        return $this->timestamp() >= $token->getClaim(self::ISSUED_AT_CLAIM) + $this->refreshTime;
     }
 
     /**

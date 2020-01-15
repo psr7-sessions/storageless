@@ -22,12 +22,8 @@ namespace PSR7Sessions\Storageless\Session;
 
 final class LazySession implements SessionInterface
 {
-    /**
-     * @internal do not access directly: use {@see LazySession::getRealSession} instead
-     *
-     * @var SessionInterface|null
-     */
-    private $realSession;
+    /** @internal do not access directly: use {@see LazySession::getRealSession} instead */
+    private ?SessionInterface $realSession = null;
 
     /** @var callable */
     private $sessionLoader;
@@ -64,49 +60,31 @@ final class LazySession implements SessionInterface
         return $this->getRealSession()->get($key, $default);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function remove(string $key) : void
     {
         $this->getRealSession()->remove($key);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function clear() : void
     {
         $this->getRealSession()->clear();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function has(string $key) : bool
     {
         return $this->getRealSession()->has($key);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function hasChanged() : bool
     {
         return $this->realSession && $this->realSession->hasChanged();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function isEmpty() : bool
     {
         return $this->getRealSession()->isEmpty();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function jsonSerialize() : object
     {
         return $this->getRealSession()->jsonSerialize();

@@ -26,10 +26,10 @@ use PHPUnit\Framework\TestCase;
 use PSR7Sessions\Storageless\Session\DefaultSessionData;
 use ReflectionClass;
 use stdClass;
-use const PHP_INT_MAX;
-use const PHP_INT_MIN;
 use function array_filter;
 use function json_encode;
+use const PHP_INT_MAX;
+use const PHP_INT_MIN;
 
 /**
  * @covers \PSR7Sessions\Storageless\Session\DefaultSessionData
@@ -283,8 +283,7 @@ final class DefaultSessionDataTest extends TestCase
             'class' => [
                 new class
                 {
-                    /** @var string */
-                    public $foo = 'bar';
+                    public string $foo = 'bar';
                 },
                 ['foo' => 'bar'],
             ],
