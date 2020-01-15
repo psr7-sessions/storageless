@@ -33,7 +33,6 @@ use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use OutOfBoundsException;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -45,6 +44,7 @@ use PSR7Sessions\Storageless\Session\SessionInterface;
 use ReflectionProperty;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
+use function assert;
 use function file_get_contents;
 use function random_int;
 use function time;
@@ -122,8 +122,8 @@ final class SessionMiddlewareTest extends TestCase
 
         $checkingMiddleware = $this->fakeDelegate(
             static function (ServerRequestInterface $request) use ($sessionValue) {
-                /** @var SessionInterface $session */
                 $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                assert($session instanceof SessionInterface);
 
                 self::assertSame($sessionValue, $session->get('foo'));
                 self::assertFalse($session->hasChanged());
@@ -159,8 +159,8 @@ final class SessionMiddlewareTest extends TestCase
 
         $checkingMiddleware = $this->fakeDelegate(
             static function (ServerRequestInterface $request) use ($sessionValue) {
-                /** @var SessionInterface $session */
                 $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                assert($session instanceof SessionInterface);
 
                 self::assertSame($sessionValue, $session->get('scalar'));
                 self::assertFalse($session->hasChanged());
@@ -311,8 +311,8 @@ final class SessionMiddlewareTest extends TestCase
             ),
             $this->fakeDelegate(
                 static function (ServerRequestInterface $request) {
-                    /** @var SessionInterface $session */
                     $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                    assert($session instanceof SessionInterface);
 
                     // note: we set the same data just to make sure that we are indeed interacting with the session
                     $session->set('foo', 'bar');
@@ -337,8 +337,8 @@ final class SessionMiddlewareTest extends TestCase
             ),
             $this->fakeDelegate(
                 static function (ServerRequestInterface $request) {
-                    /** @var SessionInterface $session */
                     $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                    assert($session instanceof SessionInterface);
 
                     $session->clear();
 
@@ -419,7 +419,6 @@ final class SessionMiddlewareTest extends TestCase
 
     public function testSessionTokenParsingIsDelayedWhenSessionIsNotBeingUsed() : void
     {
-        /** @var Signer|MockObject $signer */
         $signer = $this->createMock(Signer::class);
 
         $signer->expects(self::never())->method('verify');
@@ -702,8 +701,8 @@ final class SessionMiddlewareTest extends TestCase
     {
         return $this->fakeDelegate(
             static function (ServerRequestInterface $request) use ($value) {
-                /** @var SessionInterface $session */
                 $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                assert($session instanceof SessionInterface);
                 $session->set('foo', $value);
 
                 return new Response();

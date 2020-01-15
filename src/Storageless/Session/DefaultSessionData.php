@@ -23,9 +23,10 @@ namespace PSR7Sessions\Storageless\Session;
 use InvalidArgumentException;
 use JsonSerializable;
 use stdClass;
-use const JSON_PRESERVE_ZERO_FRACTION;
 use function array_key_exists;
+use function assert;
 use function count;
+use function is_array;
 use function is_string;
 use function json_decode;
 use function json_encode;
@@ -33,14 +34,15 @@ use function json_last_error;
 use function json_last_error_msg;
 use function sprintf;
 use function var_export;
+use const JSON_PRESERVE_ZERO_FRACTION;
 
 final class DefaultSessionData implements SessionInterface
 {
     /** @var array<string, int|bool|string|float|mixed[]|null> */
-    private $data;
+    private array $data;
 
     /** @var array<string, int|bool|string|float|mixed[]|null> */
-    private $originalData;
+    private array $originalData;
 
     /**
      * Instantiation via __construct is not allowed, use
@@ -57,8 +59,8 @@ final class DefaultSessionData implements SessionInterface
     {
         $instance = new self();
 
-        /** @var array $arrayShapedData */
         $arrayShapedData = self::convertValueToScalar($data);
+        assert(is_array($arrayShapedData));
 
         $instance->originalData = $instance->data = $arrayShapedData;
 
@@ -110,49 +112,31 @@ final class DefaultSessionData implements SessionInterface
         return $this->data[$key];
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function remove(string $key) : void
     {
         unset($this->data[$key]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function clear() : void
     {
         $this->data = [];
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function has(string $key) : bool
     {
         return array_key_exists($key, $this->data);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function hasChanged() : bool
     {
         return $this->data !== $this->originalData;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function isEmpty() : bool
     {
         return ! count($this->data);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function jsonSerialize() : object
     {
         return (object) $this->data;

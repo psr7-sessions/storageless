@@ -56,8 +56,8 @@ $sessionMiddleware = new SessionMiddleware(
 $myMiddleware = new class implements RequestHandlerInterface {
     public function handle(ServerRequestInterface $request) : ResponseInterface
     {
-        /** @var SessionInterface $session */
         $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+        assert($session instanceof SessionInterface);
 
         $counterValue = $session->get('counter', 0);
 
