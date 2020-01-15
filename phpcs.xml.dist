@@ -19,6 +19,10 @@
 
     <rule ref="Doctrine">
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming"/>
+
+        <!-- spaces after the by-ref marker are endorsed and wanted
+             spacing is important, and by-ref should be highly evident -->
+        <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterReference"/>
     </rule>
 </ruleset>
 
