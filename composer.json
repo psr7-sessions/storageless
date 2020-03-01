@@ -34,7 +34,7 @@
         "phpunit/phpunit":                      "^8.5.2",
         "zendframework/zend-diactoros":         "^2.2.1",
         "zendframework/zend-httphandlerrunner": "^1.1.0",
-        "infection/infection":                  "^0.13.6",
+        "infection/infection":                  "^0.15.3",
         "phpstan/phpstan":                      "^0.11.19",
         "phpstan/phpstan-phpunit":              "^0.11.2",
         "phpstan/phpstan-strict-rules":         "^0.11.1",
