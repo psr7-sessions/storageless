@@ -25,11 +25,11 @@ You can use the `PSR7Sessions\Storageless\Http\SessionMiddleware` in any
 [PSR-15](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-15-request-handlers.md)
 compatible middleware.
 
-In a [`zendframework/zend-expressive`](https://github.com/zendframework/zend-expressive)
+In a [`mezzio/mezzio`](https://github.com/mezzio/mezzio)
 application, this would look like following:
 
 ```php
-$app = \Zend\Expressive\AppFactory::create();
+$app = new \Mezzio\Application(/* ... */);
 
 $app->pipe(\PSR7Sessions\Storageless\Http\SessionMiddleware::fromSymmetricKeyDefaults(
     'mBC5v1sOKVvbdEitdSBenu59nfNfhwkedkJVNabosTw=', // replace this with a key of your own (see docs below)
