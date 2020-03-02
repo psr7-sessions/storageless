@@ -41,6 +41,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
 use PSR7Sessions\Storageless\Session\DefaultSessionData;
 use PSR7Sessions\Storageless\Session\SessionInterface;
+use PSR7SessionsTest\Storageless\Asset\MutableBadCookie;
 use ReflectionProperty;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
@@ -605,6 +606,32 @@ final class SessionMiddlewareTest extends TestCase
                         ->process(new ServerRequest(), $this->writingMiddleware())
                 )
                 ->getSameSite()
+        );
+    }
+
+    public function testMutableCookieWillNotBeUsed() : void
+    {
+        $cookie = MutableBadCookie::create(SessionMiddleware::DEFAULT_COOKIE);
+
+        assert($cookie instanceof MutableBadCookie);
+
+        $middleware = new SessionMiddleware(
+            new Sha256(),
+            'foo',
+            'foo',
+            $cookie,
+            new Parser(),
+            1000,
+            new SystemClock()
+        );
+
+        $cookie->mutated = true;
+
+        self::assertStringStartsWith(
+            'slsession=',
+            $middleware
+                ->process(new ServerRequest(), $this->writingMiddleware())
+                ->getHeaderLine('Set-Cookie')
         );
     }
 
