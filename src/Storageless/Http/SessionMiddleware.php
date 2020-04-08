@@ -47,7 +47,7 @@ final class SessionMiddleware implements MiddlewareInterface
     public const ISSUED_AT_CLAIM      = 'iat';
     public const SESSION_CLAIM        = 'session-data';
     public const SESSION_ATTRIBUTE    = 'session';
-    public const DEFAULT_COOKIE       = 'slsession';
+    public const DEFAULT_COOKIE       = '__Secure-slsession';
     public const DEFAULT_REFRESH_TIME = 60;
 
     private Signer $signer;

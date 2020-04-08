@@ -628,7 +628,7 @@ final class SessionMiddlewareTest extends TestCase
         $cookie->mutated = true;
 
         self::assertStringStartsWith(
-            'slsession=',
+            '__Secure-slsession=',
             $middleware
                 ->process(new ServerRequest(), $this->writingMiddleware())
                 ->getHeaderLine('Set-Cookie')
