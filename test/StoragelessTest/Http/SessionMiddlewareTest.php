@@ -52,6 +52,12 @@ use function uniqid;
 final class SessionMiddlewareTest extends TestCase
 {
     /**
+     * @see https://tools.ietf.org/html/rfc6265#section-4.1.2.5 for Secure flag
+     * @see https://tools.ietf.org/html/rfc6265#section-4.1.2.6 for HttpOnly flag
+     * @see https://github.com/psr7-sessions/storageless/pull/46 for / path
+     * @see https://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site for SameSite flag
+     * @see https://tools.ietf.org/html/draft-ietf-httpbis-cookie-prefixes for __Secure- prefix
+     *
      * @dataProvider defaultMiddlewaresProvider
      * @group #46
      */
