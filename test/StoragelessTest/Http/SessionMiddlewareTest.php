@@ -25,7 +25,6 @@ use DateTimeImmutable;
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\Modifier\SameSite;
 use Dflydev\FigCookies\SetCookie;
-use InvalidArgumentException;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ServerRequest;
 use Lcobucci\Clock\FrozenClock;
@@ -34,7 +33,6 @@ use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
-use OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -53,30 +51,21 @@ use function uniqid;
 
 final class SessionMiddlewareTest extends TestCase
 {
-    public function testFromSymmetricKeyDefaultsUsesASecureCookie() : void
+    /**
+     * @dataProvider defaultMiddlewaresProvider
+     * @group #46
+     */
+    public function testDefaultMiddlewareConfiguresASecureCookie(SessionMiddleware $middleware) : void
     {
-        $response = SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100)
-            ->process(new ServerRequest(), $this->writingMiddleware());
+        $response = $middleware->process(new ServerRequest(), $this->writingMiddleware());
 
         $cookie = $this->getCookie($response);
 
         self::assertTrue($cookie->getSecure());
         self::assertTrue($cookie->getHttpOnly());
-    }
-
-    public function testFromAsymmetricKeyDefaultsUsesASecureCookie() : void
-    {
-        $response = SessionMiddleware::fromAsymmetricKeyDefaults(
-            self::privateKey(),
-            self::publicKey(),
-            200
-        )
-            ->process(new ServerRequest(), $this->writingMiddleware());
-
-        $cookie = $this->getCookie($response);
-
-        self::assertTrue($cookie->getSecure());
-        self::assertTrue($cookie->getHttpOnly());
+        self::assertSame('/', $cookie->getPath());
+        self::assertEquals(SameSite::lax(), $cookie->getSameSite());
+        self::assertStringStartsWith('__Secure-', $cookie->getName());
     }
 
     /**
@@ -519,7 +508,7 @@ final class SessionMiddlewareTest extends TestCase
      */
     public function validMiddlewaresProvider() : array
     {
-        return [
+        return $this->defaultMiddlewaresProvider() + [
             [new SessionMiddleware(
                 new Sha256(),
                 'foo',
@@ -530,6 +519,15 @@ final class SessionMiddlewareTest extends TestCase
                 new SystemClock()
             ),
             ],
+        ];
+    }
+
+    /**
+     * @return SessionMiddleware[][]
+     */
+    public function defaultMiddlewaresProvider() : array
+    {
+        return [
             [SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100)],
             [SessionMiddleware::fromAsymmetricKeyDefaults(
                 self::privateKey(),
@@ -538,75 +536,6 @@ final class SessionMiddlewareTest extends TestCase
             ),
             ],
         ];
-    }
-
-    /**
-     * @group #46
-     */
-    public function testFromSymmetricKeyDefaultsWillHaveADefaultSessionPath() : void
-    {
-        self::assertSame(
-            '/',
-            $this
-                ->getCookie(
-                    SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100)
-                        ->process(new ServerRequest(), $this->writingMiddleware())
-                )
-                ->getPath()
-        );
-    }
-
-    public function testFromSymmetricKeyDefaultsWillHaveALaxSameSitePolicy() : void
-    {
-        self::assertEquals(
-            SameSite::lax(),
-            $this
-                ->getCookie(
-                    SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100)
-                        ->process(new ServerRequest(), $this->writingMiddleware())
-                )
-                ->getSameSite()
-        );
-    }
-
-    /**
-     * @throws InvalidArgumentException
-     * @throws OutOfBoundsException
-     *
-     * @group #46
-     */
-    public function testFromAsymmetricKeyDefaultsWillHaveADefaultSessionPath() : void
-    {
-        self::assertSame(
-            '/',
-            $this
-                ->getCookie(
-                    SessionMiddleware::fromAsymmetricKeyDefaults(
-                        self::privateKey(),
-                        self::publicKey(),
-                        200
-                    )
-                        ->process(new ServerRequest(), $this->writingMiddleware())
-                )
-                ->getPath()
-        );
-    }
-
-    public function testFromAsymmetricKeyDefaultsWillHaveALaxSameSitePolicy() : void
-    {
-        self::assertEquals(
-            SameSite::lax(),
-            $this
-                ->getCookie(
-                    SessionMiddleware::fromAsymmetricKeyDefaults(
-                        self::privateKey(),
-                        self::publicKey(),
-                        200
-                    )
-                        ->process(new ServerRequest(), $this->writingMiddleware())
-                )
-                ->getSameSite()
-        );
     }
 
     public function testMutableCookieWillNotBeUsed() : void
