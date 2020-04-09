@@ -71,7 +71,7 @@ If you want to fine-tune more settings of `PSR7Session`, then simply use the
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
 
 // a blueprint of the cookie that `PSR7Session` should use to generate
-// and read cookies:
+// and read cookies, be careful to secure it, see defaults below:
 $cookieBlueprint   = \Dflydev\FigCookies\SetCookie::create('cookie-name');
 $sessionMiddleware = new SessionMiddleware(
     $signer, // an \Lcobucci\JWT\Signer
@@ -85,16 +85,19 @@ $sessionMiddleware = new SessionMiddleware(
 );
 ```
 
-It is recommended not to use this setup
+It is recommended not to use this setup.
 
 ### Defaults
 
-By default, sessions generated via the `SessionMiddleware` use following parameters:
+By default, sessions generated via the `SessionMiddleware` factory methods use following parameters:
 
- * `"__Secure-slsession"` is the name of the cookie where the session is stored
- * `"__Secure-slsession"` cookie is configured as [`HttpOnly`](https://www.owasp.org/index.php/HttpOnly)
- * `"__Secure-slsession"` cookie is configured as [`secure`](https://www.owasp.org/index.php/SecureFlag)
- * The `"__Secure-slsession"` cookie will contain a [JWT token](http://jwt.io/)
+ * `"__Secure-slsession"` is the name of the cookie where the session is stored, [`__Secure-`](https://tools.ietf.org/html/draft-ietf-httpbis-cookie-prefixes)
+ prefix is intentional
+ * `"__Secure-slsession"` cookie is configured as [`Secure`](https://tools.ietf.org/html/rfc6265#section-4.1.2.5)
+ * `"__Secure-slsession"` cookie is configured as [`HttpOnly`](https://tools.ietf.org/html/rfc6265#section-4.1.2.6)
+ * `"__Secure-slsession"` cookie is configured as [`SameSite=Lax`](https://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site)
+ * `"__Secure-slsession"` cookie is configured as [`path=/`](https://github.com/psr7-sessions/storageless/pull/46)
+ * The `"__Secure-slsession"` cookie will contain a [JWT token](https://jwt.io/)
  * The JWT token in the `"__Secure-slsession"` is signed, but **unencrypted**
  * The JWT token in the `"__Secure-slsession"` has an [`iat` claim](https://self-issued.info/docs/draft-ietf-oauth-json-web-token.html#rfc.section.4.1.6)
  * The session is re-generated only after `60` seconds, and **not** at every user-agent interaction
