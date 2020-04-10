@@ -58,12 +58,15 @@ final class SessionMiddlewareTest extends TestCase
      * @see https://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site for SameSite flag
      * @see https://tools.ietf.org/html/draft-ietf-httpbis-cookie-prefixes for __Secure- prefix
      *
+     * @param callable(): SessionMiddleware $middlewareFactory
+     *
      * @dataProvider defaultMiddlewaresProvider
      * @group #46
      */
-    public function testDefaultMiddlewareConfiguresASecureCookie(SessionMiddleware $middleware) : void
+    public function testDefaultMiddlewareConfiguresASecureCookie(callable $middlewareFactory) : void
     {
-        $response = $middleware->process(new ServerRequest(), $this->writingMiddleware());
+        $middleware = $middlewareFactory();
+        $response   = $middleware->process(new ServerRequest(), $this->writingMiddleware());
 
         $cookie = $this->getCookie($response);
 
@@ -75,28 +78,37 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     /**
+     * @param callable(): SessionMiddleware $middlewareFactory
+     *
      * @dataProvider validMiddlewaresProvider
      */
-    public function testSkipsInjectingSessionCookieOnEmptyContainer(SessionMiddleware $middleware) : void
+    public function testSkipsInjectingSessionCookieOnEmptyContainer(callable $middlewareFactory) : void
     {
-        $response = $this->ensureSameResponse($middleware, new ServerRequest(), $this->emptyValidationMiddleware());
+        $middleware = $middlewareFactory();
+        $response   = $this->ensureSameResponse($middleware, new ServerRequest(), $this->emptyValidationMiddleware());
 
         self::assertNull($this->getCookie($response)->getValue());
     }
 
     /**
+     * @param callable(): SessionMiddleware $middlewareFactory
+     *
      * @dataProvider validMiddlewaresProvider
      */
-    public function testExtractsSessionContainerFromEmptyRequest(SessionMiddleware $middleware) : void
+    public function testExtractsSessionContainerFromEmptyRequest(callable $middlewareFactory) : void
     {
+        $middleware = $middlewareFactory();
         $this->ensureSameResponse($middleware, new ServerRequest(), $this->emptyValidationMiddleware());
     }
 
     /**
+     * @param callable(): SessionMiddleware $middlewareFactory
+     *
      * @dataProvider validMiddlewaresProvider
      */
-    public function testInjectsSessionInResponseCookies(SessionMiddleware $middleware) : void
+    public function testInjectsSessionInResponseCookies(callable $middlewareFactory) : void
     {
+        $middleware      = $middlewareFactory();
         $initialResponse = new Response();
         $response        = $middleware->process(new ServerRequest(), $this->writingMiddleware());
 
@@ -110,10 +122,13 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     /**
+     * @param callable(): SessionMiddleware $middlewareFactory
+     *
      * @dataProvider validMiddlewaresProvider
      */
-    public function testSessionContainerCanBeReusedOverMultipleRequests(SessionMiddleware $middleware) : void
+    public function testSessionContainerCanBeReusedOverMultipleRequests(callable $middlewareFactory) : void
     {
+        $middleware   = $middlewareFactory();
         $sessionValue = uniqid('', true);
 
         $checkingMiddleware = $this->fakeDelegate(
@@ -147,10 +162,13 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     /**
+     * @param callable(): SessionMiddleware $middlewareFactory
+     *
      * @dataProvider validMiddlewaresProvider
      */
-    public function testSessionContainerCanBeCreatedEvenIfTokenDataIsMalformed(SessionMiddleware $middleware) : void
+    public function testSessionContainerCanBeCreatedEvenIfTokenDataIsMalformed(callable $middlewareFactory) : void
     {
+        $middleware   = $middlewareFactory();
         $sessionValue = uniqid('not valid session data', true);
 
         $checkingMiddleware = $this->fakeDelegate(
@@ -187,10 +205,13 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     /**
+     * @param callable(): SessionMiddleware $middlewareFactory
+     *
      * @dataProvider validMiddlewaresProvider
      */
-    public function testWillIgnoreRequestsWithExpiredTokens(SessionMiddleware $middleware) : void
+    public function testWillIgnoreRequestsWithExpiredTokens(callable $middlewareFactory) : void
     {
+        $middleware   = $middlewareFactory();
         $expiredToken = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => $this->createToken(
@@ -204,10 +225,13 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     /**
+     * @param callable(): SessionMiddleware $middlewareFactory
+     *
      * @dataProvider validMiddlewaresProvider
      */
-    public function testWillIgnoreRequestsWithTokensFromFuture(SessionMiddleware $middleware) : void
+    public function testWillIgnoreRequestsWithTokensFromFuture(callable $middlewareFactory) : void
     {
+        $middleware    = $middlewareFactory();
         $tokenInFuture = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => $this->createToken(
@@ -221,10 +245,13 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     /**
+     * @param callable(): SessionMiddleware $middlewareFactory
+     *
      * @dataProvider validMiddlewaresProvider
      */
-    public function testWillIgnoreUnSignedTokens(SessionMiddleware $middleware) : void
+    public function testWillIgnoreUnSignedTokens(callable $middlewareFactory) : void
     {
+        $middleware    = $middlewareFactory();
         $unsignedToken = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
@@ -238,10 +265,13 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     /**
+     * @param callable(): SessionMiddleware $middlewareFactory
+     *
      * @dataProvider validMiddlewaresProvider
      */
-    public function testWillNotRefreshSignedTokensWithoutIssuedAt(SessionMiddleware $middleware) : void
+    public function testWillNotRefreshSignedTokensWithoutIssuedAt(callable $middlewareFactory) : void
     {
+        $middleware    = $middlewareFactory();
         $unsignedToken = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
@@ -296,10 +326,13 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     /**
+     * @param callable(): SessionMiddleware $middlewareFactory
+     *
      * @dataProvider validMiddlewaresProvider
      */
-    public function testWillSkipInjectingSessionCookiesWhenSessionIsNotChanged(SessionMiddleware $middleware) : void
+    public function testWillSkipInjectingSessionCookiesWhenSessionIsNotChanged(callable $middlewareFactory) : void
     {
+        $middleware = $middlewareFactory();
         $this->ensureSameResponse(
             $middleware,
             $this->requestWithResponseCookies(
@@ -322,10 +355,13 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     /**
+     * @param callable(): SessionMiddleware $middlewareFactory
+     *
      * @dataProvider validMiddlewaresProvider
      */
-    public function testWillSendExpirationCookieWhenSessionContentsAreCleared(SessionMiddleware $middleware) : void
+    public function testWillSendExpirationCookieWhenSessionContentsAreCleared(callable $middlewareFactory) : void
     {
+        $middleware = $middlewareFactory();
         $this->ensureClearsSessionCookie(
             $middleware,
             $this->requestWithResponseCookies(
@@ -345,10 +381,13 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     /**
+     * @param callable(): SessionMiddleware $middlewareFactory
+     *
      * @dataProvider validMiddlewaresProvider
      */
-    public function testWillIgnoreMalformedTokens(SessionMiddleware $middleware) : void
+    public function testWillIgnoreMalformedTokens(callable $middlewareFactory) : void
     {
+        $middleware = $middlewareFactory();
         $this->ensureSameResponse(
             $middleware,
             (new ServerRequest())->withCookieParams([SessionMiddleware::DEFAULT_COOKIE => 'malformed content']),
@@ -510,36 +549,43 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     /**
-     * @return SessionMiddleware[][]
+     * @return array<array<callable(): SessionMiddleware>>
      */
     public function validMiddlewaresProvider() : array
     {
         return $this->defaultMiddlewaresProvider() + [
-            [new SessionMiddleware(
-                new Sha256(),
-                'foo',
-                'foo',
-                SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
-                new Parser(),
-                100,
-                new SystemClock()
-            ),
+            [static function () : SessionMiddleware {
+                return new SessionMiddleware(
+                    new Sha256(),
+                    'foo',
+                    'foo',
+                    SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
+                    new Parser(),
+                    100,
+                    new SystemClock()
+                );
+            },
             ],
         ];
     }
 
     /**
-     * @return SessionMiddleware[][]
+     * @return array<array<callable(): SessionMiddleware>>
      */
     public function defaultMiddlewaresProvider() : array
     {
         return [
-            [SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100)],
-            [SessionMiddleware::fromAsymmetricKeyDefaults(
-                self::privateKey(),
-                self::publicKey(),
-                200
-            ),
+            [static function () : SessionMiddleware {
+                return SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100);
+            },
+            ],
+            [static function () : SessionMiddleware {
+                return SessionMiddleware::fromAsymmetricKeyDefaults(
+                    self::privateKey(),
+                    self::publicKey(),
+                    200
+                );
+            },
             ],
         ];
     }
