@@ -15,7 +15,7 @@ never be shared with the client MUST be avoided.
 This is actually also valid for traditional PHP sessions, since those
 sessions may be read by various processes.
 
-#### Sessions cannot be invalidated
+#### Single sessions cannot be invalidated
 
 There is no way to (securely) manually invalidate a session just via
 PSR7Session Storageless.
@@ -34,6 +34,9 @@ therefore you may want to just use traditional sessions.
 This limitation is also why PSR7Session Storageless should only be used with secure
 (TLS) HTTPS connections: if any session is spoofed, there is no way to lock
 out an attacker.
+
+Note however that you can still securely invalidate all active sessions by changing
+the key.
 
 #### Increased network traffic
 
