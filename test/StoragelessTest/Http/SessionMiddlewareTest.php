@@ -25,7 +25,6 @@ use DateTimeImmutable;
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\Modifier\SameSite;
 use Dflydev\FigCookies\SetCookie;
-use InvalidArgumentException;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ServerRequest;
 use Lcobucci\Clock\FrozenClock;
@@ -34,7 +33,6 @@ use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
-use OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -53,55 +51,64 @@ use function uniqid;
 
 final class SessionMiddlewareTest extends TestCase
 {
-    public function testFromSymmetricKeyDefaultsUsesASecureCookie() : void
+    /**
+     * @see https://tools.ietf.org/html/rfc6265#section-4.1.2.5 for Secure flag
+     * @see https://tools.ietf.org/html/rfc6265#section-4.1.2.6 for HttpOnly flag
+     * @see https://github.com/psr7-sessions/storageless/pull/46 for / path
+     * @see https://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site for SameSite flag
+     * @see https://tools.ietf.org/html/draft-ietf-httpbis-cookie-prefixes for __Secure- prefix
+     *
+     * @param callable(): SessionMiddleware $middlewareFactory
+     *
+     * @dataProvider defaultMiddlewaresProvider
+     * @group #46
+     */
+    public function testDefaultMiddlewareConfiguresASecureCookie(callable $middlewareFactory) : void
     {
-        $response = SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100)
-            ->process(new ServerRequest(), $this->writingMiddleware());
+        $middleware = $middlewareFactory();
+        $response   = $middleware->process(new ServerRequest(), $this->writingMiddleware());
 
         $cookie = $this->getCookie($response);
 
         self::assertTrue($cookie->getSecure());
         self::assertTrue($cookie->getHttpOnly());
-    }
-
-    public function testFromAsymmetricKeyDefaultsUsesASecureCookie() : void
-    {
-        $response = SessionMiddleware::fromAsymmetricKeyDefaults(
-            self::privateKey(),
-            self::publicKey(),
-            200
-        )
-            ->process(new ServerRequest(), $this->writingMiddleware());
-
-        $cookie = $this->getCookie($response);
-
-        self::assertTrue($cookie->getSecure());
-        self::assertTrue($cookie->getHttpOnly());
+        self::assertSame('/', $cookie->getPath());
+        self::assertEquals(SameSite::lax(), $cookie->getSameSite());
+        self::assertStringStartsWith('__Secure-', $cookie->getName());
     }
 
     /**
+     * @param callable(): SessionMiddleware $middlewareFactory
+     *
      * @dataProvider validMiddlewaresProvider
      */
-    public function testSkipsInjectingSessionCookieOnEmptyContainer(SessionMiddleware $middleware) : void
+    public function testSkipsInjectingSessionCookieOnEmptyContainer(callable $middlewareFactory) : void
     {
-        $response = $this->ensureSameResponse($middleware, new ServerRequest(), $this->emptyValidationMiddleware());
+        $middleware = $middlewareFactory();
+        $response   = $this->ensureSameResponse($middleware, new ServerRequest(), $this->emptyValidationMiddleware());
 
         self::assertNull($this->getCookie($response)->getValue());
     }
 
     /**
+     * @param callable(): SessionMiddleware $middlewareFactory
+     *
      * @dataProvider validMiddlewaresProvider
      */
-    public function testExtractsSessionContainerFromEmptyRequest(SessionMiddleware $middleware) : void
+    public function testExtractsSessionContainerFromEmptyRequest(callable $middlewareFactory) : void
     {
+        $middleware = $middlewareFactory();
         $this->ensureSameResponse($middleware, new ServerRequest(), $this->emptyValidationMiddleware());
     }
 
     /**
+     * @param callable(): SessionMiddleware $middlewareFactory
+     *
      * @dataProvider validMiddlewaresProvider
      */
-    public function testInjectsSessionInResponseCookies(SessionMiddleware $middleware) : void
+    public function testInjectsSessionInResponseCookies(callable $middlewareFactory) : void
     {
+        $middleware      = $middlewareFactory();
         $initialResponse = new Response();
         $response        = $middleware->process(new ServerRequest(), $this->writingMiddleware());
 
@@ -115,10 +122,13 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     /**
+     * @param callable(): SessionMiddleware $middlewareFactory
+     *
      * @dataProvider validMiddlewaresProvider
      */
-    public function testSessionContainerCanBeReusedOverMultipleRequests(SessionMiddleware $middleware) : void
+    public function testSessionContainerCanBeReusedOverMultipleRequests(callable $middlewareFactory) : void
     {
+        $middleware   = $middlewareFactory();
         $sessionValue = uniqid('', true);
 
         $checkingMiddleware = $this->fakeDelegate(
@@ -152,10 +162,13 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     /**
+     * @param callable(): SessionMiddleware $middlewareFactory
+     *
      * @dataProvider validMiddlewaresProvider
      */
-    public function testSessionContainerCanBeCreatedEvenIfTokenDataIsMalformed(SessionMiddleware $middleware) : void
+    public function testSessionContainerCanBeCreatedEvenIfTokenDataIsMalformed(callable $middlewareFactory) : void
     {
+        $middleware   = $middlewareFactory();
         $sessionValue = uniqid('not valid session data', true);
 
         $checkingMiddleware = $this->fakeDelegate(
@@ -192,10 +205,13 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     /**
+     * @param callable(): SessionMiddleware $middlewareFactory
+     *
      * @dataProvider validMiddlewaresProvider
      */
-    public function testWillIgnoreRequestsWithExpiredTokens(SessionMiddleware $middleware) : void
+    public function testWillIgnoreRequestsWithExpiredTokens(callable $middlewareFactory) : void
     {
+        $middleware   = $middlewareFactory();
         $expiredToken = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => $this->createToken(
@@ -209,10 +225,13 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     /**
+     * @param callable(): SessionMiddleware $middlewareFactory
+     *
      * @dataProvider validMiddlewaresProvider
      */
-    public function testWillIgnoreRequestsWithTokensFromFuture(SessionMiddleware $middleware) : void
+    public function testWillIgnoreRequestsWithTokensFromFuture(callable $middlewareFactory) : void
     {
+        $middleware    = $middlewareFactory();
         $tokenInFuture = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => $this->createToken(
@@ -226,10 +245,13 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     /**
+     * @param callable(): SessionMiddleware $middlewareFactory
+     *
      * @dataProvider validMiddlewaresProvider
      */
-    public function testWillIgnoreUnSignedTokens(SessionMiddleware $middleware) : void
+    public function testWillIgnoreUnSignedTokens(callable $middlewareFactory) : void
     {
+        $middleware    = $middlewareFactory();
         $unsignedToken = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
@@ -243,10 +265,13 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     /**
+     * @param callable(): SessionMiddleware $middlewareFactory
+     *
      * @dataProvider validMiddlewaresProvider
      */
-    public function testWillNotRefreshSignedTokensWithoutIssuedAt(SessionMiddleware $middleware) : void
+    public function testWillNotRefreshSignedTokensWithoutIssuedAt(callable $middlewareFactory) : void
     {
+        $middleware    = $middlewareFactory();
         $unsignedToken = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
@@ -301,10 +326,13 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     /**
+     * @param callable(): SessionMiddleware $middlewareFactory
+     *
      * @dataProvider validMiddlewaresProvider
      */
-    public function testWillSkipInjectingSessionCookiesWhenSessionIsNotChanged(SessionMiddleware $middleware) : void
+    public function testWillSkipInjectingSessionCookiesWhenSessionIsNotChanged(callable $middlewareFactory) : void
     {
+        $middleware = $middlewareFactory();
         $this->ensureSameResponse(
             $middleware,
             $this->requestWithResponseCookies(
@@ -327,10 +355,13 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     /**
+     * @param callable(): SessionMiddleware $middlewareFactory
+     *
      * @dataProvider validMiddlewaresProvider
      */
-    public function testWillSendExpirationCookieWhenSessionContentsAreCleared(SessionMiddleware $middleware) : void
+    public function testWillSendExpirationCookieWhenSessionContentsAreCleared(callable $middlewareFactory) : void
     {
+        $middleware = $middlewareFactory();
         $this->ensureClearsSessionCookie(
             $middleware,
             $this->requestWithResponseCookies(
@@ -350,10 +381,13 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     /**
+     * @param callable(): SessionMiddleware $middlewareFactory
+     *
      * @dataProvider validMiddlewaresProvider
      */
-    public function testWillIgnoreMalformedTokens(SessionMiddleware $middleware) : void
+    public function testWillIgnoreMalformedTokens(callable $middlewareFactory) : void
     {
+        $middleware = $middlewareFactory();
         $this->ensureSameResponse(
             $middleware,
             (new ServerRequest())->withCookieParams([SessionMiddleware::DEFAULT_COOKIE => 'malformed content']),
@@ -515,98 +549,45 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     /**
-     * @return SessionMiddleware[][]
+     * @return array<array<callable(): SessionMiddleware>>
      */
     public function validMiddlewaresProvider() : array
     {
-        return [
-            [new SessionMiddleware(
-                new Sha256(),
-                'foo',
-                'foo',
-                SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
-                new Parser(),
-                100,
-                new SystemClock()
-            ),
-            ],
-            [SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100)],
-            [SessionMiddleware::fromAsymmetricKeyDefaults(
-                self::privateKey(),
-                self::publicKey(),
-                200
-            ),
+        return $this->defaultMiddlewaresProvider() + [
+            [static function () : SessionMiddleware {
+                return new SessionMiddleware(
+                    new Sha256(),
+                    'foo',
+                    'foo',
+                    SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
+                    new Parser(),
+                    100,
+                    new SystemClock()
+                );
+            },
             ],
         ];
     }
 
     /**
-     * @group #46
+     * @return array<array<callable(): SessionMiddleware>>
      */
-    public function testFromSymmetricKeyDefaultsWillHaveADefaultSessionPath() : void
+    public function defaultMiddlewaresProvider() : array
     {
-        self::assertSame(
-            '/',
-            $this
-                ->getCookie(
-                    SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100)
-                        ->process(new ServerRequest(), $this->writingMiddleware())
-                )
-                ->getPath()
-        );
-    }
-
-    public function testFromSymmetricKeyDefaultsWillHaveALaxSameSitePolicy() : void
-    {
-        self::assertEquals(
-            SameSite::lax(),
-            $this
-                ->getCookie(
-                    SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100)
-                        ->process(new ServerRequest(), $this->writingMiddleware())
-                )
-                ->getSameSite()
-        );
-    }
-
-    /**
-     * @throws InvalidArgumentException
-     * @throws OutOfBoundsException
-     *
-     * @group #46
-     */
-    public function testFromAsymmetricKeyDefaultsWillHaveADefaultSessionPath() : void
-    {
-        self::assertSame(
-            '/',
-            $this
-                ->getCookie(
-                    SessionMiddleware::fromAsymmetricKeyDefaults(
-                        self::privateKey(),
-                        self::publicKey(),
-                        200
-                    )
-                        ->process(new ServerRequest(), $this->writingMiddleware())
-                )
-                ->getPath()
-        );
-    }
-
-    public function testFromAsymmetricKeyDefaultsWillHaveALaxSameSitePolicy() : void
-    {
-        self::assertEquals(
-            SameSite::lax(),
-            $this
-                ->getCookie(
-                    SessionMiddleware::fromAsymmetricKeyDefaults(
-                        self::privateKey(),
-                        self::publicKey(),
-                        200
-                    )
-                        ->process(new ServerRequest(), $this->writingMiddleware())
-                )
-                ->getSameSite()
-        );
+        return [
+            [static function () : SessionMiddleware {
+                return SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100);
+            },
+            ],
+            [static function () : SessionMiddleware {
+                return SessionMiddleware::fromAsymmetricKeyDefaults(
+                    self::privateKey(),
+                    self::publicKey(),
+                    200
+                );
+            },
+            ],
+        ];
     }
 
     public function testMutableCookieWillNotBeUsed() : void
@@ -628,7 +609,7 @@ final class SessionMiddlewareTest extends TestCase
         $cookie->mutated = true;
 
         self::assertStringStartsWith(
-            'slsession=',
+            '__Secure-slsession=',
             $middleware
                 ->process(new ServerRequest(), $this->writingMiddleware())
                 ->getHeaderLine('Set-Cookie')
