@@ -34,7 +34,7 @@
         "phpunit/phpunit":                      "^9.0.2",
         "laminas/laminas-diactoros":            "^2.2.3",
         "laminas/laminas-httphandlerrunner":    "^1.1.0",
-        "infection/infection":                  "^0.16.1",
+        "infection/infection":                  "^0.16.4",
         "phpstan/phpstan":                      "^0.11.19",
         "phpstan/phpstan-phpunit":              "^0.11.2",
         "phpstan/phpstan-strict-rules":         "^0.11.1",
