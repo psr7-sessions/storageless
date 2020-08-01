@@ -26,8 +26,10 @@ use PHPUnit\Framework\TestCase;
 use PSR7Sessions\Storageless\Session\DefaultSessionData;
 use ReflectionClass;
 use stdClass;
+
 use function array_filter;
 use function json_encode;
+
 use const PHP_INT_MAX;
 use const PHP_INT_MIN;
 
@@ -36,7 +38,7 @@ use const PHP_INT_MIN;
  */
 final class DefaultSessionDataTest extends TestCase
 {
-    public function testEqualityOfEmptySessions() : void
+    public function testEqualityOfEmptySessions(): void
     {
         self::assertEquals(
             DefaultSessionData::fromTokenData([]),
@@ -48,22 +50,22 @@ final class DefaultSessionDataTest extends TestCase
         );
     }
 
-    public function testContainerIsEmptyWhenCreatedExplicitlyAsEmpty() : void
+    public function testContainerIsEmptyWhenCreatedExplicitlyAsEmpty(): void
     {
         self::assertTrue(DefaultSessionData::newEmptySession()->isEmpty());
     }
 
-    public function testContainerIsEmptyWhenCreatedWithoutData() : void
+    public function testContainerIsEmptyWhenCreatedWithoutData(): void
     {
         self::assertTrue(DefaultSessionData::fromTokenData([])->isEmpty());
     }
 
-    public function testContainerIsNotEmptyWhenDataIsProvided() : void
+    public function testContainerIsNotEmptyWhenDataIsProvided(): void
     {
         self::assertFalse(DefaultSessionData::fromTokenData(['foo' => 'bar'])->isEmpty());
     }
 
-    public function testContainerIsNotEmptyWhenDataIsPassedToItAfterwards() : void
+    public function testContainerIsNotEmptyWhenDataIsPassedToItAfterwards(): void
     {
         $session = DefaultSessionData::newEmptySession();
 
@@ -72,7 +74,7 @@ final class DefaultSessionDataTest extends TestCase
         self::assertFalse($session->isEmpty());
     }
 
-    public function testContainerIsEmptyWhenDataIsRemovedFromIt() : void
+    public function testContainerIsEmptyWhenDataIsRemovedFromIt(): void
     {
         $session = DefaultSessionData::fromTokenData(['foo' => 'bar']);
 
@@ -81,7 +83,7 @@ final class DefaultSessionDataTest extends TestCase
         self::assertTrue($session->isEmpty());
     }
 
-    public function testClearWillRemoveEverythingFromTheSessionContainer() : void
+    public function testClearWillRemoveEverythingFromTheSessionContainer(): void
     {
         $session = DefaultSessionData::fromTokenData([
             'foo' => 'bar',
@@ -96,7 +98,7 @@ final class DefaultSessionDataTest extends TestCase
         self::assertFalse($session->has('baz'));
     }
 
-    public function testStorageKeysAreConvertedToStringKeys() : void
+    public function testStorageKeysAreConvertedToStringKeys(): void
     {
         self::assertSame(
             '{"0":"a","1":"b","2":"c"}',
@@ -109,7 +111,7 @@ final class DefaultSessionDataTest extends TestCase
      *
      * @dataProvider storageScalarDataProvider
      */
-    public function testContainerDataIsStoredAndRetrieved(string $key, $value) : void
+    public function testContainerDataIsStoredAndRetrieved(string $key, $value): void
     {
         $session = DefaultSessionData::newEmptySession();
 
@@ -122,7 +124,7 @@ final class DefaultSessionDataTest extends TestCase
      *
      * @dataProvider storageScalarDataProvider
      */
-    public function testSettingDataInAContainerMarksTheContainerAsMutated(string $key, $value) : void
+    public function testSettingDataInAContainerMarksTheContainerAsMutated(string $key, $value): void
     {
         $session = DefaultSessionData::newEmptySession();
 
@@ -131,7 +133,7 @@ final class DefaultSessionDataTest extends TestCase
         self::assertTrue($session->hasChanged());
     }
 
-    public function testChangingTheDataTypeOfAValueIsConsideredAsAChange() : void
+    public function testChangingTheDataTypeOfAValueIsConsideredAsAChange(): void
     {
         $session = DefaultSessionData::fromDecodedTokenData((object) ['a' => 1]);
 
@@ -151,7 +153,7 @@ final class DefaultSessionDataTest extends TestCase
      *
      * @dataProvider storageScalarDataProvider
      */
-    public function testContainerIsNotChangedWhenScalarDataIsSetAndOverwrittenInIt(string $key, $value) : void
+    public function testContainerIsNotChangedWhenScalarDataIsSetAndOverwrittenInIt(string $key, $value): void
     {
         $session = DefaultSessionData::fromTokenData([$key => $value]);
 
@@ -167,7 +169,7 @@ final class DefaultSessionDataTest extends TestCase
      *
      * @dataProvider storageNonScalarDataProvider
      */
-    public function testContainerIsNotChangedWhenNonScalarDataIsSetAndOverwrittenInIt($nonScalarValue) : void
+    public function testContainerIsNotChangedWhenNonScalarDataIsSetAndOverwrittenInIt($nonScalarValue): void
     {
         $session = DefaultSessionData::fromTokenData(['key' => $nonScalarValue]);
 
@@ -183,7 +185,7 @@ final class DefaultSessionDataTest extends TestCase
      *
      * @dataProvider storageScalarDataProvider
      */
-    public function testContainerBuiltWithDataContainsData(string $key, $value) : void
+    public function testContainerBuiltWithDataContainsData(string $key, $value): void
     {
         $session = DefaultSessionData::fromTokenData([$key => $value]);
 
@@ -196,7 +198,7 @@ final class DefaultSessionDataTest extends TestCase
      *
      * @dataProvider storageScalarDataProvider
      */
-    public function testContainerBuiltWithStdClassContainsData(string $key, $value) : void
+    public function testContainerBuiltWithStdClassContainsData(string $key, $value): void
     {
         if ($key === "\0" || $value === "\0" || $key === '') {
             self::markTestSkipped('Null bytes or empty keys are not supported by PHP\'s stdClass');
@@ -214,7 +216,7 @@ final class DefaultSessionDataTest extends TestCase
      *
      * @dataProvider storageNonScalarDataProvider
      */
-    public function testContainerStoresScalarValueFromNestedObjects($nonScalar, $expectedScalar) : void
+    public function testContainerStoresScalarValueFromNestedObjects($nonScalar, $expectedScalar): void
     {
         $session = DefaultSessionData::fromTokenData(['key' => $nonScalar]);
 
@@ -230,7 +232,7 @@ final class DefaultSessionDataTest extends TestCase
      *
      * @dataProvider storageScalarDataProvider
      */
-    public function testGetWillReturnDefaultValueOnNonExistingKey(string $key, $value) : void
+    public function testGetWillReturnDefaultValueOnNonExistingKey(string $key, $value): void
     {
         $session = DefaultSessionData::newEmptySession();
 
@@ -244,12 +246,12 @@ final class DefaultSessionDataTest extends TestCase
      *
      * @dataProvider storageNonScalarDataProvider
      */
-    public function testGetWillReturnScalarCastDefaultValueOnNonExistingKey($nonScalar, $expectedScalar) : void
+    public function testGetWillReturnScalarCastDefaultValueOnNonExistingKey($nonScalar, $expectedScalar): void
     {
         self::assertSame($expectedScalar, DefaultSessionData::newEmptySession()->get('key', $nonScalar));
     }
 
-    public function testAllMethodsAreCoveredByAnInterfacedMethod() : void
+    public function testAllMethodsAreCoveredByAnInterfacedMethod(): void
     {
         $reflection = new ReflectionClass(DefaultSessionData::class);
         $interfaces = $reflection->getInterfaces();
@@ -268,7 +270,7 @@ final class DefaultSessionDataTest extends TestCase
         }
     }
 
-    public function testRejectsNonJsonSerializableData() : void
+    public function testRejectsNonJsonSerializableData(): void
     {
         $this->expectException(JsonException::class);
 
@@ -278,12 +280,9 @@ final class DefaultSessionDataTest extends TestCase
     /**
      * @return (int|bool|string|float|mixed[]|object|JsonSerializable|null)[][]
      *
-     * @psalm-return non-empty-array<non-empty-string, array{
-     *     null|int|bool|string|float|object|array<mixed>,
-     *     null|int|bool|string|float|array<mixed>,
-     * }>
+     * @psalm-return non-empty-array<non-empty-string, array{(int|bool|string|float|object|array<mixed>|null), (int|bool|string|float|array<mixed>|null)}>
      */
-    public function storageNonScalarDataProvider() : array
+    public function storageNonScalarDataProvider(): array
     {
         return [
             'null' => [
@@ -318,7 +317,11 @@ final class DefaultSessionDataTest extends TestCase
                 ['foo' => 'bar'],
             ],
             'object' => [
-                (object) ['baz' => [(object) ['tab' => 'taz']]],
+                (object) [
+                    'baz' => [
+                        (object) ['tab' => 'taz'],
+                    ],
+                ],
                 ['baz' => [['tab' => 'taz']]],
             ],
             'array'  => [
@@ -332,7 +335,7 @@ final class DefaultSessionDataTest extends TestCase
             'jsonSerializable' => [
                 new class implements JsonSerializable
                 {
-                    public function jsonSerialize() : object
+                    public function jsonSerialize(): object
                     {
                         $object = new stdClass();
 
@@ -355,7 +358,7 @@ final class DefaultSessionDataTest extends TestCase
      *
      * @psalm-return non-empty-array<non-empty-string, array{string, int|bool|string|float|array<mixed>|null}>
      */
-    public function storageScalarDataProvider() : array
+    public function storageScalarDataProvider(): array
     {
         return [
             'string'             => ['foo', 'bar'],

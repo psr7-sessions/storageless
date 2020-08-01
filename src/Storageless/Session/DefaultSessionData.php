@@ -22,10 +22,12 @@ namespace PSR7Sessions\Storageless\Session;
 
 use JsonSerializable;
 use stdClass;
+
 use function array_key_exists;
 use function count;
 use function json_decode;
 use function json_encode;
+
 use const JSON_PRESERVE_ZERO_FRACTION;
 use const JSON_THROW_ON_ERROR;
 
@@ -47,11 +49,11 @@ final class DefaultSessionData implements SessionInterface
         array $data,
         array $originalData
     ) {
-        $this->data = $data;
+        $this->data         = $data;
         $this->originalData = $originalData;
     }
 
-    public static function fromDecodedTokenData(stdClass $data) : self
+    public static function fromDecodedTokenData(stdClass $data): self
     {
         $arrayShapedData = self::convertValueToScalar($data);
 
@@ -61,7 +63,7 @@ final class DefaultSessionData implements SessionInterface
     /**
      * @param array<int|bool|string|float|mixed[]|object|JsonSerializable|null> $data
      */
-    public static function fromTokenData(array $data) : self
+    public static function fromTokenData(array $data): self
     {
         $instance = new self([], []);
 
@@ -74,7 +76,7 @@ final class DefaultSessionData implements SessionInterface
         return $instance;
     }
 
-    public static function newEmptySession() : self
+    public static function newEmptySession(): self
     {
         return new self([], []);
     }
@@ -82,7 +84,7 @@ final class DefaultSessionData implements SessionInterface
     /**
      * {@inheritDoc}
      */
-    public function set(string $key, $value) : void
+    public function set(string $key, $value): void
     {
         $this->data[$key] = self::convertValueToScalar($value);
     }
@@ -99,42 +101,42 @@ final class DefaultSessionData implements SessionInterface
         return $this->data[$key];
     }
 
-    public function remove(string $key) : void
+    public function remove(string $key): void
     {
         unset($this->data[$key]);
     }
 
-    public function clear() : void
+    public function clear(): void
     {
         $this->data = [];
     }
 
-    public function has(string $key) : bool
+    public function has(string $key): bool
     {
         return array_key_exists($key, $this->data);
     }
 
-    public function hasChanged() : bool
+    public function hasChanged(): bool
     {
         return $this->data !== $this->originalData;
     }
 
-    public function isEmpty() : bool
+    public function isEmpty(): bool
     {
         return ! count($this->data);
     }
 
-    public function jsonSerialize() : object
+    public function jsonSerialize(): object
     {
         return (object) $this->data;
     }
 
     /**
-     * @param null|int|bool|string|float|mixed[]|object|JsonSerializable $value
+     * @param int|bool|string|float|mixed[]|object|JsonSerializable|null $value
      *
-     * @return null|int|bool|string|float|mixed[]
+     * @return int|bool|string|float|mixed[]|null
      *
-     * @psalm-template ValueType of null|int|bool|string|float|array<mixed>
+     * @psalm-template ValueType of int|bool|string|float|array<mixed>|null
      * @psalm-template ValueTypeWithObjects of ValueType|object
      *
      * @psalm-param ValueTypeWithObjects $value

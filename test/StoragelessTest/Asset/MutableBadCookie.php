@@ -30,7 +30,7 @@ final class MutableBadCookie extends SetCookie
 {
     public bool $mutated = false;
 
-    public function __toString() : string
+    public function __toString(): string
     {
         if ($this->mutated) {
             return 'Cookie: was mutated';

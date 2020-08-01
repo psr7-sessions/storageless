@@ -23,6 +23,9 @@
         <!-- spaces after the by-ref marker are endorsed and wanted
              spacing is important, and by-ref should be highly evident -->
         <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterReference"/>
+
+        <!-- Squiz is really confused by the `(object) ['foo' => 'bar']` syntax used by some tests -->
+        <exclude name="Squiz.Arrays.ArrayDeclaration.ValueNoNewline"/>
     </rule>
 </ruleset>
 
