@@ -42,6 +42,9 @@ use PSR7Sessions\Storageless\Session\LazySession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
 use stdClass;
 
+use function assert;
+use function is_numeric;
+
 final class SessionMiddleware implements MiddlewareInterface
 {
     public const ISSUED_AT_CLAIM      = 'iat';
@@ -89,7 +92,7 @@ final class SessionMiddleware implements MiddlewareInterface
     /**
      * This constructor simplifies instantiation when using HTTPS (REQUIRED!) and symmetric key encryption
      */
-    public static function fromSymmetricKeyDefaults(string $symmetricKey, int $expirationTime) : self
+    public static function fromSymmetricKeyDefaults(string $symmetricKey, int $expirationTime): self
     {
         return new self(
             new Signer\Hmac\Sha256(),
@@ -114,7 +117,7 @@ final class SessionMiddleware implements MiddlewareInterface
         string $privateRsaKey,
         string $publicRsaKey,
         int $expirationTime
-    ) : self {
+    ): self {
         return new self(
             new Signer\Rsa\Sha256(),
             $privateRsaKey,
@@ -136,10 +139,10 @@ final class SessionMiddleware implements MiddlewareInterface
      * @throws BadMethodCallException
      * @throws InvalidArgumentException
      */
-    public function process(Request $request, RequestHandlerInterface $delegate) : Response
+    public function process(Request $request, RequestHandlerInterface $delegate): Response
     {
         $token            = $this->parseToken($request);
-        $sessionContainer = LazySession::fromContainerBuildingCallback(function () use ($token) : SessionInterface {
+        $sessionContainer = LazySession::fromContainerBuildingCallback(function () use ($token): SessionInterface {
             return $this->extractSessionContainer($token);
         });
 
@@ -153,8 +156,9 @@ final class SessionMiddleware implements MiddlewareInterface
     /**
      * Extract the token from the given request object
      */
-    private function parseToken(Request $request) : ?Token
+    private function parseToken(Request $request): ?Token
     {
+        /** @var array<string, string> $cookies */
         $cookies    = $request->getCookieParams();
         $cookieName = $this->defaultCookie->getName();
 
@@ -178,7 +182,7 @@ final class SessionMiddleware implements MiddlewareInterface
     /**
      * @throws OutOfBoundsException
      */
-    private function extractSessionContainer(?Token $token) : SessionInterface
+    private function extractSessionContainer(?Token $token): SessionInterface
     {
         if (! $token) {
             return DefaultSessionData::newEmptySession();
@@ -201,7 +205,7 @@ final class SessionMiddleware implements MiddlewareInterface
      * @throws BadMethodCallException
      * @throws InvalidArgumentException
      */
-    private function appendToken(SessionInterface $sessionContainer, Response $response, ?Token $token) : Response
+    private function appendToken(SessionInterface $sessionContainer, Response $response, ?Token $token): Response
     {
         $sessionContainerChanged = $sessionContainer->hasChanged();
 
@@ -216,19 +220,23 @@ final class SessionMiddleware implements MiddlewareInterface
         return $response;
     }
 
-    private function shouldTokenBeRefreshed(?Token $token) : bool
+    private function shouldTokenBeRefreshed(?Token $token): bool
     {
         if (! ($token && $token->hasClaim(self::ISSUED_AT_CLAIM))) {
             return false;
         }
 
-        return $this->timestamp() >= $token->getClaim(self::ISSUED_AT_CLAIM) + $this->refreshTime;
+        $issuedAt = $token->getClaim(self::ISSUED_AT_CLAIM);
+
+        assert(is_numeric($issuedAt));
+
+        return $this->timestamp() >= $issuedAt + $this->refreshTime;
     }
 
     /**
      * @throws BadMethodCallException
      */
-    private function getTokenCookie(SessionInterface $sessionContainer) : SetCookie
+    private function getTokenCookie(SessionInterface $sessionContainer): SetCookie
     {
         $timestamp = $this->timestamp();
 
@@ -246,7 +254,7 @@ final class SessionMiddleware implements MiddlewareInterface
             ->withExpires($timestamp + $this->expirationTime);
     }
 
-    private function getExpirationCookie() : SetCookie
+    private function getExpirationCookie(): SetCookie
     {
         $expirationDate = $this->clock->now()->modify('-30 days');
 
@@ -256,7 +264,7 @@ final class SessionMiddleware implements MiddlewareInterface
             ->withExpires($expirationDate->getTimestamp());
     }
 
-    private function timestamp() : int
+    private function timestamp(): int
     {
         return $this->clock->now()->getTimestamp();
     }

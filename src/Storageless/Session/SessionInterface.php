@@ -30,7 +30,7 @@ interface SessionInterface extends JsonSerializable
      * @param int|bool|string|float|mixed[]|object|JsonSerializable|null $value allows any nested combination of the previous
      * types as well
      */
-    public function set(string $key, $value) : void;
+    public function set(string $key, $value): void;
 
     /**
      * Retrieves a value from the session - if the value doesn't exist, then it uses the given $default, but transformed
@@ -45,28 +45,28 @@ interface SessionInterface extends JsonSerializable
     /**
      * Removes an item from the session
      */
-    public function remove(string $key) : void;
+    public function remove(string $key): void;
 
     /**
      * Clears the contents of the session
      */
-    public function clear() : void;
+    public function clear(): void;
 
     /**
      * Checks whether a given key exists in the session
      */
-    public function has(string $key) : bool;
+    public function has(string $key): bool;
 
     /**
      * Checks whether the session has changed its contents since its lifecycle start
      */
-    public function hasChanged() : bool;
+    public function hasChanged(): bool;
 
     /**
      * Checks whether the session contains any data
      */
-    public function isEmpty() : bool;
+    public function isEmpty(): bool;
 
     /** {@inheritDoc} */
-    public function jsonSerialize() : object;
+    public function jsonSerialize(): object;
 }

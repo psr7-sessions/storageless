@@ -25,29 +25,32 @@ final class LazySession implements SessionInterface
     /** @internal do not access directly: use {@see LazySession::getRealSession} instead */
     private ?SessionInterface $realSession = null;
 
-    /** @var callable */
+    /**
+     * @var callable
+     * @psalm-var callable(): SessionInterface
+     */
     private $sessionLoader;
 
     /**
      * Instantiation via __construct is not allowed, use {@see LazySession::fromContainerBuildingCallback} instead
+     *
+     * @psalm-param callable(): SessionInterface $sessionLoader
      */
-    private function __construct()
+    private function __construct(callable $sessionLoader)
     {
+        $this->sessionLoader = $sessionLoader;
     }
 
-    public static function fromContainerBuildingCallback(callable $sessionLoader) : self
+    /** @psalm-param callable(): SessionInterface $sessionLoader */
+    public static function fromContainerBuildingCallback(callable $sessionLoader): self
     {
-        $instance = new self();
-
-        $instance->sessionLoader = $sessionLoader;
-
-        return $instance;
+        return new self($sessionLoader);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function set(string $key, $value) : void
+    public function set(string $key, $value): void
     {
         $this->getRealSession()->set($key, $value);
     }
@@ -60,32 +63,32 @@ final class LazySession implements SessionInterface
         return $this->getRealSession()->get($key, $default);
     }
 
-    public function remove(string $key) : void
+    public function remove(string $key): void
     {
         $this->getRealSession()->remove($key);
     }
 
-    public function clear() : void
+    public function clear(): void
     {
         $this->getRealSession()->clear();
     }
 
-    public function has(string $key) : bool
+    public function has(string $key): bool
     {
         return $this->getRealSession()->has($key);
     }
 
-    public function hasChanged() : bool
+    public function hasChanged(): bool
     {
         return $this->realSession && $this->realSession->hasChanged();
     }
 
-    public function isEmpty() : bool
+    public function isEmpty(): bool
     {
         return $this->getRealSession()->isEmpty();
     }
 
-    public function jsonSerialize() : object
+    public function jsonSerialize(): object
     {
         return $this->getRealSession()->jsonSerialize();
     }
@@ -93,7 +96,7 @@ final class LazySession implements SessionInterface
     /**
      * Get or initialize the session
      */
-    private function getRealSession() : SessionInterface
+    private function getRealSession(): SessionInterface
     {
         return $this->realSession ?? $this->realSession = $this->loadSession();
     }
@@ -101,10 +104,8 @@ final class LazySession implements SessionInterface
     /**
      * Type-safe wrapper that ensures that the given callback returns the expected type of object, when called
      */
-    private function loadSession() : SessionInterface
+    private function loadSession(): SessionInterface
     {
-        $sessionLoader = $this->sessionLoader;
-
-        return $sessionLoader();
+        return ($this->sessionLoader)();
     }
 }

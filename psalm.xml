@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<psalm
+    totallyTyped="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+>
+    <projectFiles>
+        <directory name="examples" />
+        <directory name="src" />
+        <directory name="test/StoragelessTest" />
+        <ignoreFiles>
+            <directory name="vendor" />
+        </ignoreFiles>
+    </projectFiles>
+
+    <issueHandlers>
+        <DeprecatedMethod>
+            <errorLevel type="suppress">
+                <referencedMethod name="Lcobucci\JWT\Builder::setIssuedAt"/>
+                <referencedMethod name="Lcobucci\JWT\Builder::setExpiration"/>
+                <referencedMethod name="Lcobucci\JWT\Builder::set"/>
+                <referencedMethod name="Lcobucci\JWT\Builder::sign"/>
+            </errorLevel>
+        </DeprecatedMethod>
+    </issueHandlers>
+
+    <plugins>
+        <pluginClass class="Psalm\PhpUnitPlugin\Plugin"/>
+    </plugins>
+</psalm>

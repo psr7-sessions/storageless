@@ -1,8 +1,7 @@
 # PSR-7 Storage-less HTTP Sessions
 
-[![Build Status](https://travis-ci.org/psr7-sessions/storageless.svg)](https://travis-ci.org/psr7-sessions/storageless)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/psr7-sessions/storageless/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/psr7-sessions/storageless/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/psr7-sessions/storageless/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/psr7-sessions/storageless/?branch=master)
+[![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fpsr7-sessions%2Fstorageless)](https://dashboard.stryker-mutator.io/reports/github.com/psr7-sessions/storageless/master)
+[![Type Coverage](https://shepherd.dev/github/psr7-sessions/storageless/coverage.svg)](https://shepherd.dev/github/psr7-sessions/storageless)
 [![Packagist](https://img.shields.io/packagist/v/psr7-sessions/storageless.svg)](https://packagist.org/packages/psr7-sessions/storageless)
 [![Packagist](https://img.shields.io/packagist/vpre/psr7-sessions/storageless.svg)](https://packagist.org/packages/psr7-sessions/storageless)
 

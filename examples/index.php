@@ -54,7 +54,7 @@ $sessionMiddleware = new SessionMiddleware(
 );
 
 $myMiddleware = new class implements RequestHandlerInterface {
-    public function handle(ServerRequestInterface $request) : ResponseInterface
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
         assert($session instanceof SessionInterface);

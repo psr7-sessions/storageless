@@ -24,9 +24,8 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use PSR7Sessions\Storageless\Session\LazySession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
-use stdClass;
-use function assert;
-use function is_callable;
+use PSR7SessionsTest\Storageless\Asset\MakeSession;
+
 use function uniqid;
 
 /**
@@ -37,28 +36,28 @@ final class LazySessionTest extends TestCase
     /** @var SessionInterface&MockObject */
     private SessionInterface $wrappedSession;
 
-    /** @var callable&MockObject */
-    private MockObject $sessionLoader;
+    /** @var MakeSession&MockObject */
+    private MakeSession $sessionLoader;
 
     private LazySession $lazySession;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->wrappedSession = $this->createMock(SessionInterface::class);
-        $sessionLoader        = $this->getMockBuilder(stdClass::class)->setMethods(['__invoke'])->getMock();
-        assert(is_callable($sessionLoader));
-        $this->sessionLoader = $sessionLoader;
-        $this->lazySession   = LazySession::fromContainerBuildingCallback($this->sessionLoader);
+        $this->sessionLoader  = $this->createMock(MakeSession::class);
+        $this->lazySession    = LazySession::fromContainerBuildingCallback(function (): SessionInterface {
+            return ($this->sessionLoader)();
+        });
     }
 
-    public function testLazyNonInitializedSessionIsAlwaysNotChanged() : void
+    public function testLazyNonInitializedSessionIsAlwaysNotChanged(): void
     {
         $this->sessionLoader->expects(self::never())->method('__invoke');
 
         self::assertFalse($this->lazySession->hasChanged());
     }
 
-    public function testHasChanged() : void
+    public function testHasChanged(): void
     {
         $this->wrappedSessionWillBeLoaded();
 
@@ -71,7 +70,7 @@ final class LazySessionTest extends TestCase
         self::assertFalse($this->lazySession->hasChanged());
     }
 
-    public function testHas() : void
+    public function testHas(): void
     {
         $this->wrappedSessionWillBeLoaded();
 
@@ -84,7 +83,7 @@ final class LazySessionTest extends TestCase
         self::assertTrue($this->lazySession->has('bar'));
     }
 
-    public function testGet() : void
+    public function testGet(): void
     {
         $this->wrappedSessionWillBeLoaded();
 
@@ -99,7 +98,7 @@ final class LazySessionTest extends TestCase
         self::assertSame('taz', $this->lazySession->get('baz', 'default'));
     }
 
-    public function testRemove() : void
+    public function testRemove(): void
     {
         $this->wrappedSessionWillBeLoaded();
 
@@ -109,7 +108,7 @@ final class LazySessionTest extends TestCase
         $this->lazySession->remove('bar');
     }
 
-    public function testClear() : void
+    public function testClear(): void
     {
         $this->wrappedSessionWillBeLoaded();
 
@@ -119,7 +118,7 @@ final class LazySessionTest extends TestCase
         $this->lazySession->clear();
     }
 
-    public function testSet() : void
+    public function testSet(): void
     {
         $this->wrappedSessionWillBeLoaded();
 
@@ -133,7 +132,7 @@ final class LazySessionTest extends TestCase
         $this->lazySession->set('baz', 'tab');
     }
 
-    public function testIsEmpty() : void
+    public function testIsEmpty(): void
     {
         $this->wrappedSessionWillBeLoaded();
 
@@ -144,7 +143,7 @@ final class LazySessionTest extends TestCase
         self::assertFalse($this->lazySession->isEmpty());
     }
 
-    public function testJsonSerialize() : void
+    public function testJsonSerialize(): void
     {
         $this->wrappedSessionWillBeLoaded();
 
@@ -155,12 +154,12 @@ final class LazySessionTest extends TestCase
         self::assertEquals((object) ['baz' => 'tab'], $this->lazySession->jsonSerialize());
     }
 
-    private function wrappedSessionWillBeLoaded() : void
+    private function wrappedSessionWillBeLoaded(): void
     {
         $this->sessionLoader->expects(self::once())->method('__invoke')->willReturn($this->wrappedSession);
     }
 
-    private function forceWrappedSessionInitialization() : void
+    private function forceWrappedSessionInitialization(): void
     {
         // no-op operation that is known to trigger session lazy-loading
         $this->lazySession->remove(uniqid('nonExisting', true));
