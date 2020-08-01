@@ -41,6 +41,8 @@ use PSR7Sessions\Storageless\Session\DefaultSessionData;
 use PSR7Sessions\Storageless\Session\LazySession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
 use stdClass;
+use function assert;
+use function is_numeric;
 
 final class SessionMiddleware implements MiddlewareInterface
 {
@@ -155,6 +157,7 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     private function parseToken(Request $request) : ?Token
     {
+        /** @var array<string, string> $cookies */
         $cookies    = $request->getCookieParams();
         $cookieName = $this->defaultCookie->getName();
 
@@ -222,7 +225,11 @@ final class SessionMiddleware implements MiddlewareInterface
             return false;
         }
 
-        return $this->timestamp() >= $token->getClaim(self::ISSUED_AT_CLAIM) + $this->refreshTime;
+        $issuedAt = $token->getClaim(self::ISSUED_AT_CLAIM);
+
+        assert(is_numeric($issuedAt));
+
+        return $this->timestamp() >= $issuedAt + $this->refreshTime;
     }
 
     /**

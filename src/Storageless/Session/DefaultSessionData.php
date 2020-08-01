@@ -20,24 +20,19 @@ declare(strict_types=1);
 
 namespace PSR7Sessions\Storageless\Session;
 
-use InvalidArgumentException;
 use JsonSerializable;
 use stdClass;
 use function array_key_exists;
-use function assert;
 use function count;
-use function is_array;
-use function is_string;
 use function json_decode;
 use function json_encode;
-use function json_last_error;
-use function json_last_error_msg;
-use function sprintf;
-use function var_export;
 use const JSON_PRESERVE_ZERO_FRACTION;
+use const JSON_THROW_ON_ERROR;
 
 final class DefaultSessionData implements SessionInterface
 {
+    private const DEFAULT_JSON_DECODE_DEPTH = 512;
+
     /** @var array<string, int|bool|string|float|mixed[]|null> */
     private array $data;
 
@@ -45,34 +40,30 @@ final class DefaultSessionData implements SessionInterface
     private array $originalData;
 
     /**
-     * Instantiation via __construct is not allowed, use
-     * - {@see DefaultSessionData::fromDecodedTokenData}
-     * - {@see DefaultSessionData::fromTokenData}
-     * - {@see DefaultSessionData::newEmptySession}
-     * instead
+     * @param array<string, int|bool|string|float|mixed[]|null> $data
+     * @param array<string, int|bool|string|float|mixed[]|null> $originalData
      */
-    private function __construct()
-    {
+    private function __construct(
+        array $data,
+        array $originalData
+    ) {
+        $this->data = $data;
+        $this->originalData = $originalData;
     }
 
     public static function fromDecodedTokenData(stdClass $data) : self
     {
-        $instance = new self();
-
         $arrayShapedData = self::convertValueToScalar($data);
-        assert(is_array($arrayShapedData));
 
-        $instance->originalData = $instance->data = $arrayShapedData;
-
-        return $instance;
+        return new self($arrayShapedData, $arrayShapedData);
     }
 
-    /** @param mixed[] $data */
+    /**
+     * @param array<int|bool|string|float|mixed[]|object|JsonSerializable|null> $data
+     */
     public static function fromTokenData(array $data) : self
     {
-        $instance = new self();
-
-        $instance->data = [];
+        $instance = new self([], []);
 
         foreach ($data as $key => $value) {
             $instance->set((string) $key, $value);
@@ -85,11 +76,7 @@ final class DefaultSessionData implements SessionInterface
 
     public static function newEmptySession() : self
     {
-        $instance = new self();
-
-        $instance->originalData = $instance->data = [];
-
-        return $instance;
+        return new self([], []);
     }
 
     /**
@@ -143,24 +130,27 @@ final class DefaultSessionData implements SessionInterface
     }
 
     /**
-     * @param int|bool|string|float|mixed[]|object|JsonSerializable|null $value
+     * @param null|int|bool|string|float|mixed[]|object|JsonSerializable $value
      *
-     * @return int|bool|string|float|mixed[]
+     * @return null|int|bool|string|float|mixed[]
+     *
+     * @psalm-template ValueType of null|int|bool|string|float|array<mixed>
+     * @psalm-template ValueTypeWithObjects of ValueType|object
+     *
+     * @psalm-param ValueTypeWithObjects $value
+     *
+     * @psalm-return (ValueTypeWithObjects is object ? array<string, ValueType> : ValueType)
      */
     private static function convertValueToScalar($value)
     {
-        $jsonScalar = json_encode($value, JSON_PRESERVE_ZERO_FRACTION);
+        /** @psalm-var ValueType $decoded */
+        $decoded = json_decode(
+            json_encode($value, JSON_PRESERVE_ZERO_FRACTION | JSON_THROW_ON_ERROR),
+            true,
+            self::DEFAULT_JSON_DECODE_DEPTH,
+            JSON_THROW_ON_ERROR
+        );
 
-        if (! is_string($jsonScalar)) {
-            // @TODO use PHP 7.3 and JSON_THROW_ON_ERROR instead? https://wiki.php.net/rfc/json_throw_on_error
-            throw new InvalidArgumentException(sprintf(
-                'Could not serialise given value %s due to %s (%s)',
-                var_export($value, true),
-                json_last_error_msg(),
-                json_last_error()
-            ));
-        }
-
-        return json_decode($jsonScalar, true);
+        return $decoded;
     }
 }

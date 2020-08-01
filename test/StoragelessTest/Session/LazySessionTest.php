@@ -24,9 +24,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use PSR7Sessions\Storageless\Session\LazySession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
-use stdClass;
-use function assert;
-use function is_callable;
+use PSR7SessionsTest\Storageless\Asset\MakeSession;
 use function uniqid;
 
 /**
@@ -37,18 +35,18 @@ final class LazySessionTest extends TestCase
     /** @var SessionInterface&MockObject */
     private SessionInterface $wrappedSession;
 
-    /** @var callable&MockObject */
-    private MockObject $sessionLoader;
+    /** @var MakeSession&MockObject */
+    private MakeSession $sessionLoader;
 
     private LazySession $lazySession;
 
     protected function setUp() : void
     {
         $this->wrappedSession = $this->createMock(SessionInterface::class);
-        $sessionLoader        = $this->getMockBuilder(stdClass::class)->setMethods(['__invoke'])->getMock();
-        assert(is_callable($sessionLoader));
-        $this->sessionLoader = $sessionLoader;
-        $this->lazySession   = LazySession::fromContainerBuildingCallback($this->sessionLoader);
+        $this->sessionLoader  = $this->createMock(MakeSession::class);
+        $this->lazySession    = LazySession::fromContainerBuildingCallback(function () : SessionInterface {
+            return ($this->sessionLoader)();
+        });
     }
 
     public function testLazyNonInitializedSessionIsAlwaysNotChanged() : void

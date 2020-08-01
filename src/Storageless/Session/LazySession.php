@@ -25,23 +25,27 @@ final class LazySession implements SessionInterface
     /** @internal do not access directly: use {@see LazySession::getRealSession} instead */
     private ?SessionInterface $realSession = null;
 
-    /** @var callable */
+    /**
+     * @var callable
+     *
+     * @psalm-var callable(): SessionInterface
+     */
     private $sessionLoader;
 
     /**
      * Instantiation via __construct is not allowed, use {@see LazySession::fromContainerBuildingCallback} instead
+     *
+     * @psalm-param callable(): SessionInterface $sessionLoader
      */
-    private function __construct()
+    private function __construct(callable $sessionLoader)
     {
+        $this->sessionLoader = $sessionLoader;
     }
 
+    /** @psalm-param callable(): SessionInterface $sessionLoader */
     public static function fromContainerBuildingCallback(callable $sessionLoader) : self
     {
-        $instance = new self();
-
-        $instance->sessionLoader = $sessionLoader;
-
-        return $instance;
+        return new self($sessionLoader);
     }
 
     /**
@@ -103,8 +107,6 @@ final class LazySession implements SessionInterface
      */
     private function loadSession() : SessionInterface
     {
-        $sessionLoader = $this->sessionLoader;
-
-        return $sessionLoader();
+        return ($this->sessionLoader)();
     }
 }

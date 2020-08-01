@@ -45,6 +45,7 @@ use PSR7SessionsTest\Storageless\Asset\MutableBadCookie;
 use ReflectionProperty;
 use function assert;
 use function file_get_contents;
+use function is_string;
 use function random_int;
 use function time;
 use function uniqid;
@@ -752,7 +753,11 @@ final class SessionMiddlewareTest extends TestCase
 
         $property->setAccessible(true);
 
-        return $property->getValue($middleware);
+        $signer = $property->getValue($middleware);
+
+        assert($signer instanceof Signer);
+
+        return $signer;
     }
 
     private function getSignatureKey(SessionMiddleware $middleware) : string
@@ -761,7 +766,11 @@ final class SessionMiddlewareTest extends TestCase
 
         $property->setAccessible(true);
 
-        return $property->getValue($middleware);
+        $key = $property->getValue($middleware);
+
+        assert(is_string($key));
+
+        return $key;
     }
 
     private static function privateKey() : string

@@ -20,7 +20,7 @@ declare(strict_types=1);
 
 namespace PSR7SessionsTest\Storageless\Session;
 
-use InvalidArgumentException;
+use JsonException;
 use JsonSerializable;
 use PHPUnit\Framework\TestCase;
 use PSR7Sessions\Storageless\Session\DefaultSessionData;
@@ -270,16 +270,46 @@ final class DefaultSessionDataTest extends TestCase
 
     public function testRejectsNonJsonSerializableData() : void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Could not serialise given value '\x80' due to Malformed UTF-8 characters, possibly incorrectly encoded (5)");
+        $this->expectException(JsonException::class);
 
         DefaultSessionData::fromTokenData(['foo' => "\x80"]);
     }
 
-    /** @return (int|bool|string|float|mixed[]|object|JsonSerializable|null)[][] */
+    /**
+     * @return (int|bool|string|float|mixed[]|object|JsonSerializable|null)[][]
+     *
+     * @psalm-return non-empty-array<non-empty-string, array{
+     *     null|int|bool|string|float|object|array<mixed>,
+     *     null|int|bool|string|float|array<mixed>,
+     * }>
+     */
     public function storageNonScalarDataProvider() : array
     {
         return [
+            'null' => [
+                null,
+                null,
+            ],
+            'bool' => [
+                true,
+                true,
+            ],
+            'string' => [
+                'aaa',
+                'aaa',
+            ],
+            'integer' => [
+                123,
+                123,
+            ],
+            'float' => [
+                123.45,
+                123.45,
+            ],
+            'float with zero fraction' => [
+                123.0,
+                123.0,
+            ],
             'class' => [
                 new class
                 {
@@ -320,7 +350,11 @@ final class DefaultSessionDataTest extends TestCase
         ];
     }
 
-    /** @return (int|bool|string|float|mixed[]|null)[][] */
+    /**
+     * @return (int|bool|string|float|mixed[]|null)[][]
+     *
+     * @psalm-return non-empty-array<non-empty-string, array{string, int|bool|string|float|array<mixed>|null}>
+     */
     public function storageScalarDataProvider() : array
     {
         return [
