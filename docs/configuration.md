@@ -80,7 +80,7 @@ $sessionMiddleware = new SessionMiddleware(
     $cookieBlueprint,
     new \Lcobucci\JWT\Parser(),
     1200, // session lifetime, in seconds
-    new \Lcobucci\Clock\SystemClock(),
+    new \Lcobucci\Clock\SystemClock(new DateTimeZone(date_default_timezone_get()),
     60    // session automatic refresh time, in seconds
 );
 ```

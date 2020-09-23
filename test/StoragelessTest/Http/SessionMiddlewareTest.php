@@ -22,6 +22,7 @@ namespace PSR7SessionsTest\Storageless\Http;
 
 use DateTime;
 use DateTimeImmutable;
+use DateTimeZone;
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\Modifier\SameSite;
 use Dflydev\FigCookies\SetCookie;
@@ -45,6 +46,7 @@ use PSR7SessionsTest\Storageless\Asset\MutableBadCookie;
 use ReflectionProperty;
 
 use function assert;
+use function date_default_timezone_get;
 use function file_get_contents;
 use function is_string;
 use function random_int;
@@ -406,7 +408,7 @@ final class SessionMiddlewareTest extends TestCase
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             new Parser(),
             100,
-            new SystemClock()
+            new SystemClock(new DateTimeZone(date_default_timezone_get()))
         );
 
         $this->ensureSameResponse(
@@ -461,7 +463,7 @@ final class SessionMiddlewareTest extends TestCase
         $signer->expects(self::never())->method('verify');
         $signer->method('getAlgorithmId')->willReturn('HS256');
 
-        $currentTimeProvider = new SystemClock();
+        $currentTimeProvider = new SystemClock(new DateTimeZone(date_default_timezone_get()));
         $setCookie           = SetCookie::create(SessionMiddleware::DEFAULT_COOKIE);
         $middleware          = new SessionMiddleware($signer, 'foo', 'foo', $setCookie, new Parser(), 100, $currentTimeProvider);
         $request             = (new ServerRequest())
@@ -533,7 +535,7 @@ final class SessionMiddlewareTest extends TestCase
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             new Parser(),
             1000,
-            new SystemClock(),
+            new SystemClock(new DateTimeZone(date_default_timezone_get())),
             300
         );
 
@@ -565,7 +567,7 @@ final class SessionMiddlewareTest extends TestCase
                         SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
                         new Parser(),
                         100,
-                        new SystemClock()
+                        new SystemClock(new DateTimeZone(date_default_timezone_get()))
                     );
                 },
             ],
@@ -608,7 +610,7 @@ final class SessionMiddlewareTest extends TestCase
             $cookie,
             new Parser(),
             1000,
-            new SystemClock()
+            new SystemClock(new DateTimeZone(date_default_timezone_get()))
         );
 
         $cookie->mutated = true;

@@ -50,7 +50,7 @@ $sessionMiddleware = new SessionMiddleware(
         ->withPath('/'),
     new Parser(),
     1200, // 20 minutes
-    new SystemClock()
+    new SystemClock(new DateTimeZone(date_default_timezone_get()))
 );
 
 $myMiddleware = new class implements RequestHandlerInterface {
