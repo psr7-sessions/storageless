@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace PSR7Sessions\Storageless\Http;
 
 use BadMethodCallException;
+use DateTimeZone;
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\Modifier\SameSite;
 use Dflydev\FigCookies\SetCookie;
@@ -43,6 +44,7 @@ use PSR7Sessions\Storageless\Session\SessionInterface;
 use stdClass;
 
 use function assert;
+use function date_default_timezone_get;
 use function is_numeric;
 
 final class SessionMiddleware implements MiddlewareInterface
@@ -105,7 +107,7 @@ final class SessionMiddleware implements MiddlewareInterface
                 ->withPath('/'),
             new Parser(),
             $expirationTime,
-            new SystemClock()
+            new SystemClock(new DateTimeZone(date_default_timezone_get()))
         );
     }
 
@@ -129,7 +131,7 @@ final class SessionMiddleware implements MiddlewareInterface
                 ->withPath('/'),
             new Parser(),
             $expirationTime,
-            new SystemClock()
+            new SystemClock(new DateTimeZone(date_default_timezone_get()))
         );
     }
 
