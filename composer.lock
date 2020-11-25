@@ -4,7 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
+<<<<<<< HEAD
     "content-hash": "fc26dc877be86c4c3ceacb8760cd7ea0",
+=======
+    "content-hash": "e8afaad6161b0e62b7d7871e2daa8872",
+>>>>>>> 9acd587... Tests pass
     "packages": [
         {
             "name": "dflydev/fig-cookies",
@@ -60,9 +64,15 @@
             ],
             "support": {
                 "issues": "https://github.com/dflydev/dflydev-fig-cookies/issues",
+<<<<<<< HEAD
                 "source": "https://github.com/dflydev/dflydev-fig-cookies/tree/v2.0.3"
             },
             "time": "2020-12-07T16:40:59+00:00"
+=======
+                "source": "https://github.com/dflydev/dflydev-fig-cookies/tree/v2.0.1"
+            },
+            "time": "2020-01-02T16:13:22+00:00"
+>>>>>>> 9acd587... Tests pass
         },
         {
             "name": "lcobucci/clock",
@@ -127,6 +137,7 @@
         },
         {
             "name": "lcobucci/jwt",
+<<<<<<< HEAD
             "version": "3.4.3",
             "source": {
                 "type": "git",
@@ -137,19 +148,38 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/lcobucci/jwt/zipball/cd83b5421df3dbbbc66bd07a5b970c9efb6371b9",
                 "reference": "cd83b5421df3dbbbc66bd07a5b970c9efb6371b9",
+=======
+            "version": "4.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lcobucci/jwt.git",
+                "reference": "6d8665ccd924dc076a9b65d1ea8abe21d68f6958"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lcobucci/jwt/zipball/6d8665ccd924dc076a9b65d1ea8abe21d68f6958",
+                "reference": "6d8665ccd924dc076a9b65d1ea8abe21d68f6958",
+>>>>>>> 9acd587... Tests pass
                 "shasum": ""
             },
             "require": {
                 "ext-mbstring": "*",
                 "ext-openssl": "*",
-                "php": "^5.6 || ^7.0"
+                "lcobucci/clock": "^2.0",
+                "php": "^7.4 || ^8.0"
             },
             "require-dev": {
-                "mikey179/vfsstream": "~1.5",
-                "phpmd/phpmd": "~2.2",
-                "phpunit/php-invoker": "~1.1",
-                "phpunit/phpunit": "^5.7 || ^7.3",
-                "squizlabs/php_codesniffer": "~2.3"
+                "infection/infection": "^0.20",
+                "lcobucci/coding-standard": "^6.0",
+                "mikey179/vfsstream": "^1.6",
+                "phpbench/phpbench": "^0.17",
+                "phpstan/extension-installer": "^1.0",
+                "phpstan/phpstan": "^0.12",
+                "phpstan/phpstan-deprecation-rules": "^0.12",
+                "phpstan/phpstan-phpunit": "^0.12",
+                "phpstan/phpstan-strict-rules": "^0.12",
+                "phpunit/php-invoker": "^3.1",
+                "phpunit/phpunit": "^9.4"
             },
             "suggest": {
                 "lcobucci/clock": "*"
@@ -157,7 +187,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.1-dev"
+                    "dev-master": "4.0-dev"
                 }
             },
             "autoload": {
@@ -176,7 +206,7 @@
             ],
             "authors": [
                 {
-                    "name": "Luís Otávio Cobucci Oblonczyk",
+                    "name": "Luís Cobucci",
                     "email": "lcobucci@gmail.com",
                     "role": "Developer"
                 }
@@ -188,7 +218,11 @@
             ],
             "support": {
                 "issues": "https://github.com/lcobucci/jwt/issues",
+<<<<<<< HEAD
                 "source": "https://github.com/lcobucci/jwt/tree/3.4.3"
+=======
+                "source": "https://github.com/lcobucci/jwt/tree/4.0.0"
+>>>>>>> 9acd587... Tests pass
             },
             "funding": [
                 {
@@ -200,7 +234,11 @@
                     "type": "patreon"
                 }
             ],
+<<<<<<< HEAD
             "time": "2021-01-27T23:38:30+00:00"
+=======
+            "time": "2020-11-25T02:06:12+00:00"
+>>>>>>> 9acd587... Tests pass
         },
         {
             "name": "psr/http-message",
@@ -373,6 +411,7 @@
     "packages-dev": [
         {
             "name": "amphp/amp",
+<<<<<<< HEAD
             "version": "v2.5.2",
             "source": {
                 "type": "git",
@@ -383,6 +422,18 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/amphp/amp/zipball/efca2b32a7580087adb8aabbff6be1dc1bb924a9",
                 "reference": "efca2b32a7580087adb8aabbff6be1dc1bb924a9",
+=======
+            "version": "v2.5.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/amphp/amp.git",
+                "reference": "ecdc3c476b3ccff02f8e5d5bcc04f7ccfd18751c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/amphp/amp/zipball/ecdc3c476b3ccff02f8e5d5bcc04f7ccfd18751c",
+                "reference": "ecdc3c476b3ccff02f8e5d5bcc04f7ccfd18751c",
+>>>>>>> 9acd587... Tests pass
                 "shasum": ""
             },
             "require": {
@@ -450,7 +501,11 @@
             "support": {
                 "irc": "irc://irc.freenode.org/amphp",
                 "issues": "https://github.com/amphp/amp/issues",
+<<<<<<< HEAD
                 "source": "https://github.com/amphp/amp/tree/v2.5.2"
+=======
+                "source": "https://github.com/amphp/amp/tree/v2.5.1"
+>>>>>>> 9acd587... Tests pass
             },
             "funding": [
                 {
@@ -458,7 +513,11 @@
                     "type": "github"
                 }
             ],
+<<<<<<< HEAD
             "time": "2021-01-10T17:06:37+00:00"
+=======
+            "time": "2020-11-03T16:23:45+00:00"
+>>>>>>> 9acd587... Tests pass
         },
         {
             "name": "amphp/byte-stream",
@@ -598,6 +657,7 @@
         },
         {
             "name": "composer/ca-bundle",
+<<<<<<< HEAD
             "version": "1.2.9",
             "source": {
                 "type": "git",
@@ -608,6 +668,18 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/composer/ca-bundle/zipball/78a0e288fdcebf92aa2318a8d3656168da6ac1a5",
                 "reference": "78a0e288fdcebf92aa2318a8d3656168da6ac1a5",
+=======
+            "version": "1.2.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/composer/ca-bundle.git",
+                "reference": "8a7ecad675253e4654ea05505233285377405215"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/8a7ecad675253e4654ea05505233285377405215",
+                "reference": "8a7ecad675253e4654ea05505233285377405215",
+>>>>>>> 9acd587... Tests pass
                 "shasum": ""
             },
             "require": {
@@ -654,7 +726,11 @@
             "support": {
                 "irc": "irc://irc.freenode.org/composer",
                 "issues": "https://github.com/composer/ca-bundle/issues",
+<<<<<<< HEAD
                 "source": "https://github.com/composer/ca-bundle/tree/1.2.9"
+=======
+                "source": "https://github.com/composer/ca-bundle/tree/1.2.8"
+>>>>>>> 9acd587... Tests pass
             },
             "funding": [
                 {
@@ -670,6 +746,7 @@
                     "type": "tidelift"
                 }
             ],
+<<<<<<< HEAD
             "time": "2021-01-12T12:10:35+00:00"
         },
         {
@@ -684,6 +761,22 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/composer/composer/zipball/e55d297525f0ecc805c813a0f63a40114fd670f6",
                 "reference": "e55d297525f0ecc805c813a0f63a40114fd670f6",
+=======
+            "time": "2020-08-23T12:54:47+00:00"
+        },
+        {
+            "name": "composer/composer",
+            "version": "1.10.17",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/composer/composer.git",
+                "reference": "09d42e18394d8594be24e37923031c4b7442a1cb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/composer/composer/zipball/09d42e18394d8594be24e37923031c4b7442a1cb",
+                "reference": "09d42e18394d8594be24e37923031c4b7442a1cb",
+>>>>>>> 9acd587... Tests pass
                 "shasum": ""
             },
             "require": {
@@ -753,7 +846,11 @@
             "support": {
                 "irc": "irc://irc.freenode.org/composer",
                 "issues": "https://github.com/composer/composer/issues",
+<<<<<<< HEAD
                 "source": "https://github.com/composer/composer/tree/1.10.20"
+=======
+                "source": "https://github.com/composer/composer/tree/1.10.17"
+>>>>>>> 9acd587... Tests pass
             },
             "funding": [
                 {
@@ -769,7 +866,11 @@
                     "type": "tidelift"
                 }
             ],
+<<<<<<< HEAD
             "time": "2021-01-27T14:41:06+00:00"
+=======
+            "time": "2020-10-30T21:31:58+00:00"
+>>>>>>> 9acd587... Tests pass
         },
         {
             "name": "composer/package-versions-deprecated",
@@ -906,7 +1007,11 @@
             "support": {
                 "irc": "irc://irc.freenode.org/composer",
                 "issues": "https://github.com/composer/semver/issues",
+<<<<<<< HEAD
                 "source": "https://github.com/composer/semver/tree/1.7.2"
+=======
+                "source": "https://github.com/composer/semver/tree/1.7.1"
+>>>>>>> 9acd587... Tests pass
             },
             "funding": [
                 {
@@ -985,7 +1090,11 @@
             "support": {
                 "irc": "irc://irc.freenode.org/composer",
                 "issues": "https://github.com/composer/spdx-licenses/issues",
+<<<<<<< HEAD
                 "source": "https://github.com/composer/spdx-licenses/tree/1.5.5"
+=======
+                "source": "https://github.com/composer/spdx-licenses/tree/1.5.4"
+>>>>>>> 9acd587... Tests pass
             },
             "funding": [
                 {
@@ -1134,7 +1243,48 @@
                 "issues": "https://github.com/dealerdirect/phpcodesniffer-composer-installer/issues",
                 "source": "https://github.com/dealerdirect/phpcodesniffer-composer-installer"
             },
+<<<<<<< HEAD
             "time": "2020-12-07T18:04:37+00:00"
+        },
+        {
+            "name": "dnoegel/php-xdg-base-dir",
+            "version": "v0.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dnoegel/php-xdg-base-dir.git",
+                "reference": "8f8a6e48c5ecb0f991c2fdcf5f154a47d85f9ffd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/dnoegel/php-xdg-base-dir/zipball/8f8a6e48c5ecb0f991c2fdcf5f154a47d85f9ffd",
+                "reference": "8f8a6e48c5ecb0f991c2fdcf5f154a47d85f9ffd",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~7.0|~6.0|~5.0|~4.8.35"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "XdgBaseDir\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "implementation of xdg base directory specification for php",
+            "support": {
+                "issues": "https://github.com/dnoegel/php-xdg-base-dir/issues",
+                "source": "https://github.com/dnoegel/php-xdg-base-dir/tree/v0.1.1"
+            },
+            "time": "2019-12-04T15:06:13+00:00"
+=======
+            "time": "2020-06-25T14:57:39+00:00"
+>>>>>>> 9acd587... Tests pass
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -1338,9 +1488,15 @@
             "description": "A more advanced JSONRPC implementation",
             "support": {
                 "issues": "https://github.com/felixfbecker/php-advanced-json-rpc/issues",
+<<<<<<< HEAD
                 "source": "https://github.com/felixfbecker/php-advanced-json-rpc/tree/v3.2.0"
             },
             "time": "2021-01-10T17:48:47+00:00"
+=======
+                "source": "https://github.com/felixfbecker/php-advanced-json-rpc/tree/master"
+            },
+            "time": "2020-03-11T15:21:41+00:00"
+>>>>>>> 9acd587... Tests pass
         },
         {
             "name": "felixfbecker/language-server-protocol",
@@ -1547,6 +1703,7 @@
         },
         {
             "name": "infection/infection",
+<<<<<<< HEAD
             "version": "0.21.0",
             "source": {
                 "type": "git",
@@ -1557,6 +1714,18 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/infection/infection/zipball/dfacb1e3d9def7fd34c6fb8df4d4bd098815dc82",
                 "reference": "dfacb1e3d9def7fd34c6fb8df4d4bd098815dc82",
+=======
+            "version": "0.20.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/infection/infection.git",
+                "reference": "6035c1566af6a5a8d833a276351e5e18ed412305"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/infection/infection/zipball/6035c1566af6a5a8d833a276351e5e18ed412305",
+                "reference": "6035c1566af6a5a8d833a276351e5e18ed412305",
+>>>>>>> 9acd587... Tests pass
                 "shasum": ""
             },
             "require": {
@@ -1568,12 +1737,20 @@
                 "infection/extension-installer": "^0.1.0",
                 "infection/include-interceptor": "^0.2.4",
                 "justinrainbow/json-schema": "^5.2",
+<<<<<<< HEAD
                 "nikic/php-parser": "^4.10.3",
                 "ocramius/package-versions": "^1.2 || ^2.0",
                 "ondram/ci-detector": "^3.3.0",
                 "php": "^7.4 || ^8.0",
                 "sanmai/later": "^0.1.1",
                 "sanmai/pipeline": "^5.1",
+=======
+                "nikic/php-parser": "^4.10.2",
+                "ocramius/package-versions": "^1.2 || ^2.0",
+                "ondram/ci-detector": "^3.3.0",
+                "php": "^7.4 || ^8.0",
+                "sanmai/pipeline": "^3.1 || ^5.0",
+>>>>>>> 9acd587... Tests pass
                 "sebastian/diff": "^3.0.2 || ^4.0",
                 "seld/jsonlint": "^1.7",
                 "symfony/console": "^3.4.29 || ^4.1.19 || ^5.0",
@@ -1598,9 +1775,14 @@
                 "phpstan/phpstan-strict-rules": "^0.12.5",
                 "phpstan/phpstan-webmozart-assert": "^0.12.2",
                 "phpunit/phpunit": "^9.3.11",
+<<<<<<< HEAD
                 "symfony/phpunit-bridge": "^4.4.18 || ^5.1.10",
+=======
+                "symfony/phpunit-bridge": "^4.4.14 || ^5.1.6",
+>>>>>>> 9acd587... Tests pass
                 "symfony/yaml": "^5.0",
-                "thecodingmachine/phpstan-safe-rule": "^1.0"
+                "thecodingmachine/phpstan-safe-rule": "^1.0",
+                "vimeo/psalm": "^4.0"
             },
             "bin": [
                 "bin/infection"
@@ -1656,6 +1838,7 @@
             ],
             "support": {
                 "issues": "https://github.com/infection/infection/issues",
+<<<<<<< HEAD
                 "source": "https://github.com/infection/infection/tree/0.21.0"
             },
             "funding": [
@@ -1669,6 +1852,11 @@
                 }
             ],
             "time": "2021-01-26T22:10:01+00:00"
+=======
+                "source": "https://github.com/infection/infection/tree/0.20.2"
+            },
+            "time": "2020-11-20T17:15:57+00:00"
+>>>>>>> 9acd587... Tests pass
         },
         {
             "name": "jetbrains/phpstorm-stubs",
@@ -2127,6 +2315,7 @@
         },
         {
             "name": "nikic/php-parser",
+<<<<<<< HEAD
             "version": "v4.10.4",
             "source": {
                 "type": "git",
@@ -2137,6 +2326,18 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/c6d052fc58cb876152f89f532b95a8d7907e7f0e",
                 "reference": "c6d052fc58cb876152f89f532b95a8d7907e7f0e",
+=======
+            "version": "v4.10.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nikic/PHP-Parser.git",
+                "reference": "658f1be311a230e0907f5dfe0213742aff0596de"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/658f1be311a230e0907f5dfe0213742aff0596de",
+                "reference": "658f1be311a230e0907f5dfe0213742aff0596de",
+>>>>>>> 9acd587... Tests pass
                 "shasum": ""
             },
             "require": {
@@ -2177,9 +2378,15 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
+<<<<<<< HEAD
                 "source": "https://github.com/nikic/PHP-Parser/tree/v4.10.4"
             },
             "time": "2020-12-20T10:01:03+00:00"
+=======
+                "source": "https://github.com/nikic/PHP-Parser/tree/v4.10.2"
+            },
+            "time": "2020-09-26T10:30:38+00:00"
+>>>>>>> 9acd587... Tests pass
         },
         {
             "name": "nikolaposa/version",
@@ -2238,9 +2445,15 @@
             ],
             "support": {
                 "issues": "https://github.com/nikolaposa/version/issues",
+<<<<<<< HEAD
                 "source": "https://github.com/nikolaposa/version/tree/4.1.0"
             },
             "time": "2020-12-12T10:47:10+00:00"
+=======
+                "source": "https://github.com/nikolaposa/version/tree/4.0.0"
+            },
+            "time": "2019-12-29T15:07:37+00:00"
+>>>>>>> 9acd587... Tests pass
         },
         {
             "name": "ondram/ci-detector",
@@ -2429,6 +2642,7 @@
         },
         {
             "name": "phar-io/version",
+<<<<<<< HEAD
             "version": "3.0.4",
             "source": {
                 "type": "git",
@@ -2439,6 +2653,18 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/phar-io/version/zipball/e4782611070e50613683d2b9a57730e9a3ba5451",
                 "reference": "e4782611070e50613683d2b9a57730e9a3ba5451",
+=======
+            "version": "3.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phar-io/version.git",
+                "reference": "c6bb6825def89e0a32220f88337f8ceaf1975fa0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phar-io/version/zipball/c6bb6825def89e0a32220f88337f8ceaf1975fa0",
+                "reference": "c6bb6825def89e0a32220f88337f8ceaf1975fa0",
+>>>>>>> 9acd587... Tests pass
                 "shasum": ""
             },
             "require": {
@@ -2474,9 +2700,15 @@
             "description": "Library for handling version information and constraints",
             "support": {
                 "issues": "https://github.com/phar-io/version/issues",
+<<<<<<< HEAD
                 "source": "https://github.com/phar-io/version/tree/3.0.4"
             },
             "time": "2020-12-13T23:18:30+00:00"
+=======
+                "source": "https://github.com/phar-io/version/tree/master"
+            },
+            "time": "2020-06-27T14:39:04+00:00"
+>>>>>>> 9acd587... Tests pass
         },
         {
             "name": "phpdocumentor/reflection-common",
@@ -2638,6 +2870,7 @@
         },
         {
             "name": "phpspec/prophecy",
+<<<<<<< HEAD
             "version": "1.12.2",
             "source": {
                 "type": "git",
@@ -2648,6 +2881,18 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/phpspec/prophecy/zipball/245710e971a030f42e08f4912863805570f23d39",
                 "reference": "245710e971a030f42e08f4912863805570f23d39",
+=======
+            "version": "1.12.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpspec/prophecy.git",
+                "reference": "8ce87516be71aae9b956f81906aaf0338e0d8a2d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/8ce87516be71aae9b956f81906aaf0338e0d8a2d",
+                "reference": "8ce87516be71aae9b956f81906aaf0338e0d8a2d",
+>>>>>>> 9acd587... Tests pass
                 "shasum": ""
             },
             "require": {
@@ -2659,7 +2904,11 @@
             },
             "require-dev": {
                 "phpspec/phpspec": "^6.0",
+<<<<<<< HEAD
                 "phpunit/phpunit": "^8.0 || ^9.0"
+=======
+                "phpunit/phpunit": "^8.0 || ^9.0 <9.3"
+>>>>>>> 9acd587... Tests pass
             },
             "type": "library",
             "extra": {
@@ -2699,9 +2948,15 @@
             ],
             "support": {
                 "issues": "https://github.com/phpspec/prophecy/issues",
+<<<<<<< HEAD
                 "source": "https://github.com/phpspec/prophecy/tree/1.12.2"
             },
             "time": "2020-12-19T10:15:11+00:00"
+=======
+                "source": "https://github.com/phpspec/prophecy/tree/1.12.1"
+            },
+            "time": "2020-09-29T09:10:42+00:00"
+>>>>>>> 9acd587... Tests pass
         },
         {
             "name": "phpstan/phpdoc-parser",
@@ -2758,6 +3013,7 @@
         },
         {
             "name": "phpunit/php-code-coverage",
+<<<<<<< HEAD
             "version": "9.2.5",
             "source": {
                 "type": "git",
@@ -2768,6 +3024,18 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/f3e026641cc91909d421802dd3ac7827ebfd97e1",
                 "reference": "f3e026641cc91909d421802dd3ac7827ebfd97e1",
+=======
+            "version": "9.2.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
+                "reference": "6b20e2055f7c29b56cb3870b3de7cc463d7add41"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/6b20e2055f7c29b56cb3870b3de7cc463d7add41",
+                "reference": "6b20e2055f7c29b56cb3870b3de7cc463d7add41",
+>>>>>>> 9acd587... Tests pass
                 "shasum": ""
             },
             "require": {
@@ -2781,7 +3049,11 @@
                 "sebastian/code-unit-reverse-lookup": "^2.0.2",
                 "sebastian/complexity": "^2.0",
                 "sebastian/environment": "^5.1.2",
+<<<<<<< HEAD
                 "sebastian/lines-of-code": "^1.0.3",
+=======
+                "sebastian/lines-of-code": "^1.0",
+>>>>>>> 9acd587... Tests pass
                 "sebastian/version": "^3.0.1",
                 "theseer/tokenizer": "^1.2.0"
             },
@@ -2823,7 +3095,11 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/php-code-coverage/issues",
+<<<<<<< HEAD
                 "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.5"
+=======
+                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.3"
+>>>>>>> 9acd587... Tests pass
             },
             "funding": [
                 {
@@ -2831,7 +3107,11 @@
                     "type": "github"
                 }
             ],
+<<<<<<< HEAD
             "time": "2020-11-28T06:44:49+00:00"
+=======
+            "time": "2020-10-30T10:46:41+00:00"
+>>>>>>> 9acd587... Tests pass
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -3076,6 +3356,7 @@
         },
         {
             "name": "phpunit/phpunit",
+<<<<<<< HEAD
             "version": "9.5.1",
             "source": {
                 "type": "git",
@@ -3086,6 +3367,18 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/e7bdf4085de85a825f4424eae52c99a1cec2f360",
                 "reference": "e7bdf4085de85a825f4424eae52c99a1cec2f360",
+=======
+            "version": "9.4.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sebastianbergmann/phpunit.git",
+                "reference": "9fa359ff5ddaa5eb2be2bedb08a6a5787a5807ab"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/9fa359ff5ddaa5eb2be2bedb08a6a5787a5807ab",
+                "reference": "9fa359ff5ddaa5eb2be2bedb08a6a5787a5807ab",
+>>>>>>> 9acd587... Tests pass
                 "shasum": ""
             },
             "require": {
@@ -3101,7 +3394,11 @@
                 "phar-io/version": "^3.0.2",
                 "php": ">=7.3",
                 "phpspec/prophecy": "^1.12.1",
+<<<<<<< HEAD
                 "phpunit/php-code-coverage": "^9.2.3",
+=======
+                "phpunit/php-code-coverage": "^9.2",
+>>>>>>> 9acd587... Tests pass
                 "phpunit/php-file-iterator": "^3.0.5",
                 "phpunit/php-invoker": "^3.1.1",
                 "phpunit/php-text-template": "^2.0.3",
@@ -3132,7 +3429,11 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
+<<<<<<< HEAD
                     "dev-master": "9.5-dev"
+=======
+                    "dev-master": "9.4-dev"
+>>>>>>> 9acd587... Tests pass
                 }
             },
             "autoload": {
@@ -3163,7 +3464,11 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
+<<<<<<< HEAD
                 "source": "https://github.com/sebastianbergmann/phpunit/tree/9.5.1"
+=======
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.4.3"
+>>>>>>> 9acd587... Tests pass
             },
             "funding": [
                 {
@@ -3175,7 +3480,11 @@
                     "type": "github"
                 }
             ],
+<<<<<<< HEAD
             "time": "2021-01-17T07:42:25+00:00"
+=======
+            "time": "2020-11-10T12:53:30+00:00"
+>>>>>>> 9acd587... Tests pass
         },
         {
             "name": "psalm/plugin-phpunit",
@@ -3457,6 +3766,7 @@
         },
         {
             "name": "roave/better-reflection",
+<<<<<<< HEAD
             "version": "4.12.2",
             "source": {
                 "type": "git",
@@ -3467,6 +3777,18 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/Roave/BetterReflection/zipball/73c376c7245b2928837ed1e8bef446f57f1148a0",
                 "reference": "73c376c7245b2928837ed1e8bef446f57f1148a0",
+=======
+            "version": "4.11.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Roave/BetterReflection.git",
+                "reference": "7246619ac9c2992a37b4f5c0042fb35abacc7252"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Roave/BetterReflection/zipball/7246619ac9c2992a37b4f5c0042fb35abacc7252",
+                "reference": "7246619ac9c2992a37b4f5c0042fb35abacc7252",
+>>>>>>> 9acd587... Tests pass
                 "shasum": ""
             },
             "require": {
@@ -3479,12 +3801,20 @@
                 "roave/signature": "^1.3"
             },
             "require-dev": {
+<<<<<<< HEAD
                 "doctrine/coding-standard": "^8.2.0",
                 "infection/infection": "^0.20.0",
                 "phpstan/phpstan": "0.12.25",
                 "phpunit/phpunit": "^9.4.4",
                 "roave/infection-static-analysis-plugin": "^1.2",
                 "vimeo/psalm": "^4.2"
+=======
+                "doctrine/coding-standard": "^8.1.0",
+                "infection/infection": "^0.16.4",
+                "phpstan/phpstan": "^0.12.25",
+                "phpunit/phpunit": "^9.2.6",
+                "vimeo/psalm": "3.13.1"
+>>>>>>> 9acd587... Tests pass
             },
             "suggest": {
                 "composer/composer": "Required to use the ComposerSourceLocator"
@@ -3529,6 +3859,7 @@
             "description": "Better Reflection - an improved code reflection API",
             "support": {
                 "issues": "https://github.com/Roave/BetterReflection/issues",
+<<<<<<< HEAD
                 "source": "https://github.com/Roave/BetterReflection/tree/4.12.2"
             },
             "time": "2020-12-17T17:48:54+00:00"
@@ -3555,6 +3886,34 @@
                 "infection/infection": "^0.20.2",
                 "phpunit/phpunit": "^9.5.1",
                 "vimeo/psalm": "^4.4"
+=======
+                "source": "https://github.com/Roave/BetterReflection/tree/4.11.0"
+            },
+            "time": "2020-10-24T23:11:06+00:00"
+        },
+        {
+            "name": "roave/signature",
+            "version": "1.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Roave/Signature.git",
+                "reference": "bbbcc317dfe3a750e27231c5d2130153aa4c41b3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Roave/Signature/zipball/bbbcc317dfe3a750e27231c5d2130153aa4c41b3",
+                "reference": "bbbcc317dfe3a750e27231c5d2130153aa4c41b3",
+                "shasum": ""
+            },
+            "require": {
+                "php": "7.4.*"
+            },
+            "require-dev": {
+                "doctrine/coding-standard": "^8.1",
+                "infection/infection": "^0.17.5",
+                "phpunit/phpunit": "^9.3",
+                "vimeo/psalm": "^3.16"
+>>>>>>> 9acd587... Tests pass
             },
             "type": "library",
             "autoload": {
@@ -3569,6 +3928,7 @@
             "description": "Sign and verify stuff",
             "support": {
                 "issues": "https://github.com/Roave/Signature/issues",
+<<<<<<< HEAD
                 "source": "https://github.com/Roave/Signature/tree/1.4.0"
             },
             "time": "2021-01-25T09:39:37+00:00"
@@ -3630,6 +3990,11 @@
                 }
             ],
             "time": "2021-01-02T10:26:44+00:00"
+=======
+                "source": "https://github.com/Roave/Signature/tree/1.3.0"
+            },
+            "time": "2020-10-01T08:35:57+00:00"
+>>>>>>> 9acd587... Tests pass
         },
         {
             "name": "sanmai/pipeline",
@@ -3929,6 +4294,8 @@
                 "issues": "https://github.com/sebastianbergmann/comparator/issues",
                 "source": "https://github.com/sebastianbergmann/comparator/tree/4.0.6"
             },
+<<<<<<< HEAD
+=======
             "funding": [
                 {
                     "url": "https://github.com/sebastianbergmann",
@@ -3986,12 +4353,73 @@
                 "issues": "https://github.com/sebastianbergmann/complexity/issues",
                 "source": "https://github.com/sebastianbergmann/complexity/tree/2.0.2"
             },
+>>>>>>> 9acd587... Tests pass
             "funding": [
                 {
                     "url": "https://github.com/sebastianbergmann",
                     "type": "github"
                 }
             ],
+<<<<<<< HEAD
+            "time": "2020-10-26T15:49:45+00:00"
+        },
+        {
+            "name": "sebastian/complexity",
+            "version": "2.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sebastianbergmann/complexity.git",
+                "reference": "739b35e53379900cc9ac327b2147867b8b6efd88"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sebastianbergmann/complexity/zipball/739b35e53379900cc9ac327b2147867b8b6efd88",
+                "reference": "739b35e53379900cc9ac327b2147867b8b6efd88",
+                "shasum": ""
+            },
+            "require": {
+                "nikic/php-parser": "^4.7",
+                "php": ">=7.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0-dev"
+                }
+            },
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Sebastian Bergmann",
+                    "email": "sebastian@phpunit.de",
+                    "role": "lead"
+                }
+            ],
+            "description": "Library for calculating the complexity of PHP code units",
+            "homepage": "https://github.com/sebastianbergmann/complexity",
+            "support": {
+                "issues": "https://github.com/sebastianbergmann/complexity/issues",
+                "source": "https://github.com/sebastianbergmann/complexity/tree/2.0.2"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/sebastianbergmann",
+                    "type": "github"
+                }
+            ],
+=======
+>>>>>>> 9acd587... Tests pass
             "time": "2020-10-26T15:52:27+00:00"
         },
         {
@@ -4266,6 +4694,7 @@
         },
         {
             "name": "sebastian/lines-of-code",
+<<<<<<< HEAD
             "version": "1.0.3",
             "source": {
                 "type": "git",
@@ -4276,6 +4705,18 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/sebastianbergmann/lines-of-code/zipball/c1c2e997aa3146983ed888ad08b15470a2e22ecc",
                 "reference": "c1c2e997aa3146983ed888ad08b15470a2e22ecc",
+=======
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sebastianbergmann/lines-of-code.git",
+                "reference": "acf76492a65401babcf5283296fa510782783a7a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sebastianbergmann/lines-of-code/zipball/acf76492a65401babcf5283296fa510782783a7a",
+                "reference": "acf76492a65401babcf5283296fa510782783a7a",
+>>>>>>> 9acd587... Tests pass
                 "shasum": ""
             },
             "require": {
@@ -4311,7 +4752,11 @@
             "homepage": "https://github.com/sebastianbergmann/lines-of-code",
             "support": {
                 "issues": "https://github.com/sebastianbergmann/lines-of-code/issues",
+<<<<<<< HEAD
                 "source": "https://github.com/sebastianbergmann/lines-of-code/tree/1.0.3"
+=======
+                "source": "https://github.com/sebastianbergmann/lines-of-code/tree/1.0.2"
+>>>>>>> 9acd587... Tests pass
             },
             "funding": [
                 {
@@ -4319,7 +4764,11 @@
                     "type": "github"
                 }
             ],
+<<<<<<< HEAD
             "time": "2020-11-28T06:42:11+00:00"
+=======
+            "time": "2020-10-26T17:03:56+00:00"
+>>>>>>> 9acd587... Tests pass
         },
         {
             "name": "sebastian/object-enumerator",
@@ -4960,6 +5409,7 @@
             ],
             "description": "Eases the creation of beautiful and testable command line interfaces",
             "homepage": "https://symfony.com",
+<<<<<<< HEAD
             "keywords": [
                 "cli",
                 "command line",
@@ -4968,6 +5418,10 @@
             ],
             "support": {
                 "source": "https://github.com/symfony/console/tree/v5.2.2"
+=======
+            "support": {
+                "source": "https://github.com/symfony/console/tree/v5.1.8"
+>>>>>>> 9acd587... Tests pass
             },
             "funding": [
                 {
@@ -5029,7 +5483,11 @@
             "description": "Provides basic utilities for the filesystem",
             "homepage": "https://symfony.com",
             "support": {
+<<<<<<< HEAD
                 "source": "https://github.com/symfony/filesystem/tree/v5.2.2"
+=======
+                "source": "https://github.com/symfony/filesystem/tree/v5.1.8"
+>>>>>>> 9acd587... Tests pass
             },
             "funding": [
                 {
@@ -5090,7 +5548,11 @@
             "description": "Finds files and directories via an intuitive fluent interface",
             "homepage": "https://symfony.com",
             "support": {
+<<<<<<< HEAD
                 "source": "https://github.com/symfony/finder/tree/v5.2.2"
+=======
+                "source": "https://github.com/symfony/finder/tree/v5.1.8"
+>>>>>>> 9acd587... Tests pass
             },
             "funding": [
                 {
@@ -5169,7 +5631,11 @@
                 "portable"
             ],
             "support": {
+<<<<<<< HEAD
                 "source": "https://github.com/symfony/polyfill-ctype/tree/v1.22.0"
+=======
+                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.20.0"
+>>>>>>> 9acd587... Tests pass
             },
             "funding": [
                 {
@@ -5250,7 +5716,11 @@
                 "shim"
             ],
             "support": {
+<<<<<<< HEAD
                 "source": "https://github.com/symfony/polyfill-intl-grapheme/tree/v1.22.0"
+=======
+                "source": "https://github.com/symfony/polyfill-intl-grapheme/tree/v1.20.0"
+>>>>>>> 9acd587... Tests pass
             },
             "funding": [
                 {
@@ -5334,7 +5804,11 @@
                 "shim"
             ],
             "support": {
+<<<<<<< HEAD
                 "source": "https://github.com/symfony/polyfill-intl-normalizer/tree/v1.22.0"
+=======
+                "source": "https://github.com/symfony/polyfill-intl-normalizer/tree/v1.20.0"
+>>>>>>> 9acd587... Tests pass
             },
             "funding": [
                 {
@@ -5414,7 +5888,11 @@
                 "shim"
             ],
             "support": {
+<<<<<<< HEAD
                 "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.22.0"
+=======
+                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.20.0"
+>>>>>>> 9acd587... Tests pass
             },
             "funding": [
                 {
@@ -5493,7 +5971,11 @@
                 "shim"
             ],
             "support": {
+<<<<<<< HEAD
                 "source": "https://github.com/symfony/polyfill-php73/tree/v1.22.0"
+=======
+                "source": "https://github.com/symfony/polyfill-php73/tree/v1.20.0"
+>>>>>>> 9acd587... Tests pass
             },
             "funding": [
                 {
@@ -5576,7 +6058,11 @@
                 "shim"
             ],
             "support": {
+<<<<<<< HEAD
                 "source": "https://github.com/symfony/polyfill-php80/tree/v1.22.0"
+=======
+                "source": "https://github.com/symfony/polyfill-php80/tree/v1.20.0"
+>>>>>>> 9acd587... Tests pass
             },
             "funding": [
                 {
@@ -5638,7 +6124,11 @@
             "description": "Executes commands in sub-processes",
             "homepage": "https://symfony.com",
             "support": {
+<<<<<<< HEAD
                 "source": "https://github.com/symfony/process/tree/v5.2.2"
+=======
+                "source": "https://github.com/symfony/process/tree/v5.1.8"
+>>>>>>> 9acd587... Tests pass
             },
             "funding": [
                 {
@@ -5800,7 +6290,11 @@
                 "utf8"
             ],
             "support": {
+<<<<<<< HEAD
                 "source": "https://github.com/symfony/string/tree/v5.2.2"
+=======
+                "source": "https://github.com/symfony/string/tree/v5.1.8"
+>>>>>>> 9acd587... Tests pass
             },
             "funding": [
                 {
@@ -6159,8 +6653,13 @@
                 "validate"
             ],
             "support": {
+<<<<<<< HEAD
                 "issues": "https://github.com/webmozarts/assert/issues",
                 "source": "https://github.com/webmozarts/assert/tree/1.9.1"
+=======
+                "issues": "https://github.com/webmozart/assert/issues",
+                "source": "https://github.com/webmozart/assert/tree/master"
+>>>>>>> 9acd587... Tests pass
             },
             "time": "2020-07-08T17:02:28+00:00"
         },
@@ -6209,10 +6708,17 @@
             ],
             "description": "A PHP implementation of Ant's glob.",
             "support": {
+<<<<<<< HEAD
                 "issues": "https://github.com/webmozarts/glob/issues",
                 "source": "https://github.com/webmozarts/glob/tree/4.3.0"
             },
             "time": "2021-01-21T06:17:15+00:00"
+=======
+                "issues": "https://github.com/webmozart/glob/issues",
+                "source": "https://github.com/webmozart/glob/tree/master"
+            },
+            "time": "2015-12-29T11:14:33+00:00"
+>>>>>>> 9acd587... Tests pass
         },
         {
             "name": "webmozart/path-util",

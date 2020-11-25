@@ -31,12 +31,13 @@ use InvalidArgumentException;
 use Lcobucci\Clock\Clock;
 use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Builder;
+use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use Lcobucci\JWT\Validation\Constraint\ValidAt;
-use Lcobucci\JWT\Validation\Validator;
+use Lcobucci\JWT\ValidationData;
 use OutOfBoundsException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -53,42 +54,29 @@ use function sprintf;
 
 final class SessionMiddleware implements MiddlewareInterface
 {
-    public const ISSUED_AT_CLAIM      = 'iat';
     public const SESSION_CLAIM        = 'session-data';
     public const SESSION_ATTRIBUTE    = 'session';
     public const DEFAULT_COOKIE       = '__Secure-slsession';
     public const DEFAULT_REFRESH_TIME = 60;
 
-    private Signer $signer;
-
-    private Signer\Key\InMemory $signatureKey;
-
-    private Signer\Key\InMemory $verificationKey;
+    private Configuration $config;
 
     private int $expirationTime;
 
     private int $refreshTime;
-
-    private Parser $tokenParser;
 
     private SetCookie $defaultCookie;
 
     private Clock $clock;
 
     public function __construct(
-        Signer $signer,
-        string $signatureKey,
-        string $verificationKey,
+        Configuration $configuration,
         SetCookie $defaultCookie,
-        Parser $tokenParser,
         int $expirationTime,
         Clock $clock,
         int $refreshTime = self::DEFAULT_REFRESH_TIME
     ) {
-        $this->signer          = $signer;
-        $this->signatureKey    = Signer\Key\InMemory::plainText($signatureKey);
-        $this->verificationKey = Signer\Key\InMemory::plainText($verificationKey);
-        $this->tokenParser     = $tokenParser;
+        $this->config          = $configuration;
         $this->defaultCookie   = clone $defaultCookie;
         $this->expirationTime  = $expirationTime;
         $this->clock           = $clock;
@@ -101,15 +89,15 @@ final class SessionMiddleware implements MiddlewareInterface
     public static function fromSymmetricKeyDefaults(string $symmetricKey, int $expirationTime): self
     {
         return new self(
-            new Signer\Hmac\Sha256(),
-            $symmetricKey,
-            $symmetricKey,
+            Configuration::forSymmetricSigner(
+                new Signer\Hmac\Sha256(),
+                Signer\Key\InMemory::plainText($symmetricKey)
+            ),
             SetCookie::create(self::DEFAULT_COOKIE)
                 ->withSecure(true)
                 ->withHttpOnly(true)
                 ->withSameSite(SameSite::lax())
                 ->withPath('/'),
-            new Parser(),
             $expirationTime,
             new SystemClock(new DateTimeZone(date_default_timezone_get()))
         );
@@ -125,15 +113,16 @@ final class SessionMiddleware implements MiddlewareInterface
         int $expirationTime
     ): self {
         return new self(
-            new Signer\Rsa\Sha256(),
-            $privateRsaKey,
-            $publicRsaKey,
+            Configuration::forAsymmetricSigner(
+                new Signer\Hmac\Sha256(),
+                Signer\Key\InMemory::plainText($privateRsaKey),
+                Signer\Key\InMemory::plainText($publicRsaKey)
+            ),
             SetCookie::create(self::DEFAULT_COOKIE)
                 ->withSecure(true)
                 ->withHttpOnly(true)
                 ->withSameSite(SameSite::lax())
                 ->withPath('/'),
-            new Parser(),
             $expirationTime,
             new SystemClock(new DateTimeZone(date_default_timezone_get()))
         );
@@ -173,17 +162,21 @@ final class SessionMiddleware implements MiddlewareInterface
         }
 
         try {
-            $token = $this->tokenParser->parse($cookies[$cookieName]);
+            $token = $this->config->parser()->parse($cookies[$cookieName]);
         } catch (InvalidArgumentException $invalidToken) {
             return null;
         }
 
         $constraints = [
             new ValidAt($this->clock),
-            new SignedWith($this->signer, $this->verificationKey),
+            new SignedWith($this->config->signer(), $this->config->signingKey())
         ];
 
-        if (! (new Validator())->validate($token, ...$constraints)) {
+        if (
+            ! $token->claims()->has(Token\RegisteredClaims::ISSUED_AT)
+            || ! $token->claims()->has(Token\RegisteredClaims::EXPIRATION_TIME)
+            || ! $this->config->validator()->validate($token, ...$constraints)
+        ) {
             return null;
         }
 
@@ -229,15 +222,11 @@ final class SessionMiddleware implements MiddlewareInterface
 
     private function shouldTokenBeRefreshed(?Token $token): bool
     {
-        if (! ($token && $token->claims()->has(self::ISSUED_AT_CLAIM))) {
+        if ($token === null) {
             return false;
         }
 
-        $issuedAt = $token->claims()->get(self::ISSUED_AT_CLAIM);
-
-        assert($issuedAt instanceof DateTimeImmutable);
-
-        return $this->clock->now() >= $issuedAt->add(new DateInterval(sprintf('PT%sS', $this->refreshTime)));
+        return $token->hasBeenIssuedBefore($this->clock->now()->sub(new \DateInterval(sprintf('PT%sS', $this->refreshTime))));
     }
 
     /**
@@ -245,17 +234,16 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     private function getTokenCookie(SessionInterface $sessionContainer): SetCookie
     {
-        $now       = $this->clock->now();
-        $expiresAt = $now->add(new DateInterval(sprintf('PT%sS', $this->expirationTime)));
+        $expiresAt = $this->clock->now()->add(new \DateInterval(sprintf('PT%sS', $this->expirationTime)));
 
         return $this
             ->defaultCookie
             ->withValue(
-                (new Builder())
-                    ->issuedAt($now)
+                $this->config->builder()
+                    ->issuedAt($this->clock->now())
                     ->expiresAt($expiresAt)
                     ->withClaim(self::SESSION_CLAIM, $sessionContainer)
-                    ->getToken($this->signer, $this->signatureKey)
+                    ->getToken($this->config->signer(), $this->config->signingKey())
                     ->toString()
             )
             ->withExpires($expiresAt);
@@ -268,6 +256,6 @@ final class SessionMiddleware implements MiddlewareInterface
         return $this
             ->defaultCookie
             ->withValue(null)
-            ->withExpires($expirationDate->getTimestamp());
+            ->withExpires($expirationDate);
     }
 }
