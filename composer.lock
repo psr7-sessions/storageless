@@ -5,10 +5,14 @@
         "This file is @generated automatically"
     ],
 <<<<<<< HEAD
+<<<<<<< HEAD
     "content-hash": "fc26dc877be86c4c3ceacb8760cd7ea0",
 =======
     "content-hash": "e8afaad6161b0e62b7d7871e2daa8872",
 >>>>>>> 9acd587... Tests pass
+=======
+    "content-hash": "dc473e2be78b8b45e838b48abeff68a4",
+>>>>>>> c6185b3... Update composer.lock
     "packages": [
         {
             "name": "dflydev/fig-cookies",
