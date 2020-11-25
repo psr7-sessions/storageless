@@ -35,6 +35,7 @@ use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Token\Parser;
+use Lcobucci\JWT\Token\Plain;
 use Lcobucci\JWT\Token\RegisteredClaims;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
@@ -123,7 +124,9 @@ final class SessionMiddlewareTest extends TestCase
         $token = $this->getCookie($response)->getValue();
 
         self::assertIsString($token);
-        self::assertEquals(['foo' => 'bar'], (new Parser(new JoseEncoder()))->parse($token)->claims()->get('session-data'));
+        $parsedToken = (new Parser(new JoseEncoder()))->parse($token);
+        self::assertInstanceOf(Plain::class, $parsedToken);
+        self::assertEquals(['foo' => 'bar'], $parsedToken->claims()->get('session-data'));
     }
 
     /**
@@ -332,7 +335,7 @@ final class SessionMiddlewareTest extends TestCase
         self::assertIsString($tokenString);
 
         $token = (new Parser(new JoseEncoder()))->parse($tokenString);
-
+        self::assertInstanceOf(Plain::class, $token);
         self::assertEquals($now, $token->claims()->get(RegisteredClaims::ISSUED_AT), 'Token was refreshed');
     }
 

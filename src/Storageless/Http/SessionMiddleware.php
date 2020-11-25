@@ -44,6 +44,7 @@ use PSR7Sessions\Storageless\Session\LazySession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
 use stdClass;
 
+use function assert;
 use function date_default_timezone_get;
 use function sprintf;
 
@@ -146,7 +147,7 @@ final class SessionMiddleware implements MiddlewareInterface
     /**
      * Extract the token from the given request object
      */
-    private function parseToken(Request $request): ?Token
+    private function parseToken(Request $request): ?Token\Plain
     {
         /** @var array<string, string> $cookies */
         $cookies    = $request->getCookieParams();
@@ -161,6 +162,8 @@ final class SessionMiddleware implements MiddlewareInterface
         } catch (InvalidArgumentException $invalidToken) {
             return null;
         }
+
+        assert($token instanceof Token\Plain);
 
         $constraints = [
             new ValidAt($this->clock),
@@ -181,7 +184,7 @@ final class SessionMiddleware implements MiddlewareInterface
     /**
      * @throws OutOfBoundsException
      */
-    private function extractSessionContainer(?Token $token): SessionInterface
+    private function extractSessionContainer(?Token\Plain $token): SessionInterface
     {
         if (! $token) {
             return DefaultSessionData::newEmptySession();
