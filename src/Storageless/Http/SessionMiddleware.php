@@ -22,7 +22,6 @@ namespace PSR7Sessions\Storageless\Http;
 
 use BadMethodCallException;
 use DateInterval;
-use DateTimeImmutable;
 use DateTimeZone;
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\Modifier\SameSite;
@@ -30,14 +29,11 @@ use Dflydev\FigCookies\SetCookie;
 use InvalidArgumentException;
 use Lcobucci\Clock\Clock;
 use Lcobucci\Clock\SystemClock;
-use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Configuration;
-use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use Lcobucci\JWT\Validation\Constraint\ValidAt;
-use Lcobucci\JWT\ValidationData;
 use OutOfBoundsException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -48,7 +44,6 @@ use PSR7Sessions\Storageless\Session\LazySession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
 use stdClass;
 
-use function assert;
 use function date_default_timezone_get;
 use function sprintf;
 
@@ -76,11 +71,11 @@ final class SessionMiddleware implements MiddlewareInterface
         Clock $clock,
         int $refreshTime = self::DEFAULT_REFRESH_TIME
     ) {
-        $this->config          = $configuration;
-        $this->defaultCookie   = clone $defaultCookie;
-        $this->expirationTime  = $expirationTime;
-        $this->clock           = $clock;
-        $this->refreshTime     = $refreshTime;
+        $this->config         = $configuration;
+        $this->defaultCookie  = clone $defaultCookie;
+        $this->expirationTime = $expirationTime;
+        $this->clock          = $clock;
+        $this->refreshTime    = $refreshTime;
     }
 
     /**
@@ -169,7 +164,7 @@ final class SessionMiddleware implements MiddlewareInterface
 
         $constraints = [
             new ValidAt($this->clock),
-            new SignedWith($this->config->signer(), $this->config->signingKey())
+            new SignedWith($this->config->signer(), $this->config->signingKey()),
         ];
 
         if (
@@ -226,7 +221,7 @@ final class SessionMiddleware implements MiddlewareInterface
             return false;
         }
 
-        return $token->hasBeenIssuedBefore($this->clock->now()->sub(new \DateInterval(sprintf('PT%sS', $this->refreshTime))));
+        return $token->hasBeenIssuedBefore($this->clock->now()->sub(new DateInterval(sprintf('PT%sS', $this->refreshTime))));
     }
 
     /**
@@ -234,7 +229,7 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     private function getTokenCookie(SessionInterface $sessionContainer): SetCookie
     {
-        $expiresAt = $this->clock->now()->add(new \DateInterval(sprintf('PT%sS', $this->expirationTime)));
+        $expiresAt = $this->clock->now()->add(new DateInterval(sprintf('PT%sS', $this->expirationTime)));
 
         return $this
             ->defaultCookie

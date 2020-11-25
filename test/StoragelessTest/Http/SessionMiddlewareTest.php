@@ -20,7 +20,6 @@ declare(strict_types=1);
 
 namespace PSR7SessionsTest\Storageless\Http;
 
-use Cassandra\Date;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
@@ -31,12 +30,11 @@ use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ServerRequest;
 use Lcobucci\Clock\FrozenClock;
 use Lcobucci\Clock\SystemClock;
-use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Encoding\JoseEncoder;
-use Lcobucci\JWT\Token\Parser;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
+use Lcobucci\JWT\Token\Parser;
 use Lcobucci\JWT\Token\RegisteredClaims;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
@@ -298,7 +296,7 @@ final class SessionMiddlewareTest extends TestCase
     {
         // forcing ourselves to think of time as a mutable value:
         $time = time() + random_int(-100, +100);
-        $now = new DateTimeImmutable('@' . $time);
+        $now  = new DateTimeImmutable('@' . $time);
 
         $clock = new FrozenClock($now);
 
@@ -307,7 +305,7 @@ final class SessionMiddlewareTest extends TestCase
             Signer\Key\InMemory::plainText('foo'),
             Signer\Key\InMemory::plainText('foo')
         );
-        $middleware = new SessionMiddleware(
+        $middleware    = new SessionMiddleware(
             $configuration,
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             1000,
@@ -410,7 +408,7 @@ final class SessionMiddlewareTest extends TestCase
 
     public function testRejectsTokensWithInvalidSignature(): void
     {
-        $middleware = new SessionMiddleware(
+        $middleware               = new SessionMiddleware(
             Configuration::forSymmetricSigner(
                 new Sha256(),
                 Signer\Key\InMemory::plainText('foo'),
@@ -481,9 +479,9 @@ final class SessionMiddlewareTest extends TestCase
         $signer->expects(self::never())->method('verify');
         $signer->method('algorithmId')->willReturn('HS256');
 
-        $currentTimeProvider = new SystemClock(new DateTimeZone(date_default_timezone_get()));
-        $setCookie           = SetCookie::create(SessionMiddleware::DEFAULT_COOKIE);
-        $middleware          = new SessionMiddleware(
+        $currentTimeProvider    = new SystemClock(new DateTimeZone(date_default_timezone_get()));
+        $setCookie              = SetCookie::create(SessionMiddleware::DEFAULT_COOKIE);
+        $middleware             = new SessionMiddleware(
             Configuration::forSymmetricSigner(
                 $signer,
                 Signer\Key\InMemory::plainText('foo')
@@ -496,14 +494,13 @@ final class SessionMiddlewareTest extends TestCase
             new Sha256(),
             Signer\Key\InMemory::plainText('foo')
         );
-        $request             = (new ServerRequest())
+        $request                = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => $configurationForBuiler->builder()
                     ->issuedAt(new DateTimeImmutable())
                     ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
                     ->getToken($configurationForBuiler->signer(), $configurationForBuiler->signingKey())
-                    ->toString()
-                ,
+                    ->toString(),
             ]);
 
         $middleware->process(
@@ -521,12 +518,12 @@ final class SessionMiddlewareTest extends TestCase
 
     public function testShouldRegenerateTokenWhenRequestHasATokenThatIsAboutToExpire(): void
     {
-        $dateTime   = new DateTimeImmutable();
+        $dateTime      = new DateTimeImmutable();
         $configuration = Configuration::forSymmetricSigner(
             new Sha256(),
             Signer\Key\InMemory::plainText('foo')
         );
-        $middleware = new SessionMiddleware(
+        $middleware    = new SessionMiddleware(
             $configuration,
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             1000,
@@ -564,7 +561,7 @@ final class SessionMiddlewareTest extends TestCase
             new Sha256(),
             Signer\Key\InMemory::plainText('foo')
         );
-        $middleware = new SessionMiddleware(
+        $middleware    = new SessionMiddleware(
             $configuration,
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             1000,
@@ -641,7 +638,7 @@ final class SessionMiddlewareTest extends TestCase
             new Sha256(),
             Signer\Key\InMemory::plainText('foo')
         );
-        $middleware = new SessionMiddleware(
+        $middleware    = new SessionMiddleware(
             $configuration,
             $cookie,
             1000,
