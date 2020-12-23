@@ -50,7 +50,6 @@ use ReflectionProperty;
 
 use function assert;
 use function date_default_timezone_get;
-use function file_get_contents;
 use function random_int;
 use function time;
 use function uniqid;
@@ -594,10 +593,9 @@ final class SessionMiddlewareTest extends TestCase
             'from-constructor' => [
                 static function (): SessionMiddleware {
                     return new SessionMiddleware(
-                        Configuration::forAsymmetricSigner(
-                            new Sha256(),
-                            Signer\Key\InMemory::plainText('foo'),
-                            Signer\Key\InMemory::plainText('foo')
+                        Configuration::forSymmetricSigner(
+                            new Signer\Hmac\Sha512(),
+                            Signer\Key\InMemory::plainText('not relevant')
                         ),
                         SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
                         100,
@@ -616,14 +614,17 @@ final class SessionMiddlewareTest extends TestCase
         return [
             'from-symmetric' => [
                 static function (): SessionMiddleware {
-                    return SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100);
+                    return SessionMiddleware::fromSymmetricKeyDefaults(
+                        Signer\Key\InMemory::plainText('not relevant'),
+                        100
+                    );
                 },
             ],
             'from-asymmetric' => [
                 static function (): SessionMiddleware {
-                    return SessionMiddleware::fromAsymmetricKeyDefaults(
-                        self::privateKey(),
-                        self::publicKey(),
+                    return SessionMiddleware::fromRsaAsymmetricKeyDefaults(
+                        Signer\Key\LocalFileReference::file(__DIR__ . '/../../keys/private_key.pem'),
+                        Signer\Key\LocalFileReference::file(__DIR__ . '/../../keys/public_key.pem'),
                         200
                     );
                 },
@@ -803,23 +804,5 @@ final class SessionMiddlewareTest extends TestCase
         assert($config instanceof Configuration);
 
         return $config;
-    }
-
-    private static function privateKey(): string
-    {
-        $key = file_get_contents(__DIR__ . '/../../keys/private_key.pem');
-
-        self::assertIsString($key);
-
-        return $key;
-    }
-
-    private static function publicKey(): string
-    {
-        $key = file_get_contents(__DIR__ . '/../../keys/public_key.pem');
-
-        self::assertIsString($key);
-
-        return $key;
     }
 }

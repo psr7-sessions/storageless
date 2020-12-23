@@ -82,18 +82,14 @@ final class SessionMiddleware implements MiddlewareInterface
     /**
      * This constructor simplifies instantiation when using HTTPS (REQUIRED!) and symmetric key encryption
      */
-    public static function fromSymmetricKeyDefaults(string $symmetricKey, int $expirationTime): self
+    public static function fromSymmetricKeyDefaults(Signer\Key $symmetricKey, int $expirationTime): self
     {
         return new self(
             Configuration::forSymmetricSigner(
                 new Signer\Hmac\Sha256(),
-                Signer\Key\InMemory::plainText($symmetricKey)
+                $symmetricKey
             ),
-            SetCookie::create(self::DEFAULT_COOKIE)
-                ->withSecure(true)
-                ->withHttpOnly(true)
-                ->withSameSite(SameSite::lax())
-                ->withPath('/'),
+            self::buildDefaultCookie(),
             $expirationTime,
             new SystemClock(new DateTimeZone(date_default_timezone_get()))
         );
@@ -103,25 +99,30 @@ final class SessionMiddleware implements MiddlewareInterface
      * This constructor simplifies instantiation when using HTTPS (REQUIRED!) and asymmetric key encryption
      * based on RSA keys
      */
-    public static function fromAsymmetricKeyDefaults(
-        string $privateRsaKey,
-        string $publicRsaKey,
+    public static function fromRsaAsymmetricKeyDefaults(
+        Signer\Key $privateRsaKey,
+        Signer\Key $publicRsaKey,
         int $expirationTime
     ): self {
         return new self(
             Configuration::forAsymmetricSigner(
-                new Signer\Hmac\Sha256(),
-                Signer\Key\InMemory::plainText($privateRsaKey),
-                Signer\Key\InMemory::plainText($publicRsaKey)
+                new Signer\Rsa\Sha256(),
+                $privateRsaKey,
+                $publicRsaKey
             ),
-            SetCookie::create(self::DEFAULT_COOKIE)
-                ->withSecure(true)
-                ->withHttpOnly(true)
-                ->withSameSite(SameSite::lax())
-                ->withPath('/'),
+            self::buildDefaultCookie(),
             $expirationTime,
             new SystemClock(new DateTimeZone(date_default_timezone_get()))
         );
+    }
+
+    public static function buildDefaultCookie(): SetCookie
+    {
+        return SetCookie::create(self::DEFAULT_COOKIE)
+            ->withSecure(true)
+            ->withHttpOnly(true)
+            ->withSameSite(SameSite::lax())
+            ->withPath('/');
     }
 
     /**
@@ -167,7 +168,7 @@ final class SessionMiddleware implements MiddlewareInterface
 
         $constraints = [
             new ValidAt($this->clock),
-            new SignedWith($this->config->signer(), $this->config->signingKey()),
+            new SignedWith($this->config->signer(), $this->config->verificationKey()),
         ];
 
         if (

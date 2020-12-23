@@ -30,7 +30,7 @@ You can set up symmetric key based signatures via the
 ```php
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
 
-$sessionMiddleware = SessionMiddleware::fromAsymmetricKeyDefaults(
+$sessionMiddleware = SessionMiddleware::fromRsaAsymmetricKeyDefaults(
     file_get_contents('/path/to/private_key.pem'),
     file_get_contents('/path/to/public_key.pem'),
     1200 // session lifetime, in seconds
