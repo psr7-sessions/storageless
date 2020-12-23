@@ -13,7 +13,7 @@
     "mutators": {
         "@default": true,
         "global-ignoreSourceCodeByRegex": [
-            "assert\\(\\$issuedAt instanceof DateTimeImmutable\\);"
+            "assert\\(.+\\);"
         ]
     },
     "minMsi": 100,

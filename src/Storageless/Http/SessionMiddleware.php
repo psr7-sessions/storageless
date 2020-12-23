@@ -33,7 +33,7 @@ use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
-use Lcobucci\JWT\Validation\Constraint\ValidAt;
+use Lcobucci\JWT\Validation\Constraint\StrictValidAt;
 use OutOfBoundsException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -167,15 +167,11 @@ final class SessionMiddleware implements MiddlewareInterface
         assert($token instanceof Token\Plain);
 
         $constraints = [
-            new ValidAt($this->clock),
+            new StrictValidAt($this->clock),
             new SignedWith($this->config->signer(), $this->config->verificationKey()),
         ];
 
-        if (
-            ! $token->claims()->has(Token\RegisteredClaims::ISSUED_AT)
-            || ! $token->claims()->has(Token\RegisteredClaims::EXPIRATION_TIME)
-            || ! $this->config->validator()->validate($token, ...$constraints)
-        ) {
+        if (! $this->config->validator()->validate($token, ...$constraints)) {
             return null;
         }
 
@@ -221,11 +217,8 @@ final class SessionMiddleware implements MiddlewareInterface
 
     private function shouldTokenBeRefreshed(?Token $token): bool
     {
-        if ($token === null) {
-            return false;
-        }
-
-        return $token->hasBeenIssuedBefore($this->clock->now()->sub(new DateInterval(sprintf('PT%sS', $this->refreshTime))));
+        return $token !== null
+            && $token->hasBeenIssuedBefore($this->clock->now()->sub(new DateInterval(sprintf('PT%sS', $this->refreshTime))));
     }
 
     /**
@@ -240,6 +233,7 @@ final class SessionMiddleware implements MiddlewareInterface
             ->withValue(
                 $this->config->builder()
                     ->issuedAt($this->clock->now())
+                    ->canOnlyBeUsedAfter($this->clock->now())
                     ->expiresAt($expiresAt)
                     ->withClaim(self::SESSION_CLAIM, $sessionContainer)
                     ->getToken($this->config->signer(), $this->config->signingKey())

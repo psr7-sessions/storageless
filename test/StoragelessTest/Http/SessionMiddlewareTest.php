@@ -57,12 +57,6 @@ use function uniqid;
 final class SessionMiddlewareTest extends TestCase
 {
     /**
-     * @see https://tools.ietf.org/html/rfc6265#section-4.1.2.5 for Secure flag
-     * @see https://tools.ietf.org/html/rfc6265#section-4.1.2.6 for HttpOnly flag
-     * @see https://github.com/psr7-sessions/storageless/pull/46 for / path
-     * @see https://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site for SameSite flag
-     * @see https://tools.ietf.org/html/draft-ietf-httpbis-cookie-prefixes for __Secure- prefix
-     *
      * @param callable(): SessionMiddleware $middlewareFactory
      *
      * @dataProvider defaultMiddlewaresProvider
@@ -75,11 +69,14 @@ final class SessionMiddlewareTest extends TestCase
 
         $cookie = $this->getCookie($response);
 
-        self::assertTrue($cookie->getSecure());
-        self::assertTrue($cookie->getHttpOnly());
-        self::assertSame('/', $cookie->getPath());
-        self::assertEquals(SameSite::lax(), $cookie->getSameSite());
-        self::assertStringStartsWith('__Secure-', $cookie->getName());
+        self::assertCookieIsSecure($cookie);
+    }
+
+    public function testProvideADefaultSecureCookieForCustomConstructors(): void
+    {
+        $cookie = SessionMiddleware::buildDefaultCookie();
+
+        self::assertCookieIsSecure($cookie);
     }
 
     /**
@@ -264,6 +261,7 @@ final class SessionMiddlewareTest extends TestCase
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => $configuration->builder()
                     ->issuedAt(new DateTimeImmutable('-1 day'))
+                    ->canOnlyBeUsedAfter(new DateTimeImmutable('-1 day'))
                     ->expiresAt(new DateTimeImmutable('+1 day'))
                     ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
                     ->getToken($configuration->signer(), $configuration->signingKey())
@@ -285,6 +283,7 @@ final class SessionMiddlewareTest extends TestCase
         $unsignedToken = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => $configuration->builder()
+                    ->canOnlyBeUsedAfter(new DateTimeImmutable('-1 day'))
                     ->expiresAt(new DateTimeImmutable('+1 day'))
                     ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
                     ->getToken($configuration->signer(), $configuration->signingKey())
@@ -320,6 +319,7 @@ final class SessionMiddlewareTest extends TestCase
                 SessionMiddleware::DEFAULT_COOKIE => $configuration->builder()
                     ->expiresAt(new DateTimeImmutable('@' . ($time + 10000)))
                     ->issuedAt(new DateTimeImmutable('@' . ($time - 100)))
+                    ->canOnlyBeUsedAfter(new DateTimeImmutable('@' . ($time - 100)))
                     ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
                     ->getToken($configuration->signer(), $configuration->signingKey())
                     ->toString(),
@@ -537,6 +537,7 @@ final class SessionMiddlewareTest extends TestCase
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => $configuration->builder()
                     ->issuedAt(new DateTimeImmutable('-800 second'))
+                    ->canOnlyBeUsedAfter(new DateTimeImmutable('-800 second'))
                     ->expiresAt(new DateTimeImmutable('+200 second'))
                     ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
                     ->getToken($configuration->signer(), $configuration->signingKey())
@@ -575,6 +576,7 @@ final class SessionMiddlewareTest extends TestCase
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => $configuration->builder()
                     ->issuedAt(new DateTimeImmutable('-100 second'))
+                    ->canOnlyBeUsedAfter(new DateTimeImmutable('-100 second'))
                     ->expiresAt(new DateTimeImmutable('+900 second'))
                     ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
                     ->getToken($configuration->signer(), $configuration->signingKey())
@@ -715,6 +717,7 @@ final class SessionMiddlewareTest extends TestCase
 
         return $config->builder()
             ->issuedAt($issuedAt)
+            ->canOnlyBeUsedAfter($issuedAt)
             ->expiresAt($expiration)
             ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
             ->getToken($config->signer(), $config->signingKey())
@@ -732,6 +735,7 @@ final class SessionMiddlewareTest extends TestCase
 
         return $config->builder()
             ->issuedAt($issuedAt)
+            ->canOnlyBeUsedAfter($issuedAt)
             ->expiresAt($expiration)
             ->withClaim(SessionMiddleware::SESSION_CLAIM, $claim)
             ->getToken($config->signer(), $config->signingKey())
@@ -804,5 +808,21 @@ final class SessionMiddlewareTest extends TestCase
         assert($config instanceof Configuration);
 
         return $config;
+    }
+
+    /**
+     * @see https://tools.ietf.org/html/rfc6265#section-4.1.2.5 for Secure flag
+     * @see https://tools.ietf.org/html/rfc6265#section-4.1.2.6 for HttpOnly flag
+     * @see https://github.com/psr7-sessions/storageless/pull/46 for / path
+     * @see https://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site for SameSite flag
+     * @see https://tools.ietf.org/html/draft-ietf-httpbis-cookie-prefixes for __Secure- prefix
+     */
+    private static function assertCookieIsSecure(SetCookie $cookie): void
+    {
+        self::assertTrue($cookie->getSecure());
+        self::assertTrue($cookie->getHttpOnly());
+        self::assertSame('/', $cookie->getPath());
+        self::assertEquals(SameSite::lax(), $cookie->getSameSite());
+        self::assertStringStartsWith('__Secure-', $cookie->getName());
     }
 }
