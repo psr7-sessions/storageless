@@ -104,9 +104,9 @@ By default, sessions generated via the `SessionMiddleware` factory methods use f
 
 ### Local development
 
-When running applications locally on `localhost`, some settings must be changed to work without HTTPS support.
+When running applications locally on `http://localhost`, some settings must be changed to work without HTTPS support.
 
-Here is an example example:
+**The example below is completely insecure. It should only be used for local development.**
 
 ```php
 $key = '<random key>';
