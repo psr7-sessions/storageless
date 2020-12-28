@@ -109,7 +109,7 @@ When running applications locally on `localhost`, some settings must be changed 
 Here is an example example:
 
 ```php
-$key = '<random key>;
+$key = '<random key>';
 return new SessionMiddleware(
     new Sha256,
     $key,
