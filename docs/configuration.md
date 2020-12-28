@@ -101,3 +101,27 @@ By default, sessions generated via the `SessionMiddleware` factory methods use f
  * The JWT token in the `"__Secure-slsession"` is signed, but **unencrypted**
  * The JWT token in the `"__Secure-slsession"` has an [`iat` claim](https://self-issued.info/docs/draft-ietf-oauth-json-web-token.html#rfc.section.4.1.6)
  * The session is re-generated only after `60` seconds, and **not** at every user-agent interaction
+
+### Local development
+
+When running applications locally on `http://localhost`, some settings must be changed to work without HTTPS support.
+
+**The example below is completely insecure. It should only be used for local development.**
+
+```php
+$key = '<random key>';
+return new SessionMiddleware(
+    new Sha256,
+    $key,
+    $key,
+    // Override the default `__Secure-slsession` which only works on HTTPS
+    SetCookie::create('slsession')
+        // Disable mandatory HTTPS
+        ->withSecure(false)
+        ->withHttpOnly(true)
+        ->withPath('/'),
+    new Parser,
+    1200, // session lifetime, in seconds
+    SystemClock::fromUTC(),
+);
+```
