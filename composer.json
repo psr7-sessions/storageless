@@ -23,7 +23,7 @@
     "require": {
         "php":                             "^7.4.7",
         "ext-json":                        "*",
-        "dflydev/fig-cookies":             "^2.0.1",
+        "dflydev/fig-cookies":             "^2.0.3",
         "lcobucci/jwt":                    "^3.3.3",
         "lcobucci/clock":                  "^2.0.0",
         "psr/http-message":                "^1.0.1",

@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "52df094fbc3d2ae4a0d63ae3aff066b6",
+    "content-hash": "a91374a8145817923c1637bc1be6a413",
     "packages": [
         {
             "name": "dflydev/fig-cookies",
-            "version": "v2.0.1",
+            "version": "v2.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dflydev/dflydev-fig-cookies.git",
-                "reference": "733af78ddad60aec96f7c4a1204619dd4d62afff"
+                "reference": "aa3c3a6224fea4ca2c05cf6b8285ce023ff41d9b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dflydev/dflydev-fig-cookies/zipball/733af78ddad60aec96f7c4a1204619dd4d62afff",
-                "reference": "733af78ddad60aec96f7c4a1204619dd4d62afff",
+                "url": "https://api.github.com/repos/dflydev/dflydev-fig-cookies/zipball/aa3c3a6224fea4ca2c05cf6b8285ce023ff41d9b",
+                "reference": "aa3c3a6224fea4ca2c05cf6b8285ce023ff41d9b",
                 "shasum": ""
             },
             "require": {
@@ -58,7 +58,7 @@
                 "psr-7",
                 "psr7"
             ],
-            "time": "2020-01-02T16:13:22+00:00"
+            "time": "2020-12-07T16:40:59+00:00"
         },
         {
             "name": "lcobucci/clock",
