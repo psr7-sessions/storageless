@@ -228,7 +228,7 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     private function getTokenCookie(SessionInterface $sessionContainer): SetCookie
     {
-        $now = $this->clock->now();
+        $now       = $this->clock->now();
         $expiresAt = $now->add(new DateInterval(sprintf('PT%sS', $this->expirationTime)));
 
         return $this
