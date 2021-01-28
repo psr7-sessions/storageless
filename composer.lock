@@ -9,6 +9,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "content-hash": "fc26dc877be86c4c3ceacb8760cd7ea0",
 =======
     "content-hash": "e8afaad6161b0e62b7d7871e2daa8872",
@@ -25,6 +26,9 @@
 =======
     "content-hash": "616d6c4ac012262810df12aa3c722e62",
 >>>>>>> 2a40071... Bump PSALM & Infection
+=======
+    "content-hash": "cec0912c746f1747872d7490ca1e21aa",
+>>>>>>> 10b50f9... Run roave/backward-compatibility-check as separate tool
     "packages": [
         {
             "name": "dflydev/fig-cookies",
@@ -679,6 +683,7 @@
             "time": "2020-06-29T18:35:05+00:00"
         },
         {
+<<<<<<< HEAD
             "name": "beberlei/assert",
             "version": "v3.3.0",
             "source": {
@@ -1004,6 +1009,8 @@
 >>>>>>> 23d361c... Add PHP 8 support
         },
         {
+=======
+>>>>>>> 10b50f9... Run roave/backward-compatibility-check as separate tool
             "name": "composer/package-versions-deprecated",
             "version": "1.11.99.1",
             "source": {
@@ -1078,28 +1085,29 @@
         },
         {
             "name": "composer/semver",
-            "version": "1.7.2",
+            "version": "3.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/semver.git",
-                "reference": "647490bbcaf7fc4891c58f47b825eb99d19c377a"
+                "reference": "a02fdf930a3c1c3ed3a49b5f63859c0c20e10464"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/semver/zipball/647490bbcaf7fc4891c58f47b825eb99d19c377a",
-                "reference": "647490bbcaf7fc4891c58f47b825eb99d19c377a",
+                "url": "https://api.github.com/repos/composer/semver/zipball/a02fdf930a3c1c3ed3a49b5f63859c0c20e10464",
+                "reference": "a02fdf930a3c1c3ed3a49b5f63859c0c20e10464",
                 "shasum": ""
             },
             "require": {
                 "php": "^5.3.2 || ^7.0 || ^8.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.5 || ^5.0.5"
+                "phpstan/phpstan": "^0.12.54",
+                "symfony/phpunit-bridge": "^4.2 || ^5"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.x-dev"
+                    "dev-main": "3.x-dev"
                 }
             },
             "autoload": {
@@ -1140,6 +1148,7 @@
                 "issues": "https://github.com/composer/semver/issues",
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 "source": "https://github.com/composer/semver/tree/1.7.2"
 =======
                 "source": "https://github.com/composer/semver/tree/1.7.1"
@@ -1147,6 +1156,9 @@
 =======
                 "source": "https://github.com/composer/semver/tree/1.7.2"
 >>>>>>> df41794... Change factory methods signature to require Key instance
+=======
+                "source": "https://github.com/composer/semver/tree/3.2.4"
+>>>>>>> 10b50f9... Run roave/backward-compatibility-check as separate tool
             },
             "funding": [
                 {
@@ -1162,6 +1174,7 @@
                     "type": "tidelift"
                 }
             ],
+<<<<<<< HEAD
             "time": "2020-12-03T15:47:16+00:00"
         },
         {
@@ -1250,6 +1263,9 @@
                 }
             ],
             "time": "2020-12-03T16:04:16+00:00"
+=======
+            "time": "2020-11-13T08:59:24+00:00"
+>>>>>>> 10b50f9... Run roave/backward-compatibility-check as separate tool
         },
         {
             "name": "composer/xdebug-handler",
@@ -2045,53 +2061,6 @@
 >>>>>>> 2a40071... Bump PSALM & Infection
         },
         {
-            "name": "jetbrains/phpstorm-stubs",
-            "version": "v2019.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/JetBrains/phpstorm-stubs.git",
-                "reference": "883b6facd78e01c0743b554af86fa590c2573f40"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/JetBrains/phpstorm-stubs/zipball/883b6facd78e01c0743b554af86fa590c2573f40",
-                "reference": "883b6facd78e01c0743b554af86fa590c2573f40",
-                "shasum": ""
-            },
-            "require-dev": {
-                "nikic/php-parser": "^4",
-                "php": "^7.1",
-                "phpdocumentor/reflection-docblock": "^4.3",
-                "phpunit/phpunit": "^7"
-            },
-            "type": "library",
-            "autoload": {
-                "files": [
-                    "PhpStormStubsMap.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "description": "PHP runtime & extensions header files for PhpStorm",
-            "homepage": "https://www.jetbrains.com/phpstorm",
-            "keywords": [
-                "autocomplete",
-                "code",
-                "inference",
-                "inspection",
-                "jetbrains",
-                "phpstorm",
-                "stubs",
-                "type"
-            ],
-            "support": {
-                "source": "https://github.com/JetBrains/phpstorm-stubs/tree/master"
-            },
-            "time": "2019-12-05T16:56:26+00:00"
-        },
-        {
             "name": "justinrainbow/json-schema",
             "version": "5.2.10",
             "source": {
@@ -2590,6 +2559,7 @@
 >>>>>>> df41794... Change factory methods signature to require Key instance
         },
         {
+<<<<<<< HEAD
             "name": "nikolaposa/version",
             "version": "4.1.0",
             "source": {
@@ -2663,6 +2633,8 @@
 >>>>>>> df41794... Change factory methods signature to require Key instance
         },
         {
+=======
+>>>>>>> 10b50f9... Run roave/backward-compatibility-check as separate tool
             "name": "ondram/ci-detector",
             "version": "3.5.1",
             "source": {
@@ -4009,6 +3981,7 @@
             "time": "2020-03-23T09:12:05+00:00"
         },
         {
+<<<<<<< HEAD
             "name": "roave/backward-compatibility-check",
             "version": "5.0.0",
             "source": {
@@ -4269,6 +4242,8 @@
             "time": "2021-01-25T09:39:37+00:00"
         },
         {
+=======
+>>>>>>> 10b50f9... Run roave/backward-compatibility-check as separate tool
             "name": "sanmai/later",
             "version": "0.1.2",
             "source": {
@@ -5531,54 +5506,6 @@
                 }
             ],
             "time": "2020-11-11T09:19:24+00:00"
-        },
-        {
-            "name": "seld/phar-utils",
-            "version": "1.1.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Seldaek/phar-utils.git",
-                "reference": "8674b1d84ffb47cc59a101f5d5a3b61e87d23796"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/phar-utils/zipball/8674b1d84ffb47cc59a101f5d5a3b61e87d23796",
-                "reference": "8674b1d84ffb47cc59a101f5d5a3b61e87d23796",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Seld\\PharUtils\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jordi Boggiano",
-                    "email": "j.boggiano@seld.be"
-                }
-            ],
-            "description": "PHAR file format utilities, for when PHP phars you up",
-            "keywords": [
-                "phar"
-            ],
-            "support": {
-                "issues": "https://github.com/Seldaek/phar-utils/issues",
-                "source": "https://github.com/Seldaek/phar-utils/tree/master"
-            },
-            "time": "2020-07-07T18:42:57+00:00"
         },
         {
             "name": "slevomat/coding-standard",
