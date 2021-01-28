@@ -33,6 +33,7 @@ use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Encoding\ChainedFormatter;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Token;
+use Lcobucci\JWT\UnencryptedToken;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use Lcobucci\JWT\Validation\Constraint\StrictValidAt;
 use OutOfBoundsException;
@@ -149,7 +150,7 @@ final class SessionMiddleware implements MiddlewareInterface
     /**
      * Extract the token from the given request object
      */
-    private function parseToken(Request $request): ?Token\Plain
+    private function parseToken(Request $request): ?UnencryptedToken
     {
         /** @var array<string, string> $cookies */
         $cookies    = $request->getCookieParams();
@@ -165,7 +166,7 @@ final class SessionMiddleware implements MiddlewareInterface
             return null;
         }
 
-        assert($token instanceof Token\Plain);
+        assert($token instanceof UnencryptedToken);
 
         $constraints = [
             new StrictValidAt($this->clock),
@@ -182,7 +183,7 @@ final class SessionMiddleware implements MiddlewareInterface
     /**
      * @throws OutOfBoundsException
      */
-    private function extractSessionContainer(?Token\Plain $token): SessionInterface
+    private function extractSessionContainer(?UnencryptedToken $token): SessionInterface
     {
         if (! $token) {
             return DefaultSessionData::newEmptySession();
