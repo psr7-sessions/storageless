@@ -228,14 +228,15 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     private function getTokenCookie(SessionInterface $sessionContainer): SetCookie
     {
-        $expiresAt = $this->clock->now()->add(new DateInterval(sprintf('PT%sS', $this->expirationTime)));
+        $now = $this->clock->now();
+        $expiresAt = $now->add(new DateInterval(sprintf('PT%sS', $this->expirationTime)));
 
         return $this
             ->defaultCookie
             ->withValue(
                 $this->config->builder(ChainedFormatter::withUnixTimestampDates())
-                    ->issuedAt($this->clock->now())
-                    ->canOnlyBeUsedAfter($this->clock->now())
+                    ->issuedAt($now)
+                    ->canOnlyBeUsedAfter($now)
                     ->expiresAt($expiresAt)
                     ->withClaim(self::SESSION_CLAIM, $sessionContainer)
                     ->getToken($this->config->signer(), $this->config->signingKey())
