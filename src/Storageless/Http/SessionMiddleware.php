@@ -30,6 +30,7 @@ use InvalidArgumentException;
 use Lcobucci\Clock\Clock;
 use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Encoding\ChainedFormatter;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
@@ -231,7 +232,7 @@ final class SessionMiddleware implements MiddlewareInterface
         return $this
             ->defaultCookie
             ->withValue(
-                $this->config->builder()
+                $this->config->builder(ChainedFormatter::withUnixTimestampDates())
                     ->issuedAt($this->clock->now())
                     ->canOnlyBeUsedAfter($this->clock->now())
                     ->expiresAt($expiresAt)
