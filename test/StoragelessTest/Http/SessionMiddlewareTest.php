@@ -558,7 +558,7 @@ final class SessionMiddlewareTest extends TestCase
     public function validMiddlewaresProvider(): array
     {
         return $this->defaultMiddlewaresProvider() + [
-            [
+            'from-constructor' => [
                 static function (): SessionMiddleware {
                     return new SessionMiddleware(
                         new Sha256(),
@@ -580,12 +580,12 @@ final class SessionMiddlewareTest extends TestCase
     public function defaultMiddlewaresProvider(): array
     {
         return [
-            [
+            'from-symmetric' => [
                 static function (): SessionMiddleware {
                     return SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100);
                 },
             ],
-            [
+            'from-asymmetric' => [
                 static function (): SessionMiddleware {
                     return SessionMiddleware::fromAsymmetricKeyDefaults(
                         self::privateKey(),
