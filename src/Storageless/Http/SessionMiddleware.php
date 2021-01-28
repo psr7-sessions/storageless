@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace PSR7Sessions\Storageless\Http;
 
 use BadMethodCallException;
+use DateInterval;
 use DateTimeZone;
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\Modifier\SameSite;
@@ -46,6 +47,7 @@ use stdClass;
 use function assert;
 use function date_default_timezone_get;
 use function is_numeric;
+use function sprintf;
 
 final class SessionMiddleware implements MiddlewareInterface
 {
@@ -57,9 +59,9 @@ final class SessionMiddleware implements MiddlewareInterface
 
     private Signer $signer;
 
-    private string $signatureKey;
+    private Signer\Key\InMemory $signatureKey;
 
-    private string $verificationKey;
+    private Signer\Key\InMemory $verificationKey;
 
     private int $expirationTime;
 
@@ -82,8 +84,8 @@ final class SessionMiddleware implements MiddlewareInterface
         int $refreshTime = self::DEFAULT_REFRESH_TIME
     ) {
         $this->signer          = $signer;
-        $this->signatureKey    = $signatureKey;
-        $this->verificationKey = $verificationKey;
+        $this->signatureKey    = Signer\Key\InMemory::plainText($signatureKey);
+        $this->verificationKey = Signer\Key\InMemory::plainText($verificationKey);
         $this->tokenParser     = $tokenParser;
         $this->defaultCookie   = clone $defaultCookie;
         $this->expirationTime  = $expirationTime;
@@ -141,7 +143,7 @@ final class SessionMiddleware implements MiddlewareInterface
      * @throws BadMethodCallException
      * @throws InvalidArgumentException
      */
-    public function process(Request $request, RequestHandlerInterface $delegate): Response
+    public function process(Request $request, RequestHandlerInterface $handler): Response
     {
         $token            = $this->parseToken($request);
         $sessionContainer = LazySession::fromContainerBuildingCallback(function () use ($token): SessionInterface {
@@ -150,7 +152,7 @@ final class SessionMiddleware implements MiddlewareInterface
 
         return $this->appendToken(
             $sessionContainer,
-            $delegate->handle($request->withAttribute(self::SESSION_ATTRIBUTE, $sessionContainer)),
+            $handler->handle($request->withAttribute(self::SESSION_ATTRIBUTE, $sessionContainer)),
             $token
         );
     }
@@ -232,7 +234,7 @@ final class SessionMiddleware implements MiddlewareInterface
 
         assert(is_numeric($issuedAt));
 
-        return $this->timestamp() >= $issuedAt + $this->refreshTime;
+        return $this->clock->now()->getTimestamp() >= $issuedAt + $this->refreshTime;
     }
 
     /**
@@ -240,20 +242,20 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     private function getTokenCookie(SessionInterface $sessionContainer): SetCookie
     {
-        $timestamp = $this->timestamp();
+        $now       = $this->clock->now();
+        $expiresAt = $now->add(new DateInterval(sprintf('PT%sS', $this->expirationTime)));
 
         return $this
             ->defaultCookie
             ->withValue(
                 (new Builder())
-                    ->setIssuedAt($timestamp)
-                    ->setExpiration($timestamp + $this->expirationTime)
+                    ->setIssuedAt($now)
+                    ->setExpiration($expiresAt)
                     ->set(self::SESSION_CLAIM, $sessionContainer)
-                    ->sign($this->signer, $this->signatureKey)
-                    ->getToken()
-                    ->__toString()
+                    ->getToken($this->signer, $this->signatureKey)
+                    ->toString()
             )
-            ->withExpires($timestamp + $this->expirationTime);
+            ->withExpires($expiresAt);
     }
 
     private function getExpirationCookie(): SetCookie
@@ -264,10 +266,5 @@ final class SessionMiddleware implements MiddlewareInterface
             ->defaultCookie
             ->withValue(null)
             ->withExpires($expirationDate->getTimestamp());
-    }
-
-    private function timestamp(): int
-    {
-        return $this->clock->now()->getTimestamp();
     }
 }
