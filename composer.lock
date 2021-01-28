@@ -8,6 +8,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "content-hash": "fc26dc877be86c4c3ceacb8760cd7ea0",
 =======
     "content-hash": "e8afaad6161b0e62b7d7871e2daa8872",
@@ -21,6 +22,9 @@
 =======
     "content-hash": "fe0fc7cbf74f73825e76e76c5692db73",
 >>>>>>> 23d361c... Add PHP 8 support
+=======
+    "content-hash": "616d6c4ac012262810df12aa3c722e62",
+>>>>>>> 2a40071... Bump PSALM & Infection
     "packages": [
         {
             "name": "dflydev/fig-cookies",
@@ -1849,6 +1853,7 @@
         {
             "name": "infection/infection",
 <<<<<<< HEAD
+<<<<<<< HEAD
             "version": "0.21.0",
             "source": {
                 "type": "git",
@@ -1861,16 +1866,24 @@
                 "reference": "dfacb1e3d9def7fd34c6fb8df4d4bd098815dc82",
 =======
             "version": "0.20.2",
+=======
+            "version": "0.21.0",
+>>>>>>> 2a40071... Bump PSALM & Infection
             "source": {
                 "type": "git",
                 "url": "https://github.com/infection/infection.git",
-                "reference": "6035c1566af6a5a8d833a276351e5e18ed412305"
+                "reference": "dfacb1e3d9def7fd34c6fb8df4d4bd098815dc82"
             },
             "dist": {
                 "type": "zip",
+<<<<<<< HEAD
                 "url": "https://api.github.com/repos/infection/infection/zipball/6035c1566af6a5a8d833a276351e5e18ed412305",
                 "reference": "6035c1566af6a5a8d833a276351e5e18ed412305",
 >>>>>>> 9acd587... Tests pass
+=======
+                "url": "https://api.github.com/repos/infection/infection/zipball/dfacb1e3d9def7fd34c6fb8df4d4bd098815dc82",
+                "reference": "dfacb1e3d9def7fd34c6fb8df4d4bd098815dc82",
+>>>>>>> 2a40071... Bump PSALM & Infection
                 "shasum": ""
             },
             "require": {
@@ -1882,6 +1895,7 @@
                 "infection/extension-installer": "^0.1.0",
                 "infection/include-interceptor": "^0.2.4",
                 "justinrainbow/json-schema": "^5.2",
+<<<<<<< HEAD
 <<<<<<< HEAD
                 "nikic/php-parser": "^4.10.3",
                 "ocramius/package-versions": "^1.2 || ^2.0",
@@ -1896,6 +1910,14 @@
                 "php": "^7.4 || ^8.0",
                 "sanmai/pipeline": "^3.1 || ^5.0",
 >>>>>>> 9acd587... Tests pass
+=======
+                "nikic/php-parser": "^4.10.3",
+                "ocramius/package-versions": "^1.2 || ^2.0",
+                "ondram/ci-detector": "^3.3.0",
+                "php": "^7.4 || ^8.0",
+                "sanmai/later": "^0.1.1",
+                "sanmai/pipeline": "^5.1",
+>>>>>>> 2a40071... Bump PSALM & Infection
                 "sebastian/diff": "^3.0.2 || ^4.0",
                 "seld/jsonlint": "^1.7",
                 "symfony/console": "^3.4.29 || ^4.1.19 || ^5.0",
@@ -1921,13 +1943,16 @@
                 "phpstan/phpstan-webmozart-assert": "^0.12.2",
                 "phpunit/phpunit": "^9.3.11",
 <<<<<<< HEAD
+<<<<<<< HEAD
                 "symfony/phpunit-bridge": "^4.4.18 || ^5.1.10",
 =======
                 "symfony/phpunit-bridge": "^4.4.14 || ^5.1.6",
 >>>>>>> 9acd587... Tests pass
+=======
+                "symfony/phpunit-bridge": "^4.4.18 || ^5.1.10",
+>>>>>>> 2a40071... Bump PSALM & Infection
                 "symfony/yaml": "^5.0",
-                "thecodingmachine/phpstan-safe-rule": "^1.0",
-                "vimeo/psalm": "^4.0"
+                "thecodingmachine/phpstan-safe-rule": "^1.0"
             },
             "bin": [
                 "bin/infection"
@@ -1984,6 +2009,7 @@
             "support": {
                 "issues": "https://github.com/infection/infection/issues",
 <<<<<<< HEAD
+<<<<<<< HEAD
                 "source": "https://github.com/infection/infection/tree/0.21.0"
             },
             "funding": [
@@ -2002,6 +2028,21 @@
             },
             "time": "2020-11-20T17:15:57+00:00"
 >>>>>>> 9acd587... Tests pass
+=======
+                "source": "https://github.com/infection/infection/tree/0.21.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/infection",
+                    "type": "github"
+                },
+                {
+                    "url": "https://opencollective.com/infection",
+                    "type": "open_collective"
+                }
+            ],
+            "time": "2021-01-26T22:10:01+00:00"
+>>>>>>> 2a40071... Bump PSALM & Infection
         },
         {
             "name": "jetbrains/phpstorm-stubs",
@@ -3751,30 +3792,34 @@
         },
         {
             "name": "psalm/plugin-phpunit",
-            "version": "0.12.2",
+            "version": "0.15.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/psalm/psalm-plugin-phpunit.git",
-                "reference": "85ee5a080a5281e63085d933b30a06b1b1680758"
+                "reference": "30ca25ce069bf4943c36e59b7df6954f6af05e64"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/psalm/psalm-plugin-phpunit/zipball/85ee5a080a5281e63085d933b30a06b1b1680758",
-                "reference": "85ee5a080a5281e63085d933b30a06b1b1680758",
+                "url": "https://api.github.com/repos/psalm/psalm-plugin-phpunit/zipball/30ca25ce069bf4943c36e59b7df6954f6af05e64",
+                "reference": "30ca25ce069bf4943c36e59b7df6954f6af05e64",
                 "shasum": ""
             },
             "require": {
                 "composer/package-versions-deprecated": "^1.10",
                 "composer/semver": "^1.4 || ^2.0 || ^3.0",
                 "ext-simplexml": "*",
-                "php": "^7.1.3 || ^8.0",
-                "phpunit/phpunit": "^7.5 || ^8.0 || ^9.0",
-                "vimeo/psalm": "^3.6.2 || dev-master || dev-4.x"
+                "php": "^7.1 || ^8.0",
+                "vimeo/psalm": "dev-master || dev-4.x || ^4.0"
+            },
+            "conflict": {
+                "phpunit/phpunit": "<7.5"
             },
             "require-dev": {
                 "codeception/codeception": "^4.0.3",
+                "php": "^7.3 || ^8.0",
+                "phpunit/phpunit": "^7.5 || ^8.0 || ^9.0",
                 "squizlabs/php_codesniffer": "^3.3.1",
-                "weirdan/codeception-psalm-module": "^0.7.1",
+                "weirdan/codeception-psalm-module": "^0.11.0",
                 "weirdan/prophecy-shim": "^1.0 || ^2.0"
             },
             "type": "psalm-plugin",
@@ -3801,9 +3846,9 @@
             "description": "Psalm plugin for PHPUnit",
             "support": {
                 "issues": "https://github.com/psalm/psalm-plugin-phpunit/issues",
-                "source": "https://github.com/psalm/psalm-plugin-phpunit/tree/0.12.2"
+                "source": "https://github.com/psalm/psalm-plugin-phpunit/tree/0.15.1"
             },
-            "time": "2020-09-28T17:25:39+00:00"
+            "time": "2021-01-23T00:19:07+00:00"
         },
         {
             "name": "psr/container",
@@ -4280,6 +4325,7 @@
                 }
             ],
             "time": "2021-01-02T10:26:44+00:00"
+<<<<<<< HEAD
 =======
                 "source": "https://github.com/Roave/Signature/tree/1.3.0"
             },
@@ -4290,6 +4336,8 @@
             },
             "time": "2021-01-25T09:39:37+00:00"
 >>>>>>> 23d361c... Add PHP 8 support
+=======
+>>>>>>> 2a40071... Bump PSALM & Infection
         },
         {
             "name": "sanmai/pipeline",
@@ -7025,16 +7073,16 @@
         },
         {
             "name": "vimeo/psalm",
-            "version": "3.18.2",
+            "version": "4.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vimeo/psalm.git",
-                "reference": "19aa905f7c3c7350569999a93c40ae91ae4e1626"
+                "reference": "9fd7a7d885b3a216cff8dec9d8c21a132f275224"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vimeo/psalm/zipball/19aa905f7c3c7350569999a93c40ae91ae4e1626",
-                "reference": "19aa905f7c3c7350569999a93c40ae91ae4e1626",
+                "url": "https://api.github.com/repos/vimeo/psalm/zipball/9fd7a7d885b3a216cff8dec9d8c21a132f275224",
+                "reference": "9fd7a7d885b3a216cff8dec9d8c21a132f275224",
                 "shasum": ""
             },
             "require": {
@@ -7053,12 +7101,11 @@
                 "felixfbecker/advanced-json-rpc": "^3.0.3",
                 "felixfbecker/language-server-protocol": "^1.4",
                 "netresearch/jsonmapper": "^1.0 || ^2.0 || ^3.0",
-                "nikic/php-parser": "4.3.* || 4.4.* || 4.5.* || 4.6.* || ^4.8",
+                "nikic/php-parser": "^4.10.1",
                 "openlss/lib-array2xml": "^1.0",
-                "php": "^7.1.3|^8",
+                "php": "^7.1|^8",
                 "sebastian/diff": "^3.0 || ^4.0",
                 "symfony/console": "^3.4.17 || ^4.1.6 || ^5.0",
-                "webmozart/glob": "^4.1",
                 "webmozart/path-util": "^2.3"
             },
             "provide": {
@@ -7067,14 +7114,14 @@
             "require-dev": {
                 "amphp/amp": "^2.4.2",
                 "bamarni/composer-bin-plugin": "^1.2",
-                "brianium/paratest": "^4.0.0",
+                "brianium/paratest": "^4.0||^6.0",
                 "ext-curl": "*",
-                "phpdocumentor/reflection-docblock": "^4.3.4 || ^5",
-                "phpmyadmin/sql-parser": "5.1.0",
+                "phpdocumentor/reflection-docblock": "^5",
+                "phpmyadmin/sql-parser": "5.1.0||dev-master",
                 "phpspec/prophecy": ">=1.9.0",
-                "phpunit/phpunit": "^7.5.16 || ^8.5 || ^9.0",
-                "psalm/plugin-phpunit": "^0.11",
-                "slevomat/coding-standard": "^5.0",
+                "phpunit/phpunit": "^9.0",
+                "psalm/plugin-phpunit": "^0.13",
+                "slevomat/coding-standard": "^6.3.11",
                 "squizlabs/php_codesniffer": "^3.5",
                 "symfony/process": "^4.3",
                 "weirdan/prophecy-shim": "^1.0 || ^2.0"
@@ -7092,7 +7139,8 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.x-dev",
+                    "dev-master": "4.x-dev",
+                    "dev-3.x": "3.x-dev",
                     "dev-2.x": "2.x-dev",
                     "dev-1.x": "1.x-dev"
                 }
@@ -7123,9 +7171,9 @@
             ],
             "support": {
                 "issues": "https://github.com/vimeo/psalm/issues",
-                "source": "https://github.com/vimeo/psalm/tree/3.18.2"
+                "source": "https://github.com/vimeo/psalm/tree/4.4.1"
             },
-            "time": "2020-10-20T13:48:22+00:00"
+            "time": "2021-01-14T21:44:29+00:00"
         },
         {
             "name": "webmozart/assert",
@@ -7191,6 +7239,7 @@
             "time": "2020-07-08T17:02:28+00:00"
         },
         {
+<<<<<<< HEAD
             "name": "webmozart/glob",
             "version": "4.3.0",
             "source": {
@@ -7255,6 +7304,8 @@
 >>>>>>> 23d361c... Add PHP 8 support
         },
         {
+=======
+>>>>>>> 2a40071... Bump PSALM & Infection
             "name": "webmozart/path-util",
             "version": "2.3.0",
             "source": {
