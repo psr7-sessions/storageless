@@ -258,9 +258,9 @@ final class SessionMiddlewareTest extends TestCase
         $unsignedToken = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
-                    ->setIssuedAt(new DateTimeImmutable('-1 day'))
-                    ->setExpiration(new DateTimeImmutable('+1 day'))
-                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
+                    ->issuedAt(new DateTimeImmutable('-1 day'))
+                    ->expiresAt(new DateTimeImmutable('+1 day'))
+                    ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
                     ->getToken(new Signer\None(), Signer\Key\InMemory::plainText('')),
             ]);
 
@@ -278,8 +278,8 @@ final class SessionMiddlewareTest extends TestCase
         $unsignedToken = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
-                    ->setExpiration(new DateTimeImmutable('+1 day'))
-                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
+                    ->expiresAt(new DateTimeImmutable('+1 day'))
+                    ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
                     ->getToken($this->getSigner($middleware), $this->getSignatureKey($middleware)),
             ]);
 
@@ -308,9 +308,9 @@ final class SessionMiddlewareTest extends TestCase
         $requestWithTokenIssuedInThePast = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
-                    ->setExpiration(new DateTimeImmutable('@' . ($time + 10000)))
-                    ->setIssuedAt(new DateTimeImmutable('@' . ($time - 100)))
-                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
+                    ->expiresAt(new DateTimeImmutable('@' . ($time + 10000)))
+                    ->issuedAt(new DateTimeImmutable('@' . ($time - 100)))
+                    ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
                     ->getToken($this->getSigner($middleware), $this->getSignatureKey($middleware)),
             ]);
 
@@ -466,8 +466,8 @@ final class SessionMiddlewareTest extends TestCase
         $request             = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
-                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
-                    ->setIssuedAt(new DateTimeImmutable())
+                    ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
+                    ->issuedAt(new DateTimeImmutable())
                     ->getToken(new Sha256(), Signer\Key\InMemory::plainText('foo')),
             ]);
 
@@ -501,9 +501,9 @@ final class SessionMiddlewareTest extends TestCase
         $expiringToken = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
-                    ->setIssuedAt(new DateTimeImmutable('-800 second'))
-                    ->setExpiration(new DateTimeImmutable('+200 second'))
-                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
+                    ->issuedAt(new DateTimeImmutable('-800 second'))
+                    ->expiresAt(new DateTimeImmutable('+200 second'))
+                    ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
                     ->getToken($this->getSigner($middleware), $this->getSignatureKey($middleware)),
             ]);
 
@@ -537,9 +537,9 @@ final class SessionMiddlewareTest extends TestCase
         $validToken = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
-                    ->setIssuedAt(new DateTimeImmutable('-100 second'))
-                    ->setExpiration(new DateTimeImmutable('+900 second'))
-                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
+                    ->issuedAt(new DateTimeImmutable('-100 second'))
+                    ->expiresAt(new DateTimeImmutable('+900 second'))
+                    ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
                     ->getToken($this->getSigner($middleware), $this->getSignatureKey($middleware)),
             ]);
 
@@ -670,9 +670,9 @@ final class SessionMiddlewareTest extends TestCase
     private function createToken(SessionMiddleware $middleware, DateTimeImmutable $issuedAt, DateTimeImmutable $expiration): string
     {
         return (string) (new Builder())
-            ->setIssuedAt($issuedAt)
-            ->setExpiration($expiration)
-            ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
+            ->issuedAt($issuedAt)
+            ->expiresAt($expiration)
+            ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
             ->getToken($this->getSigner($middleware), $this->getSignatureKey($middleware));
     }
 
@@ -684,9 +684,9 @@ final class SessionMiddlewareTest extends TestCase
         $claim
     ): string {
         return (string) (new Builder())
-            ->setIssuedAt($issuedAt)
-            ->setExpiration($expiration)
-            ->set(SessionMiddleware::SESSION_CLAIM, $claim)
+            ->issuedAt($issuedAt)
+            ->expiresAt($expiration)
+            ->withClaim(SessionMiddleware::SESSION_CLAIM, $claim)
             ->getToken($this->getSigner($middleware), $this->getSignatureKey($middleware));
     }
 

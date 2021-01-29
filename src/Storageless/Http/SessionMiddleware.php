@@ -252,9 +252,9 @@ final class SessionMiddleware implements MiddlewareInterface
             ->defaultCookie
             ->withValue(
                 (new Builder())
-                    ->setIssuedAt($now)
-                    ->setExpiration($expiresAt)
-                    ->set(self::SESSION_CLAIM, $sessionContainer)
+                    ->issuedAt($now)
+                    ->expiresAt($expiresAt)
+                    ->withClaim(self::SESSION_CLAIM, $sessionContainer)
                     ->getToken($this->signer, $this->signatureKey)
                     ->toString()
             )
