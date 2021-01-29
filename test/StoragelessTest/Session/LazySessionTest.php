@@ -61,8 +61,14 @@ final class LazySessionTest extends TestCase
     {
         $this->wrappedSessionWillBeLoaded();
 
-        $this->wrappedSession->expects(self::at(1))->method('hasChanged')->willReturn(true);
-        $this->wrappedSession->expects(self::at(2))->method('hasChanged')->willReturn(false);
+        $this
+            ->wrappedSession
+            ->expects(self::exactly(2))
+            ->method('hasChanged')
+            ->willReturnOnConsecutiveCalls(
+                true,
+                false
+            );
 
         $this->forceWrappedSessionInitialization();
 
@@ -136,8 +142,14 @@ final class LazySessionTest extends TestCase
     {
         $this->wrappedSessionWillBeLoaded();
 
-        $this->wrappedSession->expects(self::at(0))->method('isEmpty')->willReturn(true);
-        $this->wrappedSession->expects(self::at(1))->method('isEmpty')->willReturn(false);
+        $this
+            ->wrappedSession
+            ->expects(self::exactly(2))
+            ->method('isEmpty')
+            ->willReturnOnConsecutiveCalls(
+                true,
+                false
+            );
 
         self::assertTrue($this->lazySession->isEmpty());
         self::assertFalse($this->lazySession->isEmpty());
@@ -147,8 +159,14 @@ final class LazySessionTest extends TestCase
     {
         $this->wrappedSessionWillBeLoaded();
 
-        $this->wrappedSession->expects(self::at(0))->method('jsonSerialize')->willReturn((object) ['foo' => 'bar']);
-        $this->wrappedSession->expects(self::at(1))->method('jsonSerialize')->willReturn((object) ['baz' => 'tab']);
+        $this
+            ->wrappedSession
+            ->expects(self::exactly(2))
+            ->method('jsonSerialize')
+            ->willReturnOnConsecutiveCalls(
+                (object) ['foo' => 'bar'],
+                (object) ['baz' => 'tab']
+            );
 
         self::assertEquals((object) ['foo' => 'bar'], $this->lazySession->jsonSerialize());
         self::assertEquals((object) ['baz' => 'tab'], $this->lazySession->jsonSerialize());
