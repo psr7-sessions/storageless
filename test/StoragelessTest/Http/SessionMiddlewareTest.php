@@ -121,7 +121,7 @@ final class SessionMiddlewareTest extends TestCase
         $token = $this->getCookie($response)->getValue();
 
         self::assertIsString($token);
-        self::assertEquals((object) ['foo' => 'bar'], (new Parser())->parse($token)->getClaim('session-data'));
+        self::assertEquals((object) ['foo' => 'bar'], (new Parser())->parse($token)->claims()->get('session-data'));
     }
 
     /**
@@ -289,9 +289,10 @@ final class SessionMiddlewareTest extends TestCase
     public function testWillRefreshTokenWithIssuedAtExactlyAtTokenRefreshTimeThreshold(): void
     {
         // forcing ourselves to think of time as a mutable value:
-        $time = time() + random_int(-100, +100);
+        $time     = time() + random_int(-100, +100);
+        $dateTime = new DateTimeImmutable('@' . $time);
 
-        $clock = new FrozenClock(new DateTimeImmutable('@' . $time));
+        $clock = new FrozenClock($dateTime);
 
         $middleware = new SessionMiddleware(
             new Sha256(),
@@ -323,7 +324,7 @@ final class SessionMiddlewareTest extends TestCase
 
         $token = (new Parser())->parse($tokenString);
 
-        self::assertEquals($time, $token->getClaim(SessionMiddleware::ISSUED_AT_CLAIM), 'Token was refreshed');
+        self::assertEquals($dateTime, $token->claims()->get(SessionMiddleware::ISSUED_AT_CLAIM), 'Token was refreshed');
     }
 
     /**
@@ -457,7 +458,6 @@ final class SessionMiddlewareTest extends TestCase
     {
         $signer = $this->createMock(Signer::class);
 
-        $signer->expects(self::never())->method('verify');
         $signer->method('getAlgorithmId')->willReturn('HS256');
 
         $currentTimeProvider = new SystemClock(new DateTimeZone(date_default_timezone_get()));

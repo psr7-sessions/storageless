@@ -22,6 +22,7 @@ namespace PSR7Sessions\Storageless\Http;
 
 use BadMethodCallException;
 use DateInterval;
+use DateTimeImmutable;
 use DateTimeZone;
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\Modifier\SameSite;
@@ -33,7 +34,9 @@ use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Token;
-use Lcobucci\JWT\ValidationData;
+use Lcobucci\JWT\Validation\Constraint\SignedWith;
+use Lcobucci\JWT\Validation\Constraint\ValidAt;
+use Lcobucci\JWT\Validation\Validator;
 use OutOfBoundsException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -46,7 +49,6 @@ use stdClass;
 
 use function assert;
 use function date_default_timezone_get;
-use function is_numeric;
 use function sprintf;
 
 final class SessionMiddleware implements MiddlewareInterface
@@ -176,7 +178,12 @@ final class SessionMiddleware implements MiddlewareInterface
             return null;
         }
 
-        if (! $token->validate(new ValidationData())) {
+        $constraints = [
+            new ValidAt($this->clock),
+            new SignedWith($this->signer, $this->verificationKey),
+        ];
+
+        if (! (new Validator())->validate($token, ...$constraints)) {
             return null;
         }
 
@@ -193,12 +200,8 @@ final class SessionMiddleware implements MiddlewareInterface
         }
 
         try {
-            if (! $token->verify($this->signer, $this->verificationKey)) {
-                return DefaultSessionData::newEmptySession();
-            }
-
             return DefaultSessionData::fromDecodedTokenData(
-                (object) $token->getClaim(self::SESSION_CLAIM, new stdClass())
+                (object) $token->claims()->get(self::SESSION_CLAIM, new stdClass())
             );
         } catch (BadMethodCallException $invalidToken) {
             return DefaultSessionData::newEmptySession();
@@ -226,15 +229,15 @@ final class SessionMiddleware implements MiddlewareInterface
 
     private function shouldTokenBeRefreshed(?Token $token): bool
     {
-        if (! ($token && $token->hasClaim(self::ISSUED_AT_CLAIM))) {
+        if (! ($token && $token->claims()->has(self::ISSUED_AT_CLAIM))) {
             return false;
         }
 
-        $issuedAt = $token->getClaim(self::ISSUED_AT_CLAIM);
+        $issuedAt = $token->claims()->get(self::ISSUED_AT_CLAIM);
 
-        assert(is_numeric($issuedAt));
+        assert($issuedAt instanceof DateTimeImmutable);
 
-        return $this->clock->now()->getTimestamp() >= $issuedAt + $this->refreshTime;
+        return $this->clock->now() >= $issuedAt->add(new DateInterval(sprintf('PT%sS', $this->refreshTime)));
     }
 
     /**
