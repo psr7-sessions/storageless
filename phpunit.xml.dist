@@ -7,12 +7,12 @@
     beStrictAboutOutputDuringTests="true"
     beStrictAboutTestsThatDoNotTestAnything="true"
 >
-    <testsuite name="PSR7Session tests">
-        <directory>./test/StoragelessTest</directory>
-    </testsuite>
-    <filter>
-        <whitelist addUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">./src</directory>
-        </whitelist>
-    </filter>
+  <coverage includeUncoveredFiles="true">
+    <include>
+      <directory suffix=".php">./src</directory>
+    </include>
+  </coverage>
+  <testsuite name="PSR7Session tests">
+    <directory>./test/StoragelessTest</directory>
+  </testsuite>
 </phpunit>

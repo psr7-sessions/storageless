@@ -48,7 +48,6 @@ use ReflectionProperty;
 use function assert;
 use function date_default_timezone_get;
 use function file_get_contents;
-use function is_string;
 use function random_int;
 use function time;
 use function uniqid;
@@ -122,7 +121,7 @@ final class SessionMiddlewareTest extends TestCase
         $token = $this->getCookie($response)->getValue();
 
         self::assertIsString($token);
-        self::assertEquals((object) ['foo' => 'bar'], (new Parser())->parse($token)->getClaim('session-data'));
+        self::assertEquals((object) ['foo' => 'bar'], (new Parser())->parse($token)->claims()->get('session-data'));
     }
 
     /**
@@ -189,8 +188,8 @@ final class SessionMiddlewareTest extends TestCase
 
         $this->createTokenWithCustomClaim(
             $middleware,
-            new DateTime('-1 day'),
-            new DateTime('+1 day'),
+            new DateTimeImmutable('-1 day'),
+            new DateTimeImmutable('+1 day'),
             'not valid session data'
         );
 
@@ -199,8 +198,8 @@ final class SessionMiddlewareTest extends TestCase
                 ->withCookieParams([
                     SessionMiddleware::DEFAULT_COOKIE => $this->createTokenWithCustomClaim(
                         $middleware,
-                        new DateTime('-1 day'),
-                        new DateTime('+1 day'),
+                        new DateTimeImmutable('-1 day'),
+                        new DateTimeImmutable('+1 day'),
                         $sessionValue
                     ),
                 ]),
@@ -220,8 +219,8 @@ final class SessionMiddlewareTest extends TestCase
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => $this->createToken(
                     $middleware,
-                    new DateTime('-1 day'),
-                    new DateTime('-2 day')
+                    new DateTimeImmutable('-1 day'),
+                    new DateTimeImmutable('-2 day')
                 ),
             ]);
 
@@ -240,8 +239,8 @@ final class SessionMiddlewareTest extends TestCase
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => $this->createToken(
                     $middleware,
-                    new DateTime('+1 day'),
-                    new DateTime('-2 day')
+                    new DateTimeImmutable('+1 day'),
+                    new DateTimeImmutable('-2 day')
                 ),
             ]);
 
@@ -259,10 +258,10 @@ final class SessionMiddlewareTest extends TestCase
         $unsignedToken = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
-                    ->setIssuedAt((new DateTime('-1 day'))->getTimestamp())
-                    ->setExpiration((new DateTime('+1 day'))->getTimestamp())
-                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
-                    ->getToken(),
+                    ->issuedAt(new DateTimeImmutable('-1 day'))
+                    ->expiresAt(new DateTimeImmutable('+1 day'))
+                    ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
+                    ->getToken(new Signer\None(), Signer\Key\InMemory::plainText('')),
             ]);
 
         $this->ensureSameResponse($middleware, $unsignedToken, $this->emptyValidationMiddleware());
@@ -279,10 +278,9 @@ final class SessionMiddlewareTest extends TestCase
         $unsignedToken = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
-                    ->setExpiration((new DateTime('+1 day'))->getTimestamp())
-                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
-                    ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
-                    ->getToken(),
+                    ->expiresAt(new DateTimeImmutable('+1 day'))
+                    ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
+                    ->getToken($this->getSigner($middleware), $this->getSignatureKey($middleware)),
             ]);
 
         $this->ensureSameResponse($middleware, $unsignedToken);
@@ -291,9 +289,10 @@ final class SessionMiddlewareTest extends TestCase
     public function testWillRefreshTokenWithIssuedAtExactlyAtTokenRefreshTimeThreshold(): void
     {
         // forcing ourselves to think of time as a mutable value:
-        $time = time() + random_int(-100, +100);
+        $time     = time() + random_int(-100, +100);
+        $dateTime = new DateTimeImmutable('@' . $time);
 
-        $clock = new FrozenClock(new DateTimeImmutable('@' . $time));
+        $clock = new FrozenClock($dateTime);
 
         $middleware = new SessionMiddleware(
             new Sha256(),
@@ -309,11 +308,10 @@ final class SessionMiddlewareTest extends TestCase
         $requestWithTokenIssuedInThePast = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
-                    ->setExpiration($time + 10000)
-                    ->setIssuedAt($time - 100)
-                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
-                    ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
-                    ->getToken(),
+                    ->expiresAt(new DateTimeImmutable('@' . ($time + 10000)))
+                    ->issuedAt(new DateTimeImmutable('@' . ($time - 100)))
+                    ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
+                    ->getToken($this->getSigner($middleware), $this->getSignatureKey($middleware)),
             ]);
 
         $tokenString = $this
@@ -326,7 +324,7 @@ final class SessionMiddlewareTest extends TestCase
 
         $token = (new Parser())->parse($tokenString);
 
-        self::assertEquals($time, $token->getClaim(SessionMiddleware::ISSUED_AT_CLAIM), 'Token was refreshed');
+        self::assertEquals($dateTime, $token->claims()->get(SessionMiddleware::ISSUED_AT_CLAIM), 'Token was refreshed');
     }
 
     /**
@@ -460,7 +458,6 @@ final class SessionMiddlewareTest extends TestCase
     {
         $signer = $this->createMock(Signer::class);
 
-        $signer->expects(self::never())->method('verify');
         $signer->method('getAlgorithmId')->willReturn('HS256');
 
         $currentTimeProvider = new SystemClock(new DateTimeZone(date_default_timezone_get()));
@@ -469,10 +466,9 @@ final class SessionMiddlewareTest extends TestCase
         $request             = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
-                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
-                    ->setIssuedAt(time())
-                    ->sign(new Sha256(), 'foo')
-                    ->getToken(),
+                    ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
+                    ->issuedAt(new DateTimeImmutable())
+                    ->getToken(new Sha256(), Signer\Key\InMemory::plainText('foo')),
             ]);
 
         $middleware->process(
@@ -505,11 +501,10 @@ final class SessionMiddlewareTest extends TestCase
         $expiringToken = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
-                    ->setIssuedAt((new DateTime('-800 second'))->getTimestamp())
-                    ->setExpiration((new DateTime('+200 second'))->getTimestamp())
-                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
-                    ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
-                    ->getToken(),
+                    ->issuedAt(new DateTimeImmutable('-800 second'))
+                    ->expiresAt(new DateTimeImmutable('+200 second'))
+                    ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
+                    ->getToken($this->getSigner($middleware), $this->getSignatureKey($middleware)),
             ]);
 
         $initialResponse = new Response();
@@ -542,11 +537,10 @@ final class SessionMiddlewareTest extends TestCase
         $validToken = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
-                    ->setIssuedAt((new DateTime('-100 second'))->getTimestamp())
-                    ->setExpiration((new DateTime('+900 second'))->getTimestamp())
-                    ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
-                    ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
-                    ->getToken(),
+                    ->issuedAt(new DateTimeImmutable('-100 second'))
+                    ->expiresAt(new DateTimeImmutable('+900 second'))
+                    ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
+                    ->getToken($this->getSigner($middleware), $this->getSignatureKey($middleware)),
             ]);
 
         $this->ensureSameResponse($middleware, $validToken);
@@ -558,7 +552,7 @@ final class SessionMiddlewareTest extends TestCase
     public function validMiddlewaresProvider(): array
     {
         return $this->defaultMiddlewaresProvider() + [
-            [
+            'from-constructor' => [
                 static function (): SessionMiddleware {
                     return new SessionMiddleware(
                         new Sha256(),
@@ -580,12 +574,12 @@ final class SessionMiddlewareTest extends TestCase
     public function defaultMiddlewaresProvider(): array
     {
         return [
-            [
+            'from-symmetric' => [
                 static function (): SessionMiddleware {
                     return SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100);
                 },
             ],
-            [
+            'from-asymmetric' => [
                 static function (): SessionMiddleware {
                     return SessionMiddleware::fromAsymmetricKeyDefaults(
                         self::privateKey(),
@@ -673,29 +667,27 @@ final class SessionMiddlewareTest extends TestCase
         return $response;
     }
 
-    private function createToken(SessionMiddleware $middleware, DateTime $issuedAt, DateTime $expiration): string
+    private function createToken(SessionMiddleware $middleware, DateTimeImmutable $issuedAt, DateTimeImmutable $expiration): string
     {
         return (string) (new Builder())
-            ->setIssuedAt($issuedAt->getTimestamp())
-            ->setExpiration($expiration->getTimestamp())
-            ->set(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
-            ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
-            ->getToken();
+            ->issuedAt($issuedAt)
+            ->expiresAt($expiration)
+            ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
+            ->getToken($this->getSigner($middleware), $this->getSignatureKey($middleware));
     }
 
     /** @param mixed $claim */
     private function createTokenWithCustomClaim(
         SessionMiddleware $middleware,
-        DateTime $issuedAt,
-        DateTime $expiration,
+        DateTimeImmutable $issuedAt,
+        DateTimeImmutable $expiration,
         $claim
     ): string {
         return (string) (new Builder())
-            ->setIssuedAt($issuedAt->getTimestamp())
-            ->setExpiration($expiration->getTimestamp())
-            ->set(SessionMiddleware::SESSION_CLAIM, $claim)
-            ->sign($this->getSigner($middleware), $this->getSignatureKey($middleware))
-            ->getToken();
+            ->issuedAt($issuedAt)
+            ->expiresAt($expiration)
+            ->withClaim(SessionMiddleware::SESSION_CLAIM, $claim)
+            ->getToken($this->getSigner($middleware), $this->getSignatureKey($middleware));
     }
 
     private function emptyValidationMiddleware(): RequestHandlerInterface
@@ -766,7 +758,7 @@ final class SessionMiddlewareTest extends TestCase
         return $signer;
     }
 
-    private function getSignatureKey(SessionMiddleware $middleware): string
+    private function getSignatureKey(SessionMiddleware $middleware): Signer\Key\InMemory
     {
         $property = new ReflectionProperty(SessionMiddleware::class, 'signatureKey');
 
@@ -774,7 +766,7 @@ final class SessionMiddlewareTest extends TestCase
 
         $key = $property->getValue($middleware);
 
-        assert(is_string($key));
+        assert($key instanceof Signer\Key\InMemory);
 
         return $key;
     }

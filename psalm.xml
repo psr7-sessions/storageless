@@ -14,17 +14,6 @@
         </ignoreFiles>
     </projectFiles>
 
-    <issueHandlers>
-        <DeprecatedMethod>
-            <errorLevel type="suppress">
-                <referencedMethod name="Lcobucci\JWT\Builder::setIssuedAt"/>
-                <referencedMethod name="Lcobucci\JWT\Builder::setExpiration"/>
-                <referencedMethod name="Lcobucci\JWT\Builder::set"/>
-                <referencedMethod name="Lcobucci\JWT\Builder::sign"/>
-            </errorLevel>
-        </DeprecatedMethod>
-    </issueHandlers>
-
     <plugins>
         <pluginClass class="Psalm\PhpUnitPlugin\Plugin"/>
     </plugins>

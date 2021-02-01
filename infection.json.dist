@@ -10,6 +10,12 @@
             "branch": "master"
         }
     },
+    "mutators": {
+        "@default": true,
+        "global-ignoreSourceCodeByRegex": [
+            "assert\\(\\$issuedAt instanceof DateTimeImmutable\\);"
+        ]
+    },
     "minMsi": 100,
     "minCoveredMsi": 100
 }
