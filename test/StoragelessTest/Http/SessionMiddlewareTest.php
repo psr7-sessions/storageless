@@ -30,10 +30,13 @@ use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ServerRequest;
 use Lcobucci\Clock\FrozenClock;
 use Lcobucci\Clock\SystemClock;
-use Lcobucci\JWT\Builder;
-use Lcobucci\JWT\Parser;
+use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
+use Lcobucci\JWT\Token\Parser;
+use Lcobucci\JWT\Token\Plain;
+use Lcobucci\JWT\Token\RegisteredClaims;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -47,7 +50,6 @@ use ReflectionProperty;
 
 use function assert;
 use function date_default_timezone_get;
-use function file_get_contents;
 use function random_int;
 use function time;
 use function uniqid;
@@ -55,12 +57,6 @@ use function uniqid;
 final class SessionMiddlewareTest extends TestCase
 {
     /**
-     * @see https://tools.ietf.org/html/rfc6265#section-4.1.2.5 for Secure flag
-     * @see https://tools.ietf.org/html/rfc6265#section-4.1.2.6 for HttpOnly flag
-     * @see https://github.com/psr7-sessions/storageless/pull/46 for / path
-     * @see https://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site for SameSite flag
-     * @see https://tools.ietf.org/html/draft-ietf-httpbis-cookie-prefixes for __Secure- prefix
-     *
      * @param callable(): SessionMiddleware $middlewareFactory
      *
      * @dataProvider defaultMiddlewaresProvider
@@ -73,11 +69,14 @@ final class SessionMiddlewareTest extends TestCase
 
         $cookie = $this->getCookie($response);
 
-        self::assertTrue($cookie->getSecure());
-        self::assertTrue($cookie->getHttpOnly());
-        self::assertSame('/', $cookie->getPath());
-        self::assertEquals(SameSite::lax(), $cookie->getSameSite());
-        self::assertStringStartsWith('__Secure-', $cookie->getName());
+        self::assertCookieIsSecure($cookie);
+    }
+
+    public function testProvideADefaultSecureCookieForCustomConstructors(): void
+    {
+        $cookie = SessionMiddleware::buildDefaultCookie();
+
+        self::assertCookieIsSecure($cookie);
     }
 
     /**
@@ -121,7 +120,9 @@ final class SessionMiddlewareTest extends TestCase
         $token = $this->getCookie($response)->getValue();
 
         self::assertIsString($token);
-        self::assertEquals((object) ['foo' => 'bar'], (new Parser())->parse($token)->claims()->get('session-data'));
+        $parsedToken = (new Parser(new JoseEncoder()))->parse($token);
+        self::assertInstanceOf(Plain::class, $parsedToken);
+        self::assertEquals(['foo' => 'bar'], $parsedToken->claims()->get('session-data'));
     }
 
     /**
@@ -255,13 +256,16 @@ final class SessionMiddlewareTest extends TestCase
     public function testWillIgnoreUnSignedTokens(callable $middlewareFactory): void
     {
         $middleware    = $middlewareFactory();
+        $configuration = Configuration::forUnsecuredSigner();
         $unsignedToken = (new ServerRequest())
             ->withCookieParams([
-                SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
+                SessionMiddleware::DEFAULT_COOKIE => $configuration->builder()
                     ->issuedAt(new DateTimeImmutable('-1 day'))
+                    ->canOnlyBeUsedAfter(new DateTimeImmutable('-1 day'))
                     ->expiresAt(new DateTimeImmutable('+1 day'))
                     ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
-                    ->getToken(new Signer\None(), Signer\Key\InMemory::plainText('')),
+                    ->getToken($configuration->signer(), $configuration->signingKey())
+                    ->toString(),
             ]);
 
         $this->ensureSameResponse($middleware, $unsignedToken, $this->emptyValidationMiddleware());
@@ -272,34 +276,39 @@ final class SessionMiddlewareTest extends TestCase
      *
      * @dataProvider validMiddlewaresProvider
      */
-    public function testWillNotRefreshSignedTokensWithoutIssuedAt(callable $middlewareFactory): void
+    public function testWillIgnoreSignedTokensWithoutIssuedAt(callable $middlewareFactory): void
     {
         $middleware    = $middlewareFactory();
+        $configuration = $this->getJwtConfiguration($middleware);
         $unsignedToken = (new ServerRequest())
             ->withCookieParams([
-                SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
+                SessionMiddleware::DEFAULT_COOKIE => $configuration->builder()
+                    ->canOnlyBeUsedAfter(new DateTimeImmutable('-1 day'))
                     ->expiresAt(new DateTimeImmutable('+1 day'))
                     ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
-                    ->getToken($this->getSigner($middleware), $this->getSignatureKey($middleware)),
+                    ->getToken($configuration->signer(), $configuration->signingKey())
+                    ->toString(),
             ]);
 
-        $this->ensureSameResponse($middleware, $unsignedToken);
+        $this->ensureSameResponse($middleware, $unsignedToken, $this->emptyValidationMiddleware());
     }
 
     public function testWillRefreshTokenWithIssuedAtExactlyAtTokenRefreshTimeThreshold(): void
     {
         // forcing ourselves to think of time as a mutable value:
-        $time     = time() + random_int(-100, +100);
-        $dateTime = new DateTimeImmutable('@' . $time);
+        $time = time() + random_int(-100, +100);
+        $now  = new DateTimeImmutable('@' . $time);
 
-        $clock = new FrozenClock($dateTime);
+        $clock = new FrozenClock($now);
 
-        $middleware = new SessionMiddleware(
+        $configuration = Configuration::forAsymmetricSigner(
             new Sha256(),
-            'foo',
-            'foo',
+            Signer\Key\InMemory::plainText('foo'),
+            Signer\Key\InMemory::plainText('foo')
+        );
+        $middleware    = new SessionMiddleware(
+            $configuration,
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
-            new Parser(),
             1000,
             $clock,
             100
@@ -307,11 +316,13 @@ final class SessionMiddlewareTest extends TestCase
 
         $requestWithTokenIssuedInThePast = (new ServerRequest())
             ->withCookieParams([
-                SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
+                SessionMiddleware::DEFAULT_COOKIE => $configuration->builder()
                     ->expiresAt(new DateTimeImmutable('@' . ($time + 10000)))
                     ->issuedAt(new DateTimeImmutable('@' . ($time - 100)))
+                    ->canOnlyBeUsedAfter(new DateTimeImmutable('@' . ($time - 100)))
                     ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
-                    ->getToken($this->getSigner($middleware), $this->getSignatureKey($middleware)),
+                    ->getToken($configuration->signer(), $configuration->signingKey())
+                    ->toString(),
             ]);
 
         $tokenString = $this
@@ -322,9 +333,9 @@ final class SessionMiddlewareTest extends TestCase
 
         self::assertIsString($tokenString);
 
-        $token = (new Parser())->parse($tokenString);
-
-        self::assertEquals($dateTime, $token->claims()->get(SessionMiddleware::ISSUED_AT_CLAIM), 'Token was refreshed');
+        $token = (new Parser(new JoseEncoder()))->parse($tokenString);
+        self::assertInstanceOf(Plain::class, $token);
+        self::assertEquals($now, $token->claims()->get(RegisteredClaims::ISSUED_AT), 'Token was refreshed');
     }
 
     /**
@@ -399,18 +410,27 @@ final class SessionMiddlewareTest extends TestCase
 
     public function testRejectsTokensWithInvalidSignature(): void
     {
-        $middleware = new SessionMiddleware(
-            new Sha256(),
-            'foo',
-            'bar', // wrong symmetric key (on purpose)
+        $middleware               = new SessionMiddleware(
+            Configuration::forSymmetricSigner(
+                new Sha256(),
+                Signer\Key\InMemory::plainText('foo'),
+            ),
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
-            new Parser(),
+            100,
+            new SystemClock(new DateTimeZone(date_default_timezone_get()))
+        );
+        $middlewareWithAlteredKey = new SessionMiddleware(
+            Configuration::forSymmetricSigner(
+                new Sha256(),
+                Signer\Key\InMemory::plainText('bar'),
+            ),
+            SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             100,
             new SystemClock(new DateTimeZone(date_default_timezone_get()))
         );
 
         $this->ensureSameResponse(
-            $middleware,
+            $middlewareWithAlteredKey,
             $this->requestWithResponseCookies(
                 $middleware->process(new ServerRequest(), $this->writingMiddleware())
             ),
@@ -429,11 +449,11 @@ final class SessionMiddlewareTest extends TestCase
 
         $dateTime   = new DateTimeImmutable();
         $middleware = new SessionMiddleware(
-            new Sha256(),
-            'foo',
-            'foo',
+            Configuration::forSymmetricSigner(
+                new Sha256(),
+                Signer\Key\InMemory::plainText('foo')
+            ),
             $defaultCookie,
-            new Parser(),
             123456,
             new FrozenClock($dateTime),
             123
@@ -458,17 +478,31 @@ final class SessionMiddlewareTest extends TestCase
     {
         $signer = $this->createMock(Signer::class);
 
-        $signer->method('getAlgorithmId')->willReturn('HS256');
+        $signer->expects(self::never())->method('verify');
+        $signer->method('algorithmId')->willReturn('HS256');
 
-        $currentTimeProvider = new SystemClock(new DateTimeZone(date_default_timezone_get()));
-        $setCookie           = SetCookie::create(SessionMiddleware::DEFAULT_COOKIE);
-        $middleware          = new SessionMiddleware($signer, 'foo', 'foo', $setCookie, new Parser(), 100, $currentTimeProvider);
-        $request             = (new ServerRequest())
+        $currentTimeProvider    = new SystemClock(new DateTimeZone(date_default_timezone_get()));
+        $setCookie              = SetCookie::create(SessionMiddleware::DEFAULT_COOKIE);
+        $middleware             = new SessionMiddleware(
+            Configuration::forSymmetricSigner(
+                $signer,
+                Signer\Key\InMemory::plainText('foo')
+            ),
+            $setCookie,
+            100,
+            $currentTimeProvider
+        );
+        $configurationForBuiler = Configuration::forSymmetricSigner(
+            new Sha256(),
+            Signer\Key\InMemory::plainText('foo')
+        );
+        $request                = (new ServerRequest())
             ->withCookieParams([
-                SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
-                    ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
+                SessionMiddleware::DEFAULT_COOKIE => $configurationForBuiler->builder()
                     ->issuedAt(new DateTimeImmutable())
-                    ->getToken(new Sha256(), Signer\Key\InMemory::plainText('foo')),
+                    ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
+                    ->getToken($configurationForBuiler->signer(), $configurationForBuiler->signingKey())
+                    ->toString(),
             ]);
 
         $middleware->process(
@@ -486,13 +520,14 @@ final class SessionMiddlewareTest extends TestCase
 
     public function testShouldRegenerateTokenWhenRequestHasATokenThatIsAboutToExpire(): void
     {
-        $dateTime   = new DateTimeImmutable();
-        $middleware = new SessionMiddleware(
+        $dateTime      = new DateTimeImmutable();
+        $configuration = Configuration::forSymmetricSigner(
             new Sha256(),
-            'foo',
-            'foo',
+            Signer\Key\InMemory::plainText('foo')
+        );
+        $middleware    = new SessionMiddleware(
+            $configuration,
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
-            new Parser(),
             1000,
             new FrozenClock($dateTime),
             300
@@ -500,11 +535,13 @@ final class SessionMiddlewareTest extends TestCase
 
         $expiringToken = (new ServerRequest())
             ->withCookieParams([
-                SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
+                SessionMiddleware::DEFAULT_COOKIE => $configuration->builder()
                     ->issuedAt(new DateTimeImmutable('-800 second'))
+                    ->canOnlyBeUsedAfter(new DateTimeImmutable('-800 second'))
                     ->expiresAt(new DateTimeImmutable('+200 second'))
                     ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
-                    ->getToken($this->getSigner($middleware), $this->getSignatureKey($middleware)),
+                    ->getToken($configuration->signer(), $configuration->signingKey())
+                    ->toString(),
             ]);
 
         $initialResponse = new Response();
@@ -523,12 +560,13 @@ final class SessionMiddlewareTest extends TestCase
 
     public function testShouldNotRegenerateTokenWhenRequestHasATokenThatIsFarFromExpiration(): void
     {
-        $middleware = new SessionMiddleware(
+        $configuration = Configuration::forSymmetricSigner(
             new Sha256(),
-            'foo',
-            'foo',
+            Signer\Key\InMemory::plainText('foo')
+        );
+        $middleware    = new SessionMiddleware(
+            $configuration,
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
-            new Parser(),
             1000,
             new SystemClock(new DateTimeZone(date_default_timezone_get())),
             300
@@ -536,11 +574,13 @@ final class SessionMiddlewareTest extends TestCase
 
         $validToken = (new ServerRequest())
             ->withCookieParams([
-                SessionMiddleware::DEFAULT_COOKIE => (string) (new Builder())
+                SessionMiddleware::DEFAULT_COOKIE => $configuration->builder()
                     ->issuedAt(new DateTimeImmutable('-100 second'))
+                    ->canOnlyBeUsedAfter(new DateTimeImmutable('-100 second'))
                     ->expiresAt(new DateTimeImmutable('+900 second'))
                     ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
-                    ->getToken($this->getSigner($middleware), $this->getSignatureKey($middleware)),
+                    ->getToken($configuration->signer(), $configuration->signingKey())
+                    ->toString(),
             ]);
 
         $this->ensureSameResponse($middleware, $validToken);
@@ -555,11 +595,11 @@ final class SessionMiddlewareTest extends TestCase
             'from-constructor' => [
                 static function (): SessionMiddleware {
                     return new SessionMiddleware(
-                        new Sha256(),
-                        'foo',
-                        'foo',
+                        Configuration::forSymmetricSigner(
+                            new Signer\Hmac\Sha512(),
+                            Signer\Key\InMemory::plainText('not relevant')
+                        ),
                         SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
-                        new Parser(),
                         100,
                         new SystemClock(new DateTimeZone(date_default_timezone_get()))
                     );
@@ -576,14 +616,17 @@ final class SessionMiddlewareTest extends TestCase
         return [
             'from-symmetric' => [
                 static function (): SessionMiddleware {
-                    return SessionMiddleware::fromSymmetricKeyDefaults('not relevant', 100);
+                    return SessionMiddleware::fromSymmetricKeyDefaults(
+                        Signer\Key\InMemory::plainText('not relevant'),
+                        100
+                    );
                 },
             ],
             'from-asymmetric' => [
                 static function (): SessionMiddleware {
-                    return SessionMiddleware::fromAsymmetricKeyDefaults(
-                        self::privateKey(),
-                        self::publicKey(),
+                    return SessionMiddleware::fromRsaAsymmetricKeyDefaults(
+                        Signer\Key\LocalFileReference::file(__DIR__ . '/../../keys/private_key.pem'),
+                        Signer\Key\LocalFileReference::file(__DIR__ . '/../../keys/public_key.pem'),
                         200
                     );
                 },
@@ -597,12 +640,13 @@ final class SessionMiddlewareTest extends TestCase
 
         assert($cookie instanceof MutableBadCookie);
 
-        $middleware = new SessionMiddleware(
+        $configuration = Configuration::forSymmetricSigner(
             new Sha256(),
-            'foo',
-            'foo',
+            Signer\Key\InMemory::plainText('foo')
+        );
+        $middleware    = new SessionMiddleware(
+            $configuration,
             $cookie,
-            new Parser(),
             1000,
             new SystemClock(new DateTimeZone(date_default_timezone_get()))
         );
@@ -669,11 +713,15 @@ final class SessionMiddlewareTest extends TestCase
 
     private function createToken(SessionMiddleware $middleware, DateTimeImmutable $issuedAt, DateTimeImmutable $expiration): string
     {
-        return (string) (new Builder())
+        $config = $this->getJwtConfiguration($middleware);
+
+        return $config->builder()
             ->issuedAt($issuedAt)
+            ->canOnlyBeUsedAfter($issuedAt)
             ->expiresAt($expiration)
             ->withClaim(SessionMiddleware::SESSION_CLAIM, DefaultSessionData::fromTokenData(['foo' => 'bar']))
-            ->getToken($this->getSigner($middleware), $this->getSignatureKey($middleware));
+            ->getToken($config->signer(), $config->signingKey())
+            ->toString();
     }
 
     /** @param mixed $claim */
@@ -683,11 +731,15 @@ final class SessionMiddlewareTest extends TestCase
         DateTimeImmutable $expiration,
         $claim
     ): string {
-        return (string) (new Builder())
+        $config = $this->getJwtConfiguration($middleware);
+
+        return $config->builder()
             ->issuedAt($issuedAt)
+            ->canOnlyBeUsedAfter($issuedAt)
             ->expiresAt($expiration)
             ->withClaim(SessionMiddleware::SESSION_CLAIM, $claim)
-            ->getToken($this->getSigner($middleware), $this->getSignatureKey($middleware));
+            ->getToken($config->signer(), $config->signingKey())
+            ->toString();
     }
 
     private function emptyValidationMiddleware(): RequestHandlerInterface
@@ -745,47 +797,32 @@ final class SessionMiddlewareTest extends TestCase
         return FigResponseCookies::get($response, $name);
     }
 
-    private function getSigner(SessionMiddleware $middleware): Signer
+    private function getJwtConfiguration(SessionMiddleware $middleware): Configuration
     {
-        $property = new ReflectionProperty(SessionMiddleware::class, 'signer');
+        $property = new ReflectionProperty(SessionMiddleware::class, 'config');
 
         $property->setAccessible(true);
 
-        $signer = $property->getValue($middleware);
+        $config = $property->getValue($middleware);
 
-        assert($signer instanceof Signer);
+        assert($config instanceof Configuration);
 
-        return $signer;
+        return $config;
     }
 
-    private function getSignatureKey(SessionMiddleware $middleware): Signer\Key\InMemory
+    /**
+     * @see https://tools.ietf.org/html/rfc6265#section-4.1.2.5 for Secure flag
+     * @see https://tools.ietf.org/html/rfc6265#section-4.1.2.6 for HttpOnly flag
+     * @see https://github.com/psr7-sessions/storageless/pull/46 for / path
+     * @see https://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site for SameSite flag
+     * @see https://tools.ietf.org/html/draft-ietf-httpbis-cookie-prefixes for __Secure- prefix
+     */
+    private static function assertCookieIsSecure(SetCookie $cookie): void
     {
-        $property = new ReflectionProperty(SessionMiddleware::class, 'signatureKey');
-
-        $property->setAccessible(true);
-
-        $key = $property->getValue($middleware);
-
-        assert($key instanceof Signer\Key\InMemory);
-
-        return $key;
-    }
-
-    private static function privateKey(): string
-    {
-        $key = file_get_contents(__DIR__ . '/../../keys/private_key.pem');
-
-        self::assertIsString($key);
-
-        return $key;
-    }
-
-    private static function publicKey(): string
-    {
-        $key = file_get_contents(__DIR__ . '/../../keys/public_key.pem');
-
-        self::assertIsString($key);
-
-        return $key;
+        self::assertTrue($cookie->getSecure());
+        self::assertTrue($cookie->getHttpOnly());
+        self::assertSame('/', $cookie->getPath());
+        self::assertEquals(SameSite::lax(), $cookie->getSameSite());
+        self::assertStringStartsWith('__Secure-', $cookie->getName());
     }
 }

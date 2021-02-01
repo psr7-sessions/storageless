@@ -9,11 +9,12 @@ You can set up symmetric key based signatures via the
 `PSR7Sessions::fromSymmetricKeyDefaults` named constructor:
 
 ```php
+use Lcobucci\JWT\Signer\Key\InMemory;
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
 
 $sessionMiddleware = SessionMiddleware::fromSymmetricKeyDefaults(
-    'OpcMuKmoxkhzW0Y1iESpjWwL/D3UBdDauJOe742BJ5Q=', // replace this with a key of your own (see below)
-    1200                                            // session lifetime, in seconds
+    InMemory::base64Encoded('OpcMuKmoxkhzW0Y1iESpjWwL/D3UBdDauJOe742BJ5Q='), // replace this with a key of your own (see below)
+    1200 // session lifetime, in seconds
 );
 ```
 
@@ -28,11 +29,12 @@ You can set up symmetric key based signatures via the
 `PSR7Sessions::fromAsymmetricKeyDefaults` named constructor:
 
 ```php
+use Lcobucci\JWT\Signer\Key\LocalFileReference;
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
 
-$sessionMiddleware = SessionMiddleware::fromAsymmetricKeyDefaults(
-    file_get_contents('/path/to/private_key.pem'),
-    file_get_contents('/path/to/public_key.pem'),
+$sessionMiddleware = SessionMiddleware::fromRsaAsymmetricKeyDefaults(
+    LocalFileReference::file('/path/to/private_key.pem'),
+    LocalFileReference::file('/path/to/public_key.pem'),
     1200 // session lifetime, in seconds
 );
 ```
@@ -59,28 +61,30 @@ you need to require them as well, since with this sort of setup you are explicit
 those components:
 
 ```sh
-composer require "lcobucci/jwt:~3.1"
-composer require "lcobucci/clock:^1.1.0"
-composer require "dflydev/fig-cookies:^1.0.1"
+composer require "lcobucci/jwt:^4.1"
+composer require "lcobucci/clock:^2.0"
+composer require "dflydev/fig-cookies:^3.0"
 ```
 
 If you want to fine-tune more settings of `PSR7Session`, then simply use the
 `PSR7Sessions\Storageless\Http\SessionMiddleware` constructor.
 
 ```php
+use Lcobucci\Clock\SystemClock;
+use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Signer;
+use Lcobucci\JWT\Signer\Key\InMemory;
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
 
-// a blueprint of the cookie that `PSR7Session` should use to generate
-// and read cookies, be careful to secure it, see defaults below:
-$cookieBlueprint   = \Dflydev\FigCookies\SetCookie::create('cookie-name');
 $sessionMiddleware = new SessionMiddleware(
-    $signer, // an \Lcobucci\JWT\Signer
-    'signature key contents',
-    'verification key contents',
-    $cookieBlueprint,
-    new \Lcobucci\JWT\Parser(),
+    Configuration::forAsymmetricSigner(
+        new Signer\Eddsa(),
+        InMemory::base64Encoded('dv6B60wqqFVDpt8+TnW7T6NtRpVQjiQP/PoqonDWBZkVboQttTfzXux+WnZeacJDcklMgyKFHVFy1C7tVDvcWA=='),
+        InMemory::base64Encoded('FW6ELbU3817sflp2XmnCQ3JJTIMihR1RctQu7VQ73Fg=')
+    ),
+    SessionMiddleware::buildDefaultCookie(),
     1200, // session lifetime, in seconds
-    new \Lcobucci\Clock\SystemClock(new DateTimeZone(date_default_timezone_get()),
+    SystemClock::fromSystemTimezone(),
     60    // session automatic refresh time, in seconds
 );
 ```
@@ -109,18 +113,25 @@ When running applications locally on `http://localhost`, some settings must be c
 **The example below is completely insecure. It should only be used for local development.**
 
 ```php
+use Dflydev\FigCookies\SetCookie;
+use Lcobucci\Clock\SystemClock;
+use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Signer;
+use Lcobucci\JWT\Signer\Key\InMemory;
+use PSR7Sessions\Storageless\Http\SessionMiddleware;
+
 $key = '<random key>';
 return new SessionMiddleware(
-    new Sha256,
-    $key,
-    $key,
+    Configuration::forSymmetricSigner(
+        new Signer\Hmac\Sha256(),
+        InMemory::plainText($key)
+    ),
     // Override the default `__Secure-slsession` which only works on HTTPS
     SetCookie::create('slsession')
         // Disable mandatory HTTPS
         ->withSecure(false)
         ->withHttpOnly(true)
         ->withPath('/'),
-    new Parser,
     1200, // session lifetime, in seconds
     SystemClock::fromUTC(),
 );
