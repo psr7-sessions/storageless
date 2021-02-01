@@ -4,31 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "content-hash": "fc26dc877be86c4c3ceacb8760cd7ea0",
-=======
-    "content-hash": "e8afaad6161b0e62b7d7871e2daa8872",
->>>>>>> 9acd587... Tests pass
-=======
-    "content-hash": "dc473e2be78b8b45e838b48abeff68a4",
->>>>>>> c6185b3... Update composer.lock
-=======
-    "content-hash": "960f36f3432e76ff12a4b537faf6d46e",
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
-    "content-hash": "fe0fc7cbf74f73825e76e76c5692db73",
->>>>>>> 23d361c... Add PHP 8 support
-=======
-    "content-hash": "616d6c4ac012262810df12aa3c722e62",
->>>>>>> 2a40071... Bump PSALM & Infection
-=======
-    "content-hash": "cec0912c746f1747872d7490ca1e21aa",
->>>>>>> 10b50f9... Run roave/backward-compatibility-check as separate tool
+    "content-hash": "13ccb747a6f929ee2c4bdc059c04e278",
     "packages": [
         {
             "name": "dflydev/fig-cookies",
@@ -88,27 +64,9 @@
             ],
             "support": {
                 "issues": "https://github.com/dflydev/dflydev-fig-cookies/issues",
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-                "source": "https://github.com/dflydev/dflydev-fig-cookies/tree/v2.0.3"
-            },
-            "time": "2020-12-07T16:40:59+00:00"
-=======
-                "source": "https://github.com/dflydev/dflydev-fig-cookies/tree/v2.0.1"
-            },
-            "time": "2020-01-02T16:13:22+00:00"
->>>>>>> 9acd587... Tests pass
-=======
-                "source": "https://github.com/dflydev/dflydev-fig-cookies/tree/v2.0.3"
-            },
-            "time": "2020-12-07T16:40:59+00:00"
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
                 "source": "https://github.com/dflydev/dflydev-fig-cookies/tree/v3.0.0"
             },
             "time": "2021-01-22T02:53:56+00:00"
->>>>>>> 23d361c... Add PHP 8 support
         },
         {
             "name": "lcobucci/clock",
@@ -173,27 +131,7 @@
         },
         {
             "name": "lcobucci/jwt",
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-            "version": "3.4.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/lcobucci/jwt.git",
-                "reference": "cd83b5421df3dbbbc66bd07a5b970c9efb6371b9"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/lcobucci/jwt/zipball/cd83b5421df3dbbbc66bd07a5b970c9efb6371b9",
-                "reference": "cd83b5421df3dbbbc66bd07a5b970c9efb6371b9",
-=======
-            "version": "4.0.0",
-=======
-            "version": "4.1.x-dev",
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
             "version": "4.1.0",
->>>>>>> 23d361c... Add PHP 8 support
             "source": {
                 "type": "git",
                 "url": "https://github.com/lcobucci/jwt.git",
@@ -201,19 +139,8 @@
             },
             "dist": {
                 "type": "zip",
-<<<<<<< HEAD
-<<<<<<< HEAD
-                "url": "https://api.github.com/repos/lcobucci/jwt/zipball/6d8665ccd924dc076a9b65d1ea8abe21d68f6958",
-                "reference": "6d8665ccd924dc076a9b65d1ea8abe21d68f6958",
->>>>>>> 9acd587... Tests pass
-=======
-                "url": "https://api.github.com/repos/lcobucci/jwt/zipball/43cb7a704c50abd37942651825c6195cf12b5278",
-                "reference": "43cb7a704c50abd37942651825c6195cf12b5278",
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
                 "url": "https://api.github.com/repos/lcobucci/jwt/zipball/2f533837091d0b76a89a059e7ed2b2732b2f459e",
                 "reference": "2f533837091d0b76a89a059e7ed2b2732b2f459e",
->>>>>>> 23d361c... Add PHP 8 support
                 "shasum": ""
             },
             "require": {
@@ -238,26 +165,11 @@
                 "phpunit/php-invoker": "^3.1",
                 "phpunit/phpunit": "^9.5"
             },
-<<<<<<< HEAD
-<<<<<<< HEAD
-            "suggest": {
-                "lcobucci/clock": "*"
-            },
-=======
-            "default-branch": true,
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
->>>>>>> 23d361c... Add PHP 8 support
             "type": "library",
             "autoload": {
                 "psr-4": {
                     "Lcobucci\\JWT\\": "src"
-                },
-                "files": [
-                    "compat/class-aliases.php",
-                    "compat/json-exception-polyfill.php",
-                    "compat/lcobucci-clock-polyfill.php"
-                ]
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -277,19 +189,7 @@
             ],
             "support": {
                 "issues": "https://github.com/lcobucci/jwt/issues",
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-                "source": "https://github.com/lcobucci/jwt/tree/3.4.3"
-=======
-                "source": "https://github.com/lcobucci/jwt/tree/4.0.0"
->>>>>>> 9acd587... Tests pass
-=======
-                "source": "https://github.com/lcobucci/jwt/tree/4.1.x"
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
                 "source": "https://github.com/lcobucci/jwt/tree/4.1.0"
->>>>>>> 23d361c... Add PHP 8 support
             },
             "funding": [
                 {
@@ -301,19 +201,7 @@
                     "type": "patreon"
                 }
             ],
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-            "time": "2021-01-27T23:38:30+00:00"
-=======
-            "time": "2020-11-25T02:06:12+00:00"
->>>>>>> 9acd587... Tests pass
-=======
-            "time": "2020-12-17T09:37:00+00:00"
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
             "time": "2021-01-28T00:57:26+00:00"
->>>>>>> 23d361c... Add PHP 8 support
         },
         {
             "name": "psr/http-message",
@@ -486,8 +374,6 @@
     "packages-dev": [
         {
             "name": "amphp/amp",
-<<<<<<< HEAD
-<<<<<<< HEAD
             "version": "v2.5.2",
             "source": {
                 "type": "git",
@@ -498,26 +384,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/amphp/amp/zipball/efca2b32a7580087adb8aabbff6be1dc1bb924a9",
                 "reference": "efca2b32a7580087adb8aabbff6be1dc1bb924a9",
-=======
-            "version": "v2.5.1",
-=======
-            "version": "v2.5.2",
->>>>>>> 23d361c... Add PHP 8 support
-            "source": {
-                "type": "git",
-                "url": "https://github.com/amphp/amp.git",
-                "reference": "efca2b32a7580087adb8aabbff6be1dc1bb924a9"
-            },
-            "dist": {
-                "type": "zip",
-<<<<<<< HEAD
-                "url": "https://api.github.com/repos/amphp/amp/zipball/ecdc3c476b3ccff02f8e5d5bcc04f7ccfd18751c",
-                "reference": "ecdc3c476b3ccff02f8e5d5bcc04f7ccfd18751c",
->>>>>>> 9acd587... Tests pass
-=======
-                "url": "https://api.github.com/repos/amphp/amp/zipball/efca2b32a7580087adb8aabbff6be1dc1bb924a9",
-                "reference": "efca2b32a7580087adb8aabbff6be1dc1bb924a9",
->>>>>>> 23d361c... Add PHP 8 support
                 "shasum": ""
             },
             "require": {
@@ -585,15 +451,7 @@
             "support": {
                 "irc": "irc://irc.freenode.org/amphp",
                 "issues": "https://github.com/amphp/amp/issues",
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "source": "https://github.com/amphp/amp/tree/v2.5.2"
-=======
-                "source": "https://github.com/amphp/amp/tree/v2.5.1"
->>>>>>> 9acd587... Tests pass
-=======
-                "source": "https://github.com/amphp/amp/tree/v2.5.2"
->>>>>>> 23d361c... Add PHP 8 support
             },
             "funding": [
                 {
@@ -601,15 +459,7 @@
                     "type": "github"
                 }
             ],
-<<<<<<< HEAD
-<<<<<<< HEAD
             "time": "2021-01-10T17:06:37+00:00"
-=======
-            "time": "2020-11-03T16:23:45+00:00"
->>>>>>> 9acd587... Tests pass
-=======
-            "time": "2021-01-10T17:06:37+00:00"
->>>>>>> 23d361c... Add PHP 8 support
         },
         {
             "name": "amphp/byte-stream",
@@ -683,334 +533,6 @@
             "time": "2020-06-29T18:35:05+00:00"
         },
         {
-<<<<<<< HEAD
-            "name": "beberlei/assert",
-            "version": "v3.3.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/beberlei/assert.git",
-                "reference": "5367e3895976b49704ae671f75bc5f0ba1b986ab"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/beberlei/assert/zipball/5367e3895976b49704ae671f75bc5f0ba1b986ab",
-                "reference": "5367e3895976b49704ae671f75bc5f0ba1b986ab",
-                "shasum": ""
-            },
-            "require": {
-                "ext-ctype": "*",
-                "ext-intl": "*",
-                "ext-json": "*",
-                "ext-mbstring": "*",
-                "ext-simplexml": "*",
-                "php": "^7.0 || ^8.0"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "*",
-                "phpstan/phpstan": "*",
-                "phpunit/phpunit": ">=6.0.0",
-                "yoast/phpunit-polyfills": "^0.1.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Assert\\": "lib/Assert"
-                },
-                "files": [
-                    "lib/Assert/functions.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-2-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Benjamin Eberlei",
-                    "email": "kontakt@beberlei.de",
-                    "role": "Lead Developer"
-                },
-                {
-                    "name": "Richard Quadling",
-                    "email": "rquadling@gmail.com",
-                    "role": "Collaborator"
-                }
-            ],
-            "description": "Thin assertion library for input validation in business models.",
-            "keywords": [
-                "assert",
-                "assertion",
-                "validation"
-            ],
-            "support": {
-                "issues": "https://github.com/beberlei/assert/issues",
-                "source": "https://github.com/beberlei/assert/tree/v3.3.0"
-            },
-            "time": "2020-11-13T20:02:54+00:00"
-        },
-        {
-            "name": "composer/ca-bundle",
-<<<<<<< HEAD
-<<<<<<< HEAD
-            "version": "1.2.9",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/composer/ca-bundle.git",
-                "reference": "78a0e288fdcebf92aa2318a8d3656168da6ac1a5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/78a0e288fdcebf92aa2318a8d3656168da6ac1a5",
-                "reference": "78a0e288fdcebf92aa2318a8d3656168da6ac1a5",
-=======
-            "version": "1.2.8",
-=======
-            "version": "1.2.9",
->>>>>>> 23d361c... Add PHP 8 support
-            "source": {
-                "type": "git",
-                "url": "https://github.com/composer/ca-bundle.git",
-                "reference": "78a0e288fdcebf92aa2318a8d3656168da6ac1a5"
-            },
-            "dist": {
-                "type": "zip",
-<<<<<<< HEAD
-                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/8a7ecad675253e4654ea05505233285377405215",
-                "reference": "8a7ecad675253e4654ea05505233285377405215",
->>>>>>> 9acd587... Tests pass
-=======
-                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/78a0e288fdcebf92aa2318a8d3656168da6ac1a5",
-                "reference": "78a0e288fdcebf92aa2318a8d3656168da6ac1a5",
->>>>>>> 23d361c... Add PHP 8 support
-                "shasum": ""
-            },
-            "require": {
-                "ext-openssl": "*",
-                "ext-pcre": "*",
-                "php": "^5.3.2 || ^7.0 || ^8.0"
-            },
-            "require-dev": {
-                "phpstan/phpstan": "^0.12.55",
-                "psr/log": "^1.0",
-                "symfony/phpunit-bridge": "^4.2 || ^5",
-                "symfony/process": "^2.5 || ^3.0 || ^4.0 || ^5.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-main": "1.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Composer\\CaBundle\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jordi Boggiano",
-                    "email": "j.boggiano@seld.be",
-                    "homepage": "http://seld.be"
-                }
-            ],
-            "description": "Lets you find a path to the system CA bundle, and includes a fallback to the Mozilla CA bundle.",
-            "keywords": [
-                "cabundle",
-                "cacert",
-                "certificate",
-                "ssl",
-                "tls"
-            ],
-            "support": {
-                "irc": "irc://irc.freenode.org/composer",
-                "issues": "https://github.com/composer/ca-bundle/issues",
-<<<<<<< HEAD
-<<<<<<< HEAD
-                "source": "https://github.com/composer/ca-bundle/tree/1.2.9"
-=======
-                "source": "https://github.com/composer/ca-bundle/tree/1.2.8"
->>>>>>> 9acd587... Tests pass
-=======
-                "source": "https://github.com/composer/ca-bundle/tree/1.2.9"
->>>>>>> 23d361c... Add PHP 8 support
-            },
-            "funding": [
-                {
-                    "url": "https://packagist.com",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/composer",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/composer/composer",
-                    "type": "tidelift"
-                }
-            ],
-<<<<<<< HEAD
-<<<<<<< HEAD
-            "time": "2021-01-12T12:10:35+00:00"
-        },
-        {
-            "name": "composer/composer",
-            "version": "1.10.20",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/composer/composer.git",
-                "reference": "e55d297525f0ecc805c813a0f63a40114fd670f6"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/composer/composer/zipball/e55d297525f0ecc805c813a0f63a40114fd670f6",
-                "reference": "e55d297525f0ecc805c813a0f63a40114fd670f6",
-=======
-            "time": "2020-08-23T12:54:47+00:00"
-=======
-            "time": "2021-01-12T12:10:35+00:00"
->>>>>>> 23d361c... Add PHP 8 support
-        },
-        {
-            "name": "composer/composer",
-            "version": "1.10.20",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/composer/composer.git",
-                "reference": "e55d297525f0ecc805c813a0f63a40114fd670f6"
-            },
-            "dist": {
-                "type": "zip",
-<<<<<<< HEAD
-<<<<<<< HEAD
-                "url": "https://api.github.com/repos/composer/composer/zipball/09d42e18394d8594be24e37923031c4b7442a1cb",
-                "reference": "09d42e18394d8594be24e37923031c4b7442a1cb",
->>>>>>> 9acd587... Tests pass
-=======
-                "url": "https://api.github.com/repos/composer/composer/zipball/196601d50c08c3fae389a417a7689367fcf37cef",
-                "reference": "196601d50c08c3fae389a417a7689367fcf37cef",
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
-                "url": "https://api.github.com/repos/composer/composer/zipball/e55d297525f0ecc805c813a0f63a40114fd670f6",
-                "reference": "e55d297525f0ecc805c813a0f63a40114fd670f6",
->>>>>>> 23d361c... Add PHP 8 support
-                "shasum": ""
-            },
-            "require": {
-                "composer/ca-bundle": "^1.0",
-                "composer/semver": "^1.0",
-                "composer/spdx-licenses": "^1.2",
-                "composer/xdebug-handler": "^1.1",
-                "justinrainbow/json-schema": "^5.2.10",
-                "php": "^5.3.2 || ^7.0 || ^8.0",
-                "psr/log": "^1.0",
-                "seld/jsonlint": "^1.4",
-                "seld/phar-utils": "^1.0",
-                "symfony/console": "^2.7 || ^3.0 || ^4.0 || ^5.0",
-                "symfony/filesystem": "^2.7 || ^3.0 || ^4.0 || ^5.0",
-                "symfony/finder": "^2.7 || ^3.0 || ^4.0 || ^5.0",
-                "symfony/process": "^2.7 || ^3.0 || ^4.0 || ^5.0"
-            },
-            "conflict": {
-                "symfony/console": "2.8.38"
-            },
-            "require-dev": {
-                "phpspec/prophecy": "^1.10",
-                "symfony/phpunit-bridge": "^4.2"
-            },
-            "suggest": {
-                "ext-openssl": "Enabling the openssl extension allows you to access https URLs for repositories and packages",
-                "ext-zip": "Enabling the zip extension allows you to unzip archives",
-                "ext-zlib": "Allow gzip compression of HTTP requests"
-            },
-            "bin": [
-                "bin/composer"
-            ],
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.10-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Composer\\": "src/Composer"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Nils Adermann",
-                    "email": "naderman@naderman.de",
-                    "homepage": "http://www.naderman.de"
-                },
-                {
-                    "name": "Jordi Boggiano",
-                    "email": "j.boggiano@seld.be",
-                    "homepage": "http://seld.be"
-                }
-            ],
-            "description": "Composer helps you declare, manage and install dependencies of PHP projects. It ensures you have the right stack everywhere.",
-            "homepage": "https://getcomposer.org/",
-            "keywords": [
-                "autoload",
-                "dependency",
-                "package"
-            ],
-            "support": {
-                "irc": "irc://irc.freenode.org/composer",
-                "issues": "https://github.com/composer/composer/issues",
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-                "source": "https://github.com/composer/composer/tree/1.10.20"
-=======
-                "source": "https://github.com/composer/composer/tree/1.10.17"
->>>>>>> 9acd587... Tests pass
-=======
-                "source": "https://github.com/composer/composer/tree/1.10.19"
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
-                "source": "https://github.com/composer/composer/tree/1.10.20"
->>>>>>> 23d361c... Add PHP 8 support
-            },
-            "funding": [
-                {
-                    "url": "https://packagist.com",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/composer",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/composer/composer",
-                    "type": "tidelift"
-                }
-            ],
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-            "time": "2021-01-27T14:41:06+00:00"
-=======
-            "time": "2020-10-30T21:31:58+00:00"
->>>>>>> 9acd587... Tests pass
-=======
-            "time": "2020-12-04T08:14:16+00:00"
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
-            "time": "2021-01-27T14:41:06+00:00"
->>>>>>> 23d361c... Add PHP 8 support
-        },
-        {
-=======
->>>>>>> 10b50f9... Run roave/backward-compatibility-check as separate tool
             "name": "composer/package-versions-deprecated",
             "version": "1.11.99.1",
             "source": {
@@ -1146,19 +668,7 @@
             "support": {
                 "irc": "irc://irc.freenode.org/composer",
                 "issues": "https://github.com/composer/semver/issues",
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-                "source": "https://github.com/composer/semver/tree/1.7.2"
-=======
-                "source": "https://github.com/composer/semver/tree/1.7.1"
->>>>>>> 9acd587... Tests pass
-=======
-                "source": "https://github.com/composer/semver/tree/1.7.2"
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
                 "source": "https://github.com/composer/semver/tree/3.2.4"
->>>>>>> 10b50f9... Run roave/backward-compatibility-check as separate tool
             },
             "funding": [
                 {
@@ -1174,98 +684,7 @@
                     "type": "tidelift"
                 }
             ],
-<<<<<<< HEAD
-            "time": "2020-12-03T15:47:16+00:00"
-        },
-        {
-            "name": "composer/spdx-licenses",
-            "version": "1.5.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/composer/spdx-licenses.git",
-                "reference": "de30328a7af8680efdc03e396aad24befd513200"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/composer/spdx-licenses/zipball/de30328a7af8680efdc03e396aad24befd513200",
-                "reference": "de30328a7af8680efdc03e396aad24befd513200",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^5.3.2 || ^7.0 || ^8.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^4.8.35 || ^5.7 || 6.5 - 7"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-main": "1.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Composer\\Spdx\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Nils Adermann",
-                    "email": "naderman@naderman.de",
-                    "homepage": "http://www.naderman.de"
-                },
-                {
-                    "name": "Jordi Boggiano",
-                    "email": "j.boggiano@seld.be",
-                    "homepage": "http://seld.be"
-                },
-                {
-                    "name": "Rob Bast",
-                    "email": "rob.bast@gmail.com",
-                    "homepage": "http://robbast.nl"
-                }
-            ],
-            "description": "SPDX licenses list and validation library.",
-            "keywords": [
-                "license",
-                "spdx",
-                "validator"
-            ],
-            "support": {
-                "irc": "irc://irc.freenode.org/composer",
-                "issues": "https://github.com/composer/spdx-licenses/issues",
-<<<<<<< HEAD
-<<<<<<< HEAD
-                "source": "https://github.com/composer/spdx-licenses/tree/1.5.5"
-=======
-                "source": "https://github.com/composer/spdx-licenses/tree/1.5.4"
->>>>>>> 9acd587... Tests pass
-=======
-                "source": "https://github.com/composer/spdx-licenses/tree/1.5.5"
->>>>>>> df41794... Change factory methods signature to require Key instance
-            },
-            "funding": [
-                {
-                    "url": "https://packagist.com",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/composer",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/composer/composer",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2020-12-03T16:04:16+00:00"
-=======
             "time": "2020-11-13T08:59:24+00:00"
->>>>>>> 10b50f9... Run roave/backward-compatibility-check as separate tool
         },
         {
             "name": "composer/xdebug-handler",
@@ -1398,52 +817,7 @@
                 "issues": "https://github.com/dealerdirect/phpcodesniffer-composer-installer/issues",
                 "source": "https://github.com/dealerdirect/phpcodesniffer-composer-installer"
             },
-<<<<<<< HEAD
-<<<<<<< HEAD
             "time": "2020-12-07T18:04:37+00:00"
-        },
-        {
-            "name": "dnoegel/php-xdg-base-dir",
-            "version": "v0.1.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/dnoegel/php-xdg-base-dir.git",
-                "reference": "8f8a6e48c5ecb0f991c2fdcf5f154a47d85f9ffd"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/dnoegel/php-xdg-base-dir/zipball/8f8a6e48c5ecb0f991c2fdcf5f154a47d85f9ffd",
-                "reference": "8f8a6e48c5ecb0f991c2fdcf5f154a47d85f9ffd",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.2"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "~7.0|~6.0|~5.0|~4.8.35"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "XdgBaseDir\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "implementation of xdg base directory specification for php",
-            "support": {
-                "issues": "https://github.com/dnoegel/php-xdg-base-dir/issues",
-                "source": "https://github.com/dnoegel/php-xdg-base-dir/tree/v0.1.1"
-            },
-            "time": "2019-12-04T15:06:13+00:00"
-=======
-            "time": "2020-06-25T14:57:39+00:00"
->>>>>>> 9acd587... Tests pass
-=======
-            "time": "2020-12-07T18:04:37+00:00"
->>>>>>> df41794... Change factory methods signature to require Key instance
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -1647,21 +1021,9 @@
             "description": "A more advanced JSONRPC implementation",
             "support": {
                 "issues": "https://github.com/felixfbecker/php-advanced-json-rpc/issues",
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "source": "https://github.com/felixfbecker/php-advanced-json-rpc/tree/v3.2.0"
             },
             "time": "2021-01-10T17:48:47+00:00"
-=======
-                "source": "https://github.com/felixfbecker/php-advanced-json-rpc/tree/master"
-            },
-            "time": "2020-03-11T15:21:41+00:00"
->>>>>>> 9acd587... Tests pass
-=======
-                "source": "https://github.com/felixfbecker/php-advanced-json-rpc/tree/v3.2.0"
-            },
-            "time": "2021-01-10T17:48:47+00:00"
->>>>>>> 23d361c... Add PHP 8 support
         },
         {
             "name": "felixfbecker/language-server-protocol",
@@ -1868,8 +1230,6 @@
         },
         {
             "name": "infection/infection",
-<<<<<<< HEAD
-<<<<<<< HEAD
             "version": "0.21.0",
             "source": {
                 "type": "git",
@@ -1880,26 +1240,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/infection/infection/zipball/dfacb1e3d9def7fd34c6fb8df4d4bd098815dc82",
                 "reference": "dfacb1e3d9def7fd34c6fb8df4d4bd098815dc82",
-=======
-            "version": "0.20.2",
-=======
-            "version": "0.21.0",
->>>>>>> 2a40071... Bump PSALM & Infection
-            "source": {
-                "type": "git",
-                "url": "https://github.com/infection/infection.git",
-                "reference": "dfacb1e3d9def7fd34c6fb8df4d4bd098815dc82"
-            },
-            "dist": {
-                "type": "zip",
-<<<<<<< HEAD
-                "url": "https://api.github.com/repos/infection/infection/zipball/6035c1566af6a5a8d833a276351e5e18ed412305",
-                "reference": "6035c1566af6a5a8d833a276351e5e18ed412305",
->>>>>>> 9acd587... Tests pass
-=======
-                "url": "https://api.github.com/repos/infection/infection/zipball/dfacb1e3d9def7fd34c6fb8df4d4bd098815dc82",
-                "reference": "dfacb1e3d9def7fd34c6fb8df4d4bd098815dc82",
->>>>>>> 2a40071... Bump PSALM & Infection
                 "shasum": ""
             },
             "require": {
@@ -1911,29 +1251,12 @@
                 "infection/extension-installer": "^0.1.0",
                 "infection/include-interceptor": "^0.2.4",
                 "justinrainbow/json-schema": "^5.2",
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "nikic/php-parser": "^4.10.3",
                 "ocramius/package-versions": "^1.2 || ^2.0",
                 "ondram/ci-detector": "^3.3.0",
                 "php": "^7.4 || ^8.0",
                 "sanmai/later": "^0.1.1",
                 "sanmai/pipeline": "^5.1",
-=======
-                "nikic/php-parser": "^4.10.2",
-                "ocramius/package-versions": "^1.2 || ^2.0",
-                "ondram/ci-detector": "^3.3.0",
-                "php": "^7.4 || ^8.0",
-                "sanmai/pipeline": "^3.1 || ^5.0",
->>>>>>> 9acd587... Tests pass
-=======
-                "nikic/php-parser": "^4.10.3",
-                "ocramius/package-versions": "^1.2 || ^2.0",
-                "ondram/ci-detector": "^3.3.0",
-                "php": "^7.4 || ^8.0",
-                "sanmai/later": "^0.1.1",
-                "sanmai/pipeline": "^5.1",
->>>>>>> 2a40071... Bump PSALM & Infection
                 "sebastian/diff": "^3.0.2 || ^4.0",
                 "seld/jsonlint": "^1.7",
                 "symfony/console": "^3.4.29 || ^4.1.19 || ^5.0",
@@ -1958,15 +1281,7 @@
                 "phpstan/phpstan-strict-rules": "^0.12.5",
                 "phpstan/phpstan-webmozart-assert": "^0.12.2",
                 "phpunit/phpunit": "^9.3.11",
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "symfony/phpunit-bridge": "^4.4.18 || ^5.1.10",
-=======
-                "symfony/phpunit-bridge": "^4.4.14 || ^5.1.6",
->>>>>>> 9acd587... Tests pass
-=======
-                "symfony/phpunit-bridge": "^4.4.18 || ^5.1.10",
->>>>>>> 2a40071... Bump PSALM & Infection
                 "symfony/yaml": "^5.0",
                 "thecodingmachine/phpstan-safe-rule": "^1.0"
             },
@@ -2024,8 +1339,6 @@
             ],
             "support": {
                 "issues": "https://github.com/infection/infection/issues",
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "source": "https://github.com/infection/infection/tree/0.21.0"
             },
             "funding": [
@@ -2039,26 +1352,6 @@
                 }
             ],
             "time": "2021-01-26T22:10:01+00:00"
-=======
-                "source": "https://github.com/infection/infection/tree/0.20.2"
-            },
-            "time": "2020-11-20T17:15:57+00:00"
->>>>>>> 9acd587... Tests pass
-=======
-                "source": "https://github.com/infection/infection/tree/0.21.0"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/infection",
-                    "type": "github"
-                },
-                {
-                    "url": "https://opencollective.com/infection",
-                    "type": "open_collective"
-                }
-            ],
-            "time": "2021-01-26T22:10:01+00:00"
->>>>>>> 2a40071... Bump PSALM & Infection
         },
         {
             "name": "justinrainbow/json-schema",
@@ -2470,8 +1763,6 @@
         },
         {
             "name": "nikic/php-parser",
-<<<<<<< HEAD
-<<<<<<< HEAD
             "version": "v4.10.4",
             "source": {
                 "type": "git",
@@ -2482,26 +1773,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/c6d052fc58cb876152f89f532b95a8d7907e7f0e",
                 "reference": "c6d052fc58cb876152f89f532b95a8d7907e7f0e",
-=======
-            "version": "v4.10.2",
-=======
-            "version": "v4.10.4",
->>>>>>> df41794... Change factory methods signature to require Key instance
-            "source": {
-                "type": "git",
-                "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "c6d052fc58cb876152f89f532b95a8d7907e7f0e"
-            },
-            "dist": {
-                "type": "zip",
-<<<<<<< HEAD
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/658f1be311a230e0907f5dfe0213742aff0596de",
-                "reference": "658f1be311a230e0907f5dfe0213742aff0596de",
->>>>>>> 9acd587... Tests pass
-=======
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/c6d052fc58cb876152f89f532b95a8d7907e7f0e",
-                "reference": "c6d052fc58cb876152f89f532b95a8d7907e7f0e",
->>>>>>> df41794... Change factory methods signature to require Key instance
                 "shasum": ""
             },
             "require": {
@@ -2542,99 +1813,11 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "source": "https://github.com/nikic/PHP-Parser/tree/v4.10.4"
             },
             "time": "2020-12-20T10:01:03+00:00"
-=======
-                "source": "https://github.com/nikic/PHP-Parser/tree/v4.10.2"
-            },
-            "time": "2020-09-26T10:30:38+00:00"
->>>>>>> 9acd587... Tests pass
-=======
-                "source": "https://github.com/nikic/PHP-Parser/tree/v4.10.4"
-            },
-            "time": "2020-12-20T10:01:03+00:00"
->>>>>>> df41794... Change factory methods signature to require Key instance
         },
         {
-<<<<<<< HEAD
-            "name": "nikolaposa/version",
-            "version": "4.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/nikolaposa/version.git",
-                "reference": "0aada6b801962c084ae465f7569397dc2186b6a7"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/nikolaposa/version/zipball/0aada6b801962c084ae465f7569397dc2186b6a7",
-                "reference": "0aada6b801962c084ae465f7569397dc2186b6a7",
-                "shasum": ""
-            },
-            "require": {
-                "beberlei/assert": "^3.2",
-                "php": "^7.2 || ^8.0"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^2.17",
-                "phpstan/phpstan": "^0.12.10",
-                "phpstan/phpstan-beberlei-assert": "^0.12.2",
-                "phpstan/phpstan-phpunit": "^0.12.6",
-                "phpunit/phpunit": "^8.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "4.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Version\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Nikola Poša",
-                    "email": "posa.nikola@gmail.com",
-                    "homepage": "https://www.nikolaposa.in.rs"
-                }
-            ],
-            "description": "Value Object that represents a SemVer-compliant version number.",
-            "homepage": "https://github.com/nikolaposa/version",
-            "keywords": [
-                "semantic",
-                "semver",
-                "version",
-                "versioning"
-            ],
-            "support": {
-                "issues": "https://github.com/nikolaposa/version/issues",
-<<<<<<< HEAD
-<<<<<<< HEAD
-                "source": "https://github.com/nikolaposa/version/tree/4.1.0"
-            },
-            "time": "2020-12-12T10:47:10+00:00"
-=======
-                "source": "https://github.com/nikolaposa/version/tree/4.0.0"
-            },
-            "time": "2019-12-29T15:07:37+00:00"
->>>>>>> 9acd587... Tests pass
-=======
-                "source": "https://github.com/nikolaposa/version/tree/4.1.0"
-            },
-            "time": "2020-12-12T10:47:10+00:00"
->>>>>>> df41794... Change factory methods signature to require Key instance
-        },
-        {
-=======
->>>>>>> 10b50f9... Run roave/backward-compatibility-check as separate tool
             "name": "ondram/ci-detector",
             "version": "3.5.1",
             "source": {
@@ -2821,8 +2004,6 @@
         },
         {
             "name": "phar-io/version",
-<<<<<<< HEAD
-<<<<<<< HEAD
             "version": "3.0.4",
             "source": {
                 "type": "git",
@@ -2833,26 +2014,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/phar-io/version/zipball/e4782611070e50613683d2b9a57730e9a3ba5451",
                 "reference": "e4782611070e50613683d2b9a57730e9a3ba5451",
-=======
-            "version": "3.0.2",
-=======
-            "version": "3.0.4",
->>>>>>> df41794... Change factory methods signature to require Key instance
-            "source": {
-                "type": "git",
-                "url": "https://github.com/phar-io/version.git",
-                "reference": "e4782611070e50613683d2b9a57730e9a3ba5451"
-            },
-            "dist": {
-                "type": "zip",
-<<<<<<< HEAD
-                "url": "https://api.github.com/repos/phar-io/version/zipball/c6bb6825def89e0a32220f88337f8ceaf1975fa0",
-                "reference": "c6bb6825def89e0a32220f88337f8ceaf1975fa0",
->>>>>>> 9acd587... Tests pass
-=======
-                "url": "https://api.github.com/repos/phar-io/version/zipball/e4782611070e50613683d2b9a57730e9a3ba5451",
-                "reference": "e4782611070e50613683d2b9a57730e9a3ba5451",
->>>>>>> df41794... Change factory methods signature to require Key instance
                 "shasum": ""
             },
             "require": {
@@ -2888,21 +2049,9 @@
             "description": "Library for handling version information and constraints",
             "support": {
                 "issues": "https://github.com/phar-io/version/issues",
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "source": "https://github.com/phar-io/version/tree/3.0.4"
             },
             "time": "2020-12-13T23:18:30+00:00"
-=======
-                "source": "https://github.com/phar-io/version/tree/master"
-            },
-            "time": "2020-06-27T14:39:04+00:00"
->>>>>>> 9acd587... Tests pass
-=======
-                "source": "https://github.com/phar-io/version/tree/3.0.4"
-            },
-            "time": "2020-12-13T23:18:30+00:00"
->>>>>>> df41794... Change factory methods signature to require Key instance
         },
         {
             "name": "phpdocumentor/reflection-common",
@@ -3064,8 +2213,6 @@
         },
         {
             "name": "phpspec/prophecy",
-<<<<<<< HEAD
-<<<<<<< HEAD
             "version": "1.12.2",
             "source": {
                 "type": "git",
@@ -3076,26 +2223,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/phpspec/prophecy/zipball/245710e971a030f42e08f4912863805570f23d39",
                 "reference": "245710e971a030f42e08f4912863805570f23d39",
-=======
-            "version": "1.12.1",
-=======
-            "version": "1.12.2",
->>>>>>> df41794... Change factory methods signature to require Key instance
-            "source": {
-                "type": "git",
-                "url": "https://github.com/phpspec/prophecy.git",
-                "reference": "245710e971a030f42e08f4912863805570f23d39"
-            },
-            "dist": {
-                "type": "zip",
-<<<<<<< HEAD
-                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/8ce87516be71aae9b956f81906aaf0338e0d8a2d",
-                "reference": "8ce87516be71aae9b956f81906aaf0338e0d8a2d",
->>>>>>> 9acd587... Tests pass
-=======
-                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/245710e971a030f42e08f4912863805570f23d39",
-                "reference": "245710e971a030f42e08f4912863805570f23d39",
->>>>>>> df41794... Change factory methods signature to require Key instance
                 "shasum": ""
             },
             "require": {
@@ -3107,15 +2234,7 @@
             },
             "require-dev": {
                 "phpspec/phpspec": "^6.0",
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "phpunit/phpunit": "^8.0 || ^9.0"
-=======
-                "phpunit/phpunit": "^8.0 || ^9.0 <9.3"
->>>>>>> 9acd587... Tests pass
-=======
-                "phpunit/phpunit": "^8.0 || ^9.0"
->>>>>>> df41794... Change factory methods signature to require Key instance
             },
             "type": "library",
             "extra": {
@@ -3155,21 +2274,9 @@
             ],
             "support": {
                 "issues": "https://github.com/phpspec/prophecy/issues",
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "source": "https://github.com/phpspec/prophecy/tree/1.12.2"
             },
             "time": "2020-12-19T10:15:11+00:00"
-=======
-                "source": "https://github.com/phpspec/prophecy/tree/1.12.1"
-            },
-            "time": "2020-09-29T09:10:42+00:00"
->>>>>>> 9acd587... Tests pass
-=======
-                "source": "https://github.com/phpspec/prophecy/tree/1.12.2"
-            },
-            "time": "2020-12-19T10:15:11+00:00"
->>>>>>> df41794... Change factory methods signature to require Key instance
         },
         {
             "name": "phpstan/phpdoc-parser",
@@ -3226,8 +2333,6 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-<<<<<<< HEAD
-<<<<<<< HEAD
             "version": "9.2.5",
             "source": {
                 "type": "git",
@@ -3238,26 +2343,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/f3e026641cc91909d421802dd3ac7827ebfd97e1",
                 "reference": "f3e026641cc91909d421802dd3ac7827ebfd97e1",
-=======
-            "version": "9.2.3",
-=======
-            "version": "9.2.5",
->>>>>>> df41794... Change factory methods signature to require Key instance
-            "source": {
-                "type": "git",
-                "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "f3e026641cc91909d421802dd3ac7827ebfd97e1"
-            },
-            "dist": {
-                "type": "zip",
-<<<<<<< HEAD
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/6b20e2055f7c29b56cb3870b3de7cc463d7add41",
-                "reference": "6b20e2055f7c29b56cb3870b3de7cc463d7add41",
->>>>>>> 9acd587... Tests pass
-=======
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/f3e026641cc91909d421802dd3ac7827ebfd97e1",
-                "reference": "f3e026641cc91909d421802dd3ac7827ebfd97e1",
->>>>>>> df41794... Change factory methods signature to require Key instance
                 "shasum": ""
             },
             "require": {
@@ -3271,15 +2356,7 @@
                 "sebastian/code-unit-reverse-lookup": "^2.0.2",
                 "sebastian/complexity": "^2.0",
                 "sebastian/environment": "^5.1.2",
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "sebastian/lines-of-code": "^1.0.3",
-=======
-                "sebastian/lines-of-code": "^1.0",
->>>>>>> 9acd587... Tests pass
-=======
-                "sebastian/lines-of-code": "^1.0.3",
->>>>>>> df41794... Change factory methods signature to require Key instance
                 "sebastian/version": "^3.0.1",
                 "theseer/tokenizer": "^1.2.0"
             },
@@ -3321,15 +2398,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/php-code-coverage/issues",
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.5"
-=======
-                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.3"
->>>>>>> 9acd587... Tests pass
-=======
-                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.5"
->>>>>>> df41794... Change factory methods signature to require Key instance
             },
             "funding": [
                 {
@@ -3337,15 +2406,7 @@
                     "type": "github"
                 }
             ],
-<<<<<<< HEAD
-<<<<<<< HEAD
             "time": "2020-11-28T06:44:49+00:00"
-=======
-            "time": "2020-10-30T10:46:41+00:00"
->>>>>>> 9acd587... Tests pass
-=======
-            "time": "2020-11-28T06:44:49+00:00"
->>>>>>> df41794... Change factory methods signature to require Key instance
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -3590,9 +2651,6 @@
         },
         {
             "name": "phpunit/phpunit",
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
             "version": "9.5.1",
             "source": {
                 "type": "git",
@@ -3603,34 +2661,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/e7bdf4085de85a825f4424eae52c99a1cec2f360",
                 "reference": "e7bdf4085de85a825f4424eae52c99a1cec2f360",
-=======
-            "version": "9.4.3",
-=======
-            "version": "9.5.0",
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
-            "version": "9.5.1",
->>>>>>> 23d361c... Add PHP 8 support
-            "source": {
-                "type": "git",
-                "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "e7bdf4085de85a825f4424eae52c99a1cec2f360"
-            },
-            "dist": {
-                "type": "zip",
-<<<<<<< HEAD
-<<<<<<< HEAD
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/9fa359ff5ddaa5eb2be2bedb08a6a5787a5807ab",
-                "reference": "9fa359ff5ddaa5eb2be2bedb08a6a5787a5807ab",
->>>>>>> 9acd587... Tests pass
-=======
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/8e16c225d57c3d6808014df6b1dd7598d0a5bbbe",
-                "reference": "8e16c225d57c3d6808014df6b1dd7598d0a5bbbe",
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/e7bdf4085de85a825f4424eae52c99a1cec2f360",
-                "reference": "e7bdf4085de85a825f4424eae52c99a1cec2f360",
->>>>>>> 23d361c... Add PHP 8 support
                 "shasum": ""
             },
             "require": {
@@ -3646,15 +2676,7 @@
                 "phar-io/version": "^3.0.2",
                 "php": ">=7.3",
                 "phpspec/prophecy": "^1.12.1",
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "phpunit/php-code-coverage": "^9.2.3",
-=======
-                "phpunit/php-code-coverage": "^9.2",
->>>>>>> 9acd587... Tests pass
-=======
-                "phpunit/php-code-coverage": "^9.2.3",
->>>>>>> df41794... Change factory methods signature to require Key instance
                 "phpunit/php-file-iterator": "^3.0.5",
                 "phpunit/php-invoker": "^3.1.1",
                 "phpunit/php-text-template": "^2.0.3",
@@ -3685,15 +2707,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-<<<<<<< HEAD
-<<<<<<< HEAD
                     "dev-master": "9.5-dev"
-=======
-                    "dev-master": "9.4-dev"
->>>>>>> 9acd587... Tests pass
-=======
-                    "dev-master": "9.5-dev"
->>>>>>> df41794... Change factory methods signature to require Key instance
                 }
             },
             "autoload": {
@@ -3724,19 +2738,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "source": "https://github.com/sebastianbergmann/phpunit/tree/9.5.1"
-=======
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.4.3"
->>>>>>> 9acd587... Tests pass
-=======
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.5.0"
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.5.1"
->>>>>>> 23d361c... Add PHP 8 support
             },
             "funding": [
                 {
@@ -3748,19 +2750,7 @@
                     "type": "github"
                 }
             ],
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
             "time": "2021-01-17T07:42:25+00:00"
-=======
-            "time": "2020-11-10T12:53:30+00:00"
->>>>>>> 9acd587... Tests pass
-=======
-            "time": "2020-12-04T05:05:53+00:00"
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
-            "time": "2021-01-17T07:42:25+00:00"
->>>>>>> 23d361c... Add PHP 8 support
         },
         {
             "name": "psalm/plugin-phpunit",
@@ -3981,269 +2971,6 @@
             "time": "2020-03-23T09:12:05+00:00"
         },
         {
-<<<<<<< HEAD
-            "name": "roave/backward-compatibility-check",
-            "version": "5.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Roave/BackwardCompatibilityCheck.git",
-                "reference": "15611feaa64b3b9fb8dbac3425e4d605c1f35c4f"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Roave/BackwardCompatibilityCheck/zipball/15611feaa64b3b9fb8dbac3425e4d605c1f35c4f",
-                "reference": "15611feaa64b3b9fb8dbac3425e4d605c1f35c4f",
-                "shasum": ""
-            },
-            "require": {
-                "composer/composer": "^1.10.7",
-                "ext-json": "*",
-                "nikolaposa/version": "^4.0.0",
-                "ocramius/package-versions": "^1.8.0",
-                "php": "^7.4.7",
-                "roave/better-reflection": "^4.6.1",
-                "symfony/console": "^5.1.2",
-                "symfony/process": "^5.1.2",
-                "thecodingmachine/safe": "^1.1.1",
-                "webmozart/assert": "^1.9.0"
-            },
-            "require-dev": {
-                "doctrine/coding-standard": "^8.0.0",
-                "infection/infection": "^0.16.3",
-                "phpunit/phpunit": "^9.2.5",
-                "roave/security-advisories": "dev-master",
-                "squizlabs/php_codesniffer": "^3.5.5",
-                "vimeo/psalm": "^3.11.6"
-            },
-            "bin": [
-                "bin/roave-backward-compatibility-check"
-            ],
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Roave\\BackwardCompatibility\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "James Titcumb",
-                    "email": "james@asgrim.com"
-                },
-                {
-                    "name": "Marco Pivetta",
-                    "email": "ocramius@gmail.com"
-                }
-            ],
-            "description": "Tool to compare two revisions of a public API to check for BC breaks",
-            "support": {
-                "issues": "https://github.com/Roave/BackwardCompatibilityCheck/issues",
-                "source": "https://github.com/Roave/BackwardCompatibilityCheck/tree/master"
-            },
-            "time": "2020-06-22T11:14:45+00:00"
-        },
-        {
-            "name": "roave/better-reflection",
-<<<<<<< HEAD
-<<<<<<< HEAD
-            "version": "4.12.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Roave/BetterReflection.git",
-                "reference": "73c376c7245b2928837ed1e8bef446f57f1148a0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Roave/BetterReflection/zipball/73c376c7245b2928837ed1e8bef446f57f1148a0",
-                "reference": "73c376c7245b2928837ed1e8bef446f57f1148a0",
-=======
-            "version": "4.11.0",
-=======
-            "version": "4.12.2",
->>>>>>> df41794... Change factory methods signature to require Key instance
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Roave/BetterReflection.git",
-                "reference": "73c376c7245b2928837ed1e8bef446f57f1148a0"
-            },
-            "dist": {
-                "type": "zip",
-<<<<<<< HEAD
-                "url": "https://api.github.com/repos/Roave/BetterReflection/zipball/7246619ac9c2992a37b4f5c0042fb35abacc7252",
-                "reference": "7246619ac9c2992a37b4f5c0042fb35abacc7252",
->>>>>>> 9acd587... Tests pass
-=======
-                "url": "https://api.github.com/repos/Roave/BetterReflection/zipball/73c376c7245b2928837ed1e8bef446f57f1148a0",
-                "reference": "73c376c7245b2928837ed1e8bef446f57f1148a0",
->>>>>>> df41794... Change factory methods signature to require Key instance
-                "shasum": ""
-            },
-            "require": {
-                "ext-json": "*",
-                "jetbrains/phpstorm-stubs": "2019.3",
-                "nikic/php-parser": "^4.6.0",
-                "php": ">=7.4.1,<7.5.0",
-                "phpdocumentor/reflection-docblock": "^5.2.2",
-                "phpdocumentor/type-resolver": "^1.4.0",
-                "roave/signature": "^1.3"
-            },
-            "require-dev": {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> df41794... Change factory methods signature to require Key instance
-                "doctrine/coding-standard": "^8.2.0",
-                "infection/infection": "^0.20.0",
-                "phpstan/phpstan": "0.12.25",
-                "phpunit/phpunit": "^9.4.4",
-                "roave/infection-static-analysis-plugin": "^1.2",
-                "vimeo/psalm": "^4.2"
-<<<<<<< HEAD
-=======
-                "doctrine/coding-standard": "^8.1.0",
-                "infection/infection": "^0.16.4",
-                "phpstan/phpstan": "^0.12.25",
-                "phpunit/phpunit": "^9.2.6",
-                "vimeo/psalm": "3.13.1"
->>>>>>> 9acd587... Tests pass
-=======
->>>>>>> df41794... Change factory methods signature to require Key instance
-            },
-            "suggest": {
-                "composer/composer": "Required to use the ComposerSourceLocator"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "4.0-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Roave\\BetterReflection\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "James Titcumb",
-                    "email": "james@asgrim.com",
-                    "homepage": "https://github.com/asgrim"
-                },
-                {
-                    "name": "Marco Pivetta",
-                    "email": "ocramius@gmail.com",
-                    "homepage": "https://ocramius.github.io/"
-                },
-                {
-                    "name": "Gary Hockin",
-                    "email": "gary@roave.com",
-                    "homepage": "https://github.com/geeh"
-                },
-                {
-                    "name": "Jaroslav Hanslík",
-                    "email": "kukulich@kukulich.cz",
-                    "homepage": "https://github.com/kukulich"
-                }
-            ],
-            "description": "Better Reflection - an improved code reflection API",
-            "support": {
-                "issues": "https://github.com/Roave/BetterReflection/issues",
-<<<<<<< HEAD
-<<<<<<< HEAD
-                "source": "https://github.com/Roave/BetterReflection/tree/4.12.2"
-            },
-            "time": "2020-12-17T17:48:54+00:00"
-        },
-        {
-            "name": "roave/signature",
-            "version": "1.4.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Roave/Signature.git",
-                "reference": "5b5bb9499cfbcc78d9f472e03af1e97e4341ec7c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Roave/Signature/zipball/5b5bb9499cfbcc78d9f472e03af1e97e4341ec7c",
-                "reference": "5b5bb9499cfbcc78d9f472e03af1e97e4341ec7c",
-                "shasum": ""
-            },
-            "require": {
-                "php": "7.4.*|8.0.*"
-            },
-            "require-dev": {
-                "doctrine/coding-standard": "^8.2",
-                "infection/infection": "^0.20.2",
-                "phpunit/phpunit": "^9.5.1",
-                "vimeo/psalm": "^4.4"
-=======
-                "source": "https://github.com/Roave/BetterReflection/tree/4.11.0"
-=======
-                "source": "https://github.com/Roave/BetterReflection/tree/4.12.2"
->>>>>>> df41794... Change factory methods signature to require Key instance
-            },
-            "time": "2020-12-17T17:48:54+00:00"
-        },
-        {
-            "name": "roave/signature",
-            "version": "1.4.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Roave/Signature.git",
-                "reference": "5b5bb9499cfbcc78d9f472e03af1e97e4341ec7c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Roave/Signature/zipball/5b5bb9499cfbcc78d9f472e03af1e97e4341ec7c",
-                "reference": "5b5bb9499cfbcc78d9f472e03af1e97e4341ec7c",
-                "shasum": ""
-            },
-            "require": {
-                "php": "7.4.*|8.0.*"
-            },
-            "require-dev": {
-<<<<<<< HEAD
-                "doctrine/coding-standard": "^8.1",
-                "infection/infection": "^0.17.5",
-                "phpunit/phpunit": "^9.3",
-                "vimeo/psalm": "^3.16"
->>>>>>> 9acd587... Tests pass
-=======
-                "doctrine/coding-standard": "^8.2",
-                "infection/infection": "^0.20.2",
-                "phpunit/phpunit": "^9.5.1",
-                "vimeo/psalm": "^4.4"
->>>>>>> 23d361c... Add PHP 8 support
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Roave\\Signature\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Sign and verify stuff",
-            "support": {
-                "issues": "https://github.com/Roave/Signature/issues",
-<<<<<<< HEAD
-<<<<<<< HEAD
-                "source": "https://github.com/Roave/Signature/tree/1.4.0"
-            },
-            "time": "2021-01-25T09:39:37+00:00"
-        },
-        {
-=======
->>>>>>> 10b50f9... Run roave/backward-compatibility-check as separate tool
             "name": "sanmai/later",
             "version": "0.1.2",
             "source": {
@@ -4300,19 +3027,6 @@
                 }
             ],
             "time": "2021-01-02T10:26:44+00:00"
-<<<<<<< HEAD
-=======
-                "source": "https://github.com/Roave/Signature/tree/1.3.0"
-            },
-            "time": "2020-10-01T08:35:57+00:00"
->>>>>>> 9acd587... Tests pass
-=======
-                "source": "https://github.com/Roave/Signature/tree/1.4.0"
-            },
-            "time": "2021-01-25T09:39:37+00:00"
->>>>>>> 23d361c... Add PHP 8 support
-=======
->>>>>>> 2a40071... Bump PSALM & Infection
         },
         {
             "name": "sanmai/pipeline",
@@ -4612,8 +3326,6 @@
                 "issues": "https://github.com/sebastianbergmann/comparator/issues",
                 "source": "https://github.com/sebastianbergmann/comparator/tree/4.0.6"
             },
-<<<<<<< HEAD
-=======
             "funding": [
                 {
                     "url": "https://github.com/sebastianbergmann",
@@ -4671,73 +3383,12 @@
                 "issues": "https://github.com/sebastianbergmann/complexity/issues",
                 "source": "https://github.com/sebastianbergmann/complexity/tree/2.0.2"
             },
->>>>>>> 9acd587... Tests pass
             "funding": [
                 {
                     "url": "https://github.com/sebastianbergmann",
                     "type": "github"
                 }
             ],
-<<<<<<< HEAD
-            "time": "2020-10-26T15:49:45+00:00"
-        },
-        {
-            "name": "sebastian/complexity",
-            "version": "2.0.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/sebastianbergmann/complexity.git",
-                "reference": "739b35e53379900cc9ac327b2147867b8b6efd88"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/complexity/zipball/739b35e53379900cc9ac327b2147867b8b6efd88",
-                "reference": "739b35e53379900cc9ac327b2147867b8b6efd88",
-                "shasum": ""
-            },
-            "require": {
-                "nikic/php-parser": "^4.7",
-                "php": ">=7.3"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^9.3"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.0-dev"
-                }
-            },
-            "autoload": {
-                "classmap": [
-                    "src/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
-                }
-            ],
-            "description": "Library for calculating the complexity of PHP code units",
-            "homepage": "https://github.com/sebastianbergmann/complexity",
-            "support": {
-                "issues": "https://github.com/sebastianbergmann/complexity/issues",
-                "source": "https://github.com/sebastianbergmann/complexity/tree/2.0.2"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/sebastianbergmann",
-                    "type": "github"
-                }
-            ],
-=======
->>>>>>> 9acd587... Tests pass
             "time": "2020-10-26T15:52:27+00:00"
         },
         {
@@ -5012,8 +3663,6 @@
         },
         {
             "name": "sebastian/lines-of-code",
-<<<<<<< HEAD
-<<<<<<< HEAD
             "version": "1.0.3",
             "source": {
                 "type": "git",
@@ -5024,26 +3673,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/sebastianbergmann/lines-of-code/zipball/c1c2e997aa3146983ed888ad08b15470a2e22ecc",
                 "reference": "c1c2e997aa3146983ed888ad08b15470a2e22ecc",
-=======
-            "version": "1.0.2",
-=======
-            "version": "1.0.3",
->>>>>>> df41794... Change factory methods signature to require Key instance
-            "source": {
-                "type": "git",
-                "url": "https://github.com/sebastianbergmann/lines-of-code.git",
-                "reference": "c1c2e997aa3146983ed888ad08b15470a2e22ecc"
-            },
-            "dist": {
-                "type": "zip",
-<<<<<<< HEAD
-                "url": "https://api.github.com/repos/sebastianbergmann/lines-of-code/zipball/acf76492a65401babcf5283296fa510782783a7a",
-                "reference": "acf76492a65401babcf5283296fa510782783a7a",
->>>>>>> 9acd587... Tests pass
-=======
-                "url": "https://api.github.com/repos/sebastianbergmann/lines-of-code/zipball/c1c2e997aa3146983ed888ad08b15470a2e22ecc",
-                "reference": "c1c2e997aa3146983ed888ad08b15470a2e22ecc",
->>>>>>> df41794... Change factory methods signature to require Key instance
                 "shasum": ""
             },
             "require": {
@@ -5079,15 +3708,7 @@
             "homepage": "https://github.com/sebastianbergmann/lines-of-code",
             "support": {
                 "issues": "https://github.com/sebastianbergmann/lines-of-code/issues",
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "source": "https://github.com/sebastianbergmann/lines-of-code/tree/1.0.3"
-=======
-                "source": "https://github.com/sebastianbergmann/lines-of-code/tree/1.0.2"
->>>>>>> 9acd587... Tests pass
-=======
-                "source": "https://github.com/sebastianbergmann/lines-of-code/tree/1.0.3"
->>>>>>> df41794... Change factory methods signature to require Key instance
             },
             "funding": [
                 {
@@ -5095,15 +3716,7 @@
                     "type": "github"
                 }
             ],
-<<<<<<< HEAD
-<<<<<<< HEAD
             "time": "2020-11-28T06:42:11+00:00"
-=======
-            "time": "2020-10-26T17:03:56+00:00"
->>>>>>> 9acd587... Tests pass
-=======
-            "time": "2020-11-28T06:42:11+00:00"
->>>>>>> df41794... Change factory methods signature to require Key instance
         },
         {
             "name": "sebastian/object-enumerator",
@@ -5626,8 +4239,6 @@
         },
         {
             "name": "symfony/console",
-<<<<<<< HEAD
-<<<<<<< HEAD
             "version": "v5.2.2",
             "source": {
                 "type": "git",
@@ -5638,26 +4249,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/symfony/console/zipball/d62ec79478b55036f65e2602e282822b8eaaff0a",
                 "reference": "d62ec79478b55036f65e2602e282822b8eaaff0a",
-=======
-            "version": "v5.2.1",
-=======
-            "version": "v5.2.2",
->>>>>>> 23d361c... Add PHP 8 support
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/console.git",
-                "reference": "d62ec79478b55036f65e2602e282822b8eaaff0a"
-            },
-            "dist": {
-                "type": "zip",
-<<<<<<< HEAD
-                "url": "https://api.github.com/repos/symfony/console/zipball/47c02526c532fb381374dab26df05e7313978976",
-                "reference": "47c02526c532fb381374dab26df05e7313978976",
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
-                "url": "https://api.github.com/repos/symfony/console/zipball/d62ec79478b55036f65e2602e282822b8eaaff0a",
-                "reference": "d62ec79478b55036f65e2602e282822b8eaaff0a",
->>>>>>> 23d361c... Add PHP 8 support
                 "shasum": ""
             },
             "require": {
@@ -5718,31 +4309,14 @@
             ],
             "description": "Eases the creation of beautiful and testable command line interfaces",
             "homepage": "https://symfony.com",
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> df41794... Change factory methods signature to require Key instance
             "keywords": [
                 "cli",
                 "command line",
                 "console",
                 "terminal"
             ],
-<<<<<<< HEAD
             "support": {
                 "source": "https://github.com/symfony/console/tree/v5.2.2"
-=======
-            "support": {
-                "source": "https://github.com/symfony/console/tree/v5.1.8"
->>>>>>> 9acd587... Tests pass
-=======
-            "support": {
-<<<<<<< HEAD
-                "source": "https://github.com/symfony/console/tree/v5.2.1"
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
-                "source": "https://github.com/symfony/console/tree/v5.2.2"
->>>>>>> 23d361c... Add PHP 8 support
             },
             "funding": [
                 {
@@ -5758,8 +4332,6 @@
                     "type": "tidelift"
                 }
             ],
-<<<<<<< HEAD
-<<<<<<< HEAD
             "time": "2021-01-27T10:15:41+00:00"
         },
         {
@@ -5774,30 +4346,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/symfony/filesystem/zipball/262d033b57c73e8b59cd6e68a45c528318b15038",
                 "reference": "262d033b57c73e8b59cd6e68a45c528318b15038",
-=======
-            "time": "2020-12-18T08:03:05+00:00"
-=======
-            "time": "2021-01-27T10:15:41+00:00"
->>>>>>> 23d361c... Add PHP 8 support
-        },
-        {
-            "name": "symfony/filesystem",
-            "version": "v5.2.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/filesystem.git",
-                "reference": "262d033b57c73e8b59cd6e68a45c528318b15038"
-            },
-            "dist": {
-                "type": "zip",
-<<<<<<< HEAD
-                "url": "https://api.github.com/repos/symfony/filesystem/zipball/fa8f8cab6b65e2d99a118e082935344c5ba8c60d",
-                "reference": "fa8f8cab6b65e2d99a118e082935344c5ba8c60d",
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
-                "url": "https://api.github.com/repos/symfony/filesystem/zipball/262d033b57c73e8b59cd6e68a45c528318b15038",
-                "reference": "262d033b57c73e8b59cd6e68a45c528318b15038",
->>>>>>> 23d361c... Add PHP 8 support
                 "shasum": ""
             },
             "require": {
@@ -5830,19 +4378,7 @@
             "description": "Provides basic utilities for the filesystem",
             "homepage": "https://symfony.com",
             "support": {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "source": "https://github.com/symfony/filesystem/tree/v5.2.2"
-=======
-                "source": "https://github.com/symfony/filesystem/tree/v5.1.8"
->>>>>>> 9acd587... Tests pass
-=======
-                "source": "https://github.com/symfony/filesystem/tree/v5.2.1"
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
-                "source": "https://github.com/symfony/filesystem/tree/v5.2.2"
->>>>>>> 23d361c... Add PHP 8 support
             },
             "funding": [
                 {
@@ -5858,8 +4394,6 @@
                     "type": "tidelift"
                 }
             ],
-<<<<<<< HEAD
-<<<<<<< HEAD
             "time": "2021-01-27T10:01:46+00:00"
         },
         {
@@ -5874,30 +4408,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/symfony/finder/zipball/196f45723b5e618bf0e23b97e96d11652696ea9e",
                 "reference": "196f45723b5e618bf0e23b97e96d11652696ea9e",
-=======
-            "time": "2020-11-30T17:05:38+00:00"
-=======
-            "time": "2021-01-27T10:01:46+00:00"
->>>>>>> 23d361c... Add PHP 8 support
-        },
-        {
-            "name": "symfony/finder",
-            "version": "v5.2.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/finder.git",
-                "reference": "196f45723b5e618bf0e23b97e96d11652696ea9e"
-            },
-            "dist": {
-                "type": "zip",
-<<<<<<< HEAD
-                "url": "https://api.github.com/repos/symfony/finder/zipball/0b9231a5922fd7287ba5b411893c0ecd2733e5ba",
-                "reference": "0b9231a5922fd7287ba5b411893c0ecd2733e5ba",
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
-                "url": "https://api.github.com/repos/symfony/finder/zipball/196f45723b5e618bf0e23b97e96d11652696ea9e",
-                "reference": "196f45723b5e618bf0e23b97e96d11652696ea9e",
->>>>>>> 23d361c... Add PHP 8 support
                 "shasum": ""
             },
             "require": {
@@ -5929,19 +4439,7 @@
             "description": "Finds files and directories via an intuitive fluent interface",
             "homepage": "https://symfony.com",
             "support": {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "source": "https://github.com/symfony/finder/tree/v5.2.2"
-=======
-                "source": "https://github.com/symfony/finder/tree/v5.1.8"
->>>>>>> 9acd587... Tests pass
-=======
-                "source": "https://github.com/symfony/finder/tree/v5.2.1"
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
-                "source": "https://github.com/symfony/finder/tree/v5.2.2"
->>>>>>> 23d361c... Add PHP 8 support
             },
             "funding": [
                 {
@@ -5957,15 +4455,7 @@
                     "type": "tidelift"
                 }
             ],
-<<<<<<< HEAD
-<<<<<<< HEAD
             "time": "2021-01-27T10:01:46+00:00"
-=======
-            "time": "2020-12-08T17:02:38+00:00"
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
-            "time": "2021-01-27T10:01:46+00:00"
->>>>>>> 23d361c... Add PHP 8 support
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -6028,15 +4518,7 @@
                 "portable"
             ],
             "support": {
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "source": "https://github.com/symfony/polyfill-ctype/tree/v1.22.0"
-=======
-                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.20.0"
->>>>>>> 9acd587... Tests pass
-=======
-                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.22.0"
->>>>>>> 23d361c... Add PHP 8 support
             },
             "funding": [
                 {
@@ -6117,15 +4599,7 @@
                 "shim"
             ],
             "support": {
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "source": "https://github.com/symfony/polyfill-intl-grapheme/tree/v1.22.0"
-=======
-                "source": "https://github.com/symfony/polyfill-intl-grapheme/tree/v1.20.0"
->>>>>>> 9acd587... Tests pass
-=======
-                "source": "https://github.com/symfony/polyfill-intl-grapheme/tree/v1.22.0"
->>>>>>> 23d361c... Add PHP 8 support
             },
             "funding": [
                 {
@@ -6209,15 +4683,7 @@
                 "shim"
             ],
             "support": {
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "source": "https://github.com/symfony/polyfill-intl-normalizer/tree/v1.22.0"
-=======
-                "source": "https://github.com/symfony/polyfill-intl-normalizer/tree/v1.20.0"
->>>>>>> 9acd587... Tests pass
-=======
-                "source": "https://github.com/symfony/polyfill-intl-normalizer/tree/v1.22.0"
->>>>>>> 23d361c... Add PHP 8 support
             },
             "funding": [
                 {
@@ -6297,15 +4763,7 @@
                 "shim"
             ],
             "support": {
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.22.0"
-=======
-                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.20.0"
->>>>>>> 9acd587... Tests pass
-=======
-                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.22.0"
->>>>>>> 23d361c... Add PHP 8 support
             },
             "funding": [
                 {
@@ -6384,15 +4842,7 @@
                 "shim"
             ],
             "support": {
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "source": "https://github.com/symfony/polyfill-php73/tree/v1.22.0"
-=======
-                "source": "https://github.com/symfony/polyfill-php73/tree/v1.20.0"
->>>>>>> 9acd587... Tests pass
-=======
-                "source": "https://github.com/symfony/polyfill-php73/tree/v1.22.0"
->>>>>>> 23d361c... Add PHP 8 support
             },
             "funding": [
                 {
@@ -6475,15 +4925,7 @@
                 "shim"
             ],
             "support": {
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "source": "https://github.com/symfony/polyfill-php80/tree/v1.22.0"
-=======
-                "source": "https://github.com/symfony/polyfill-php80/tree/v1.20.0"
->>>>>>> 9acd587... Tests pass
-=======
-                "source": "https://github.com/symfony/polyfill-php80/tree/v1.22.0"
->>>>>>> 23d361c... Add PHP 8 support
             },
             "funding": [
                 {
@@ -6503,8 +4945,6 @@
         },
         {
             "name": "symfony/process",
-<<<<<<< HEAD
-<<<<<<< HEAD
             "version": "v5.2.2",
             "source": {
                 "type": "git",
@@ -6515,26 +4955,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/symfony/process/zipball/313a38f09c77fbcdc1d223e57d368cea76a2fd2f",
                 "reference": "313a38f09c77fbcdc1d223e57d368cea76a2fd2f",
-=======
-            "version": "v5.2.1",
-=======
-            "version": "v5.2.2",
->>>>>>> 23d361c... Add PHP 8 support
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/process.git",
-                "reference": "313a38f09c77fbcdc1d223e57d368cea76a2fd2f"
-            },
-            "dist": {
-                "type": "zip",
-<<<<<<< HEAD
-                "url": "https://api.github.com/repos/symfony/process/zipball/bd8815b8b6705298beaa384f04fabd459c10bedd",
-                "reference": "bd8815b8b6705298beaa384f04fabd459c10bedd",
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
-                "url": "https://api.github.com/repos/symfony/process/zipball/313a38f09c77fbcdc1d223e57d368cea76a2fd2f",
-                "reference": "313a38f09c77fbcdc1d223e57d368cea76a2fd2f",
->>>>>>> 23d361c... Add PHP 8 support
                 "shasum": ""
             },
             "require": {
@@ -6567,19 +4987,7 @@
             "description": "Executes commands in sub-processes",
             "homepage": "https://symfony.com",
             "support": {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "source": "https://github.com/symfony/process/tree/v5.2.2"
-=======
-                "source": "https://github.com/symfony/process/tree/v5.1.8"
->>>>>>> 9acd587... Tests pass
-=======
-                "source": "https://github.com/symfony/process/tree/v5.2.1"
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
-                "source": "https://github.com/symfony/process/tree/v5.2.2"
->>>>>>> 23d361c... Add PHP 8 support
             },
             "funding": [
                 {
@@ -6595,15 +5003,7 @@
                     "type": "tidelift"
                 }
             ],
-<<<<<<< HEAD
-<<<<<<< HEAD
             "time": "2021-01-27T10:15:41+00:00"
-=======
-            "time": "2020-12-08T17:03:37+00:00"
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
-            "time": "2021-01-27T10:15:41+00:00"
->>>>>>> 23d361c... Add PHP 8 support
         },
         {
             "name": "symfony/service-contracts",
@@ -6686,8 +5086,6 @@
         },
         {
             "name": "symfony/string",
-<<<<<<< HEAD
-<<<<<<< HEAD
             "version": "v5.2.2",
             "source": {
                 "type": "git",
@@ -6698,26 +5096,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/symfony/string/zipball/c95468897f408dd0aca2ff582074423dd0455122",
                 "reference": "c95468897f408dd0aca2ff582074423dd0455122",
-=======
-            "version": "v5.2.1",
-=======
-            "version": "v5.2.2",
->>>>>>> 23d361c... Add PHP 8 support
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/string.git",
-                "reference": "c95468897f408dd0aca2ff582074423dd0455122"
-            },
-            "dist": {
-                "type": "zip",
-<<<<<<< HEAD
-                "url": "https://api.github.com/repos/symfony/string/zipball/5bd67751d2e3f7d6f770c9154b8fbcb2aa05f7ed",
-                "reference": "5bd67751d2e3f7d6f770c9154b8fbcb2aa05f7ed",
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
-                "url": "https://api.github.com/repos/symfony/string/zipball/c95468897f408dd0aca2ff582074423dd0455122",
-                "reference": "c95468897f408dd0aca2ff582074423dd0455122",
->>>>>>> 23d361c... Add PHP 8 support
                 "shasum": ""
             },
             "require": {
@@ -6771,19 +5149,7 @@
                 "utf8"
             ],
             "support": {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "source": "https://github.com/symfony/string/tree/v5.2.2"
-=======
-                "source": "https://github.com/symfony/string/tree/v5.1.8"
->>>>>>> 9acd587... Tests pass
-=======
-                "source": "https://github.com/symfony/string/tree/v5.2.1"
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
-                "source": "https://github.com/symfony/string/tree/v5.2.2"
->>>>>>> 23d361c... Add PHP 8 support
             },
             "funding": [
                 {
@@ -6799,15 +5165,7 @@
                     "type": "tidelift"
                 }
             ],
-<<<<<<< HEAD
-<<<<<<< HEAD
             "time": "2021-01-25T15:14:59+00:00"
-=======
-            "time": "2020-12-05T07:33:16+00:00"
->>>>>>> df41794... Change factory methods signature to require Key instance
-=======
-            "time": "2021-01-25T15:14:59+00:00"
->>>>>>> 23d361c... Add PHP 8 support
         },
         {
             "name": "thecodingmachine/safe",
@@ -7150,89 +5508,12 @@
                 "validate"
             ],
             "support": {
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "issues": "https://github.com/webmozarts/assert/issues",
                 "source": "https://github.com/webmozarts/assert/tree/1.9.1"
-=======
-                "issues": "https://github.com/webmozart/assert/issues",
-                "source": "https://github.com/webmozart/assert/tree/master"
->>>>>>> 9acd587... Tests pass
-=======
-                "issues": "https://github.com/webmozarts/assert/issues",
-                "source": "https://github.com/webmozarts/assert/tree/1.9.1"
->>>>>>> 23d361c... Add PHP 8 support
             },
             "time": "2020-07-08T17:02:28+00:00"
         },
         {
-<<<<<<< HEAD
-            "name": "webmozart/glob",
-            "version": "4.3.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/webmozarts/glob.git",
-                "reference": "06358fafde0f32edb4513f4fd88fe113a40c90ee"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/webmozarts/glob/zipball/06358fafde0f32edb4513f4fd88fe113a40c90ee",
-                "reference": "06358fafde0f32edb4513f4fd88fe113a40c90ee",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.3 || ^8.0.0",
-                "webmozart/path-util": "^2.2"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^8.0",
-                "symfony/filesystem": "^5.1"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "4.1-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Webmozart\\Glob\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Bernhard Schussek",
-                    "email": "bschussek@gmail.com"
-                }
-            ],
-            "description": "A PHP implementation of Ant's glob.",
-            "support": {
-<<<<<<< HEAD
-<<<<<<< HEAD
-                "issues": "https://github.com/webmozarts/glob/issues",
-                "source": "https://github.com/webmozarts/glob/tree/4.3.0"
-            },
-            "time": "2021-01-21T06:17:15+00:00"
-=======
-                "issues": "https://github.com/webmozart/glob/issues",
-                "source": "https://github.com/webmozart/glob/tree/master"
-            },
-            "time": "2015-12-29T11:14:33+00:00"
->>>>>>> 9acd587... Tests pass
-=======
-                "issues": "https://github.com/webmozarts/glob/issues",
-                "source": "https://github.com/webmozarts/glob/tree/4.3.0"
-            },
-            "time": "2021-01-21T06:17:15+00:00"
->>>>>>> 23d361c... Add PHP 8 support
-        },
-        {
-=======
->>>>>>> 2a40071... Bump PSALM & Infection
             "name": "webmozart/path-util",
             "version": "2.3.0",
             "source": {
