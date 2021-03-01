@@ -38,7 +38,7 @@
         "phpunit/phpunit":                    "^9.5.1",
         "psalm/plugin-phpunit":               "^0.15.1",
         "squizlabs/php_codesniffer":          "^3.5.8",
-        "vimeo/psalm":                        "^4.4.1"
+        "vimeo/psalm":                        "^4.6.2"
     },
     "config": {
         "sort-packages": true
