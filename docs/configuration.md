@@ -108,7 +108,12 @@ By default, sessions generated via the `SessionMiddleware` factory methods use f
 
 ### Local development
 
-When running applications locally on `http://localhost`, some settings must be changed to work without HTTPS support.
+When running applications locally on `http://localhost`, some settings may need to be changed to work without HTTPS support.
+`Secure` cookies are *sent* to localhost on the following browsers, so the example below shouldn't be needed on these:
+
+1. Firefox >= 75 (see [bug#1618113](https://bugzilla.mozilla.org/show_bug.cgi?id=1618113),
+[Set-Cookie#Secure](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#Secure), [Cookies#restrict_access_to_cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#restrict_access_to_cookies))
+2. Chrome >= 89 (see [bug#1056543](https://bugs.chromium.org/p/chromium/issues/detail?id=1056543))
 
 **The example below is completely insecure. It should only be used for local development.**
 
