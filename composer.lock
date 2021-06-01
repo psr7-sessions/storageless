@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "868da6283eb92fca2e6c9e7c799fae0b",
+    "content-hash": "aadbab453050fb143c4a18a92caea944",
     "packages": [
         {
             "name": "dflydev/fig-cookies",
@@ -2767,16 +2767,16 @@
         },
         {
             "name": "psalm/plugin-phpunit",
-            "version": "0.15.1",
+            "version": "0.15.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/psalm/psalm-plugin-phpunit.git",
-                "reference": "30ca25ce069bf4943c36e59b7df6954f6af05e64"
+                "reference": "31d15bbc0169a3c454e495e03fd8a6ccb663661b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/psalm/psalm-plugin-phpunit/zipball/30ca25ce069bf4943c36e59b7df6954f6af05e64",
-                "reference": "30ca25ce069bf4943c36e59b7df6954f6af05e64",
+                "url": "https://api.github.com/repos/psalm/psalm-plugin-phpunit/zipball/31d15bbc0169a3c454e495e03fd8a6ccb663661b",
+                "reference": "31d15bbc0169a3c454e495e03fd8a6ccb663661b",
                 "shasum": ""
             },
             "require": {
@@ -2821,9 +2821,9 @@
             "description": "Psalm plugin for PHPUnit",
             "support": {
                 "issues": "https://github.com/psalm/psalm-plugin-phpunit/issues",
-                "source": "https://github.com/psalm/psalm-plugin-phpunit/tree/0.15.1"
+                "source": "https://github.com/psalm/psalm-plugin-phpunit/tree/0.15.2"
             },
-            "time": "2021-01-23T00:19:07+00:00"
+            "time": "2021-05-29T19:11:38+00:00"
         },
         {
             "name": "psr/container",
