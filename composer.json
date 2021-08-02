@@ -36,7 +36,7 @@
         "laminas/laminas-diactoros":          "^2.6.0",
         "laminas/laminas-httphandlerrunner":  "^2.0.0",
         "phpunit/phpunit":                    "^9.5.8",
-        "psalm/plugin-phpunit":               "^0.15.2",
+        "psalm/plugin-phpunit":               "^0.16.1",
         "squizlabs/php_codesniffer":          "^3.6.0",
         "vimeo/psalm":                        "^4.9.1"
     },
