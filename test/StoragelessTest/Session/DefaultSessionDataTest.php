@@ -111,7 +111,7 @@ final class DefaultSessionDataTest extends TestCase
      *
      * @dataProvider storageScalarDataProvider
      */
-    public function testContainerDataIsStoredAndRetrieved(string $key, $value): void
+    public function testContainerDataIsStoredAndRetrieved(string $key, int|bool|string|float|array|object|null $value): void
     {
         $session = DefaultSessionData::newEmptySession();
 
@@ -124,7 +124,7 @@ final class DefaultSessionDataTest extends TestCase
      *
      * @dataProvider storageScalarDataProvider
      */
-    public function testSettingDataInAContainerMarksTheContainerAsMutated(string $key, $value): void
+    public function testSettingDataInAContainerMarksTheContainerAsMutated(string $key, int|bool|string|float|array|object|null $value): void
     {
         $session = DefaultSessionData::newEmptySession();
 
@@ -153,7 +153,7 @@ final class DefaultSessionDataTest extends TestCase
      *
      * @dataProvider storageScalarDataProvider
      */
-    public function testContainerIsNotChangedWhenScalarDataIsSetAndOverwrittenInIt(string $key, $value): void
+    public function testContainerIsNotChangedWhenScalarDataIsSetAndOverwrittenInIt(string $key, int|bool|string|float|array|object|null $value): void
     {
         $session = DefaultSessionData::fromTokenData([$key => $value]);
 
@@ -169,7 +169,7 @@ final class DefaultSessionDataTest extends TestCase
      *
      * @dataProvider storageNonScalarDataProvider
      */
-    public function testContainerIsNotChangedWhenNonScalarDataIsSetAndOverwrittenInIt($nonScalarValue): void
+    public function testContainerIsNotChangedWhenNonScalarDataIsSetAndOverwrittenInIt(int|bool|string|float|array|object|null $nonScalarValue): void
     {
         $session = DefaultSessionData::fromTokenData(['key' => $nonScalarValue]);
 
@@ -185,7 +185,7 @@ final class DefaultSessionDataTest extends TestCase
      *
      * @dataProvider storageScalarDataProvider
      */
-    public function testContainerBuiltWithDataContainsData(string $key, $value): void
+    public function testContainerBuiltWithDataContainsData(string $key, int|bool|string|float|array|object|null $value): void
     {
         $session = DefaultSessionData::fromTokenData([$key => $value]);
 
@@ -198,7 +198,7 @@ final class DefaultSessionDataTest extends TestCase
      *
      * @dataProvider storageScalarDataProvider
      */
-    public function testContainerBuiltWithStdClassContainsData(string $key, $value): void
+    public function testContainerBuiltWithStdClassContainsData(string $key, int|bool|string|float|array|object|null $value): void
     {
         if ($key === "\0" || $value === "\0" || $key === '') {
             self::markTestSkipped('Null bytes or empty keys are not supported by PHP\'s stdClass');
@@ -216,7 +216,7 @@ final class DefaultSessionDataTest extends TestCase
      *
      * @dataProvider storageNonScalarDataProvider
      */
-    public function testContainerStoresScalarValueFromNestedObjects($nonScalar, $expectedScalar): void
+    public function testContainerStoresScalarValueFromNestedObjects(int|bool|string|float|array|object|null $nonScalar, int|bool|string|float|array|null $expectedScalar): void
     {
         $session = DefaultSessionData::fromTokenData(['key' => $nonScalar]);
 
@@ -232,7 +232,7 @@ final class DefaultSessionDataTest extends TestCase
      *
      * @dataProvider storageScalarDataProvider
      */
-    public function testGetWillReturnDefaultValueOnNonExistingKey(string $key, $value): void
+    public function testGetWillReturnDefaultValueOnNonExistingKey(string $key, int|bool|string|float|array|object|null $value): void
     {
         $session = DefaultSessionData::newEmptySession();
 
@@ -246,7 +246,7 @@ final class DefaultSessionDataTest extends TestCase
      *
      * @dataProvider storageNonScalarDataProvider
      */
-    public function testGetWillReturnScalarCastDefaultValueOnNonExistingKey($nonScalar, $expectedScalar): void
+    public function testGetWillReturnScalarCastDefaultValueOnNonExistingKey(int|bool|string|float|array|object|null $nonScalar, int|bool|string|float|array|null $expectedScalar): void
     {
         self::assertSame($expectedScalar, DefaultSessionData::newEmptySession()->get('key', $nonScalar));
     }

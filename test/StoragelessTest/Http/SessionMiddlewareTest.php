@@ -724,12 +724,11 @@ final class SessionMiddlewareTest extends TestCase
             ->toString();
     }
 
-    /** @param mixed $claim */
     private function createTokenWithCustomClaim(
         SessionMiddleware $middleware,
         DateTimeImmutable $issuedAt,
         DateTimeImmutable $expiration,
-        $claim
+        mixed $claim
     ): string {
         $config = $this->getJwtConfiguration($middleware);
 
