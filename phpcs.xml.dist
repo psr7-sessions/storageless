@@ -4,8 +4,6 @@
     xsi:noNamespaceSchemaLocation="vendor/squizlabs/php_codesniffer/phpcs.xsd"
     name="psr7-sessions/storageless"
 >
-    <config name="php_version" value="70400"/>
-
     <arg name="basepath" value="."/>
     <arg name="extensions" value="php"/>
     <arg name="parallel" value="80"/>
