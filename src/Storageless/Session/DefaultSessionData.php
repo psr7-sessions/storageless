@@ -133,17 +133,15 @@ final class DefaultSessionData implements SessionInterface
 
     /**
      * @param int|bool|string|float|mixed[]|object|JsonSerializable|null $value
+     * @psalm-param ValueTypeWithObjects $value
      *
      * @return int|bool|string|float|mixed[]|null
+     * @psalm-return (ValueTypeWithObjects is object ? array<string, ValueType> : ValueType)
      *
      * @psalm-template ValueType of int|bool|string|float|array<mixed>|null
      * @psalm-template ValueTypeWithObjects of ValueType|object
-     *
-     * @psalm-param ValueTypeWithObjects $value
-     *
-     * @psalm-return (ValueTypeWithObjects is object ? array<string, ValueType> : ValueType)
      */
-    private static function convertValueToScalar($value)
+    private static function convertValueToScalar(int|bool|string|float|array|object|null $value): int|bool|string|float|array|null
     {
         /** @psalm-var ValueType $decoded */
         $decoded = json_decode(

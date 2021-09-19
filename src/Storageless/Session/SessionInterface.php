@@ -22,6 +22,9 @@ namespace PSR7Sessions\Storageless\Session;
 
 use JsonSerializable;
 
+// phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
+// phpcs:disable SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint
+/** Note: due to BC compliance, we cannot enable native type declarations here, as they would break implementations */
 interface SessionInterface extends JsonSerializable
 {
     /**
