@@ -625,8 +625,8 @@ final class SessionMiddlewareTest extends TestCase
             'from-asymmetric' => [
                 static function (): SessionMiddleware {
                     return SessionMiddleware::fromRsaAsymmetricKeyDefaults(
-                        Signer\Key\LocalFileReference::file(__DIR__ . '/../../keys/private_key.pem'),
-                        Signer\Key\LocalFileReference::file(__DIR__ . '/../../keys/public_key.pem'),
+                        Signer\Key\InMemory::file(__DIR__ . '/../../keys/private_key.pem'),
+                        Signer\Key\InMemory::file(__DIR__ . '/../../keys/public_key.pem'),
                         200
                     );
                 },
