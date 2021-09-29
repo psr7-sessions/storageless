@@ -29,12 +29,12 @@ You can set up symmetric key based signatures via the
 `PSR7Sessions::fromAsymmetricKeyDefaults` named constructor:
 
 ```php
-use Lcobucci\JWT\Signer\Key\LocalFileReference;
+use Lcobucci\JWT\Signer\Key\InMemory;
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
 
 $sessionMiddleware = SessionMiddleware::fromRsaAsymmetricKeyDefaults(
-    LocalFileReference::file('/path/to/private_key.pem'),
-    LocalFileReference::file('/path/to/public_key.pem'),
+    InMemory::file('/path/to/private_key.pem'),
+    InMemory::file('/path/to/public_key.pem'),
     1200 // session lifetime, in seconds
 );
 ```
