@@ -46,7 +46,6 @@ use PSR7Sessions\Storageless\Session\LazySession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
 use stdClass;
 
-use function assert;
 use function date_default_timezone_get;
 use function sprintf;
 
@@ -162,11 +161,13 @@ final class SessionMiddleware implements MiddlewareInterface
 
         try {
             $token = $this->config->parser()->parse($cookies[$cookieName]);
-        } catch (InvalidArgumentException $invalidToken) {
+        } catch (InvalidArgumentException) {
             return null;
         }
 
-        assert($token instanceof UnencryptedToken);
+        if (! $token instanceof UnencryptedToken) {
+            return null;
+        }
 
         $constraints = [
             new StrictValidAt($this->clock),

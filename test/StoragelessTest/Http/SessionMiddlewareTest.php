@@ -32,8 +32,10 @@ use Lcobucci\Clock\FrozenClock;
 use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Encoding\JoseEncoder;
+use Lcobucci\JWT\Parser as ParserInterface;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
+use Lcobucci\JWT\Token;
 use Lcobucci\JWT\Token\Parser;
 use Lcobucci\JWT\Token\Plain;
 use Lcobucci\JWT\Token\RegisteredClaims;
@@ -226,6 +228,31 @@ final class SessionMiddlewareTest extends TestCase
             ]);
 
         $this->ensureSameResponse($middleware, $expiredToken, $this->emptyValidationMiddleware());
+    }
+
+    public function testWillIgnoreRequestsWithNonPlainTokens(): void
+    {
+        $unknownTokenType = $this->createMock(Token::class);
+        $fakeParser       = $this->createMock(ParserInterface::class);
+        $configuration    = Configuration::forUnsecuredSigner();
+
+        $fakeParser->expects(self::atLeastOnce())
+            ->method('parse')
+            ->with('THE_COOKIE')
+            ->willReturn($unknownTokenType);
+        $configuration->setParser($fakeParser);
+
+        $this->ensureSameResponse(
+            new SessionMiddleware(
+                $configuration,
+                SetCookie::create('COOKIE_NAME'),
+                100,
+                new FrozenClock(new DateTimeImmutable())
+            ),
+            (new ServerRequest())
+                ->withCookieParams(['COOKIE_NAME' => 'THE_COOKIE']),
+            $this->emptyValidationMiddleware()
+        );
     }
 
     /**
