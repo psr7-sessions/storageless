@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fa2574e3c4041585f8a7cd5218365baf",
+    "content-hash": "f1c41d901070eb27c19f9e70c0de0d71",
     "packages": [
         {
             "name": "dflydev/fig-cookies",
@@ -1345,16 +1345,16 @@
         },
         {
             "name": "infection/infection",
-            "version": "0.26.5",
+            "version": "0.26.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/infection/infection.git",
-                "reference": "d6f07358cb40e0ccb0ea99247ae6b22120540f7f"
+                "reference": "de9b6b92f00ff1cb39decddf95797a4ebec3a1ee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/infection/infection/zipball/d6f07358cb40e0ccb0ea99247ae6b22120540f7f",
-                "reference": "d6f07358cb40e0ccb0ea99247ae6b22120540f7f",
+                "url": "https://api.github.com/repos/infection/infection/zipball/de9b6b92f00ff1cb39decddf95797a4ebec3a1ee",
+                "reference": "de9b6b92f00ff1cb39decddf95797a4ebec3a1ee",
                 "shasum": ""
             },
             "require": {
@@ -1455,7 +1455,7 @@
             ],
             "support": {
                 "issues": "https://github.com/infection/infection/issues",
-                "source": "https://github.com/infection/infection/tree/0.26.5"
+                "source": "https://github.com/infection/infection/tree/0.26.6"
             },
             "funding": [
                 {
@@ -1467,7 +1467,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2022-02-15T05:20:07+00:00"
+            "time": "2022-03-07T11:40:30+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
@@ -3025,28 +3025,28 @@
         },
         {
             "name": "roave/infection-static-analysis-plugin",
-            "version": "1.17.0",
+            "version": "1.18.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/infection-static-analysis-plugin.git",
-                "reference": "5e1553743cc89fc40ec1f4c73124e745ff333927"
+                "reference": "f7e2194b1390fc9fa900e0ec123edea7112d0c18"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/infection-static-analysis-plugin/zipball/5e1553743cc89fc40ec1f4c73124e745ff333927",
-                "reference": "5e1553743cc89fc40ec1f4c73124e745ff333927",
+                "url": "https://api.github.com/repos/Roave/infection-static-analysis-plugin/zipball/f7e2194b1390fc9fa900e0ec123edea7112d0c18",
+                "reference": "f7e2194b1390fc9fa900e0ec123edea7112d0c18",
                 "shasum": ""
             },
             "require": {
-                "infection/infection": "0.26.5",
+                "infection/infection": "0.26.6",
                 "ocramius/package-versions": "^1.9.0 || ^2.0.0",
                 "php": "~7.4.7|~8.0.0|~8.1.0",
                 "sanmai/later": "^0.1.2",
-                "vimeo/psalm": "^4.20.0"
+                "vimeo/psalm": "^4.22.0"
             },
             "require-dev": {
                 "doctrine/coding-standard": "^9.0.0",
-                "phpunit/phpunit": "^9.5.13"
+                "phpunit/phpunit": "^9.5.18"
             },
             "bin": [
                 "bin/roave-infection-static-analysis-plugin"
@@ -3070,9 +3070,9 @@
             "description": "Static analysis on top of mutation testing - prevents escaped mutants from being invalid according to static analysis",
             "support": {
                 "issues": "https://github.com/Roave/infection-static-analysis-plugin/issues",
-                "source": "https://github.com/Roave/infection-static-analysis-plugin/tree/1.17.0"
+                "source": "https://github.com/Roave/infection-static-analysis-plugin/tree/1.18.0"
             },
-            "time": "2022-02-15T08:37:48+00:00"
+            "time": "2022-03-08T08:35:20+00:00"
         },
         {
             "name": "sanmai/later",
@@ -3167,12 +3167,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Pipeline\\": "src/"
-                },
                 "files": [
                     "src/functions.php"
-                ]
+                ],
+                "psr-4": {
+                    "Pipeline\\": "src/"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
