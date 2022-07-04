@@ -21,7 +21,6 @@ declare(strict_types=1);
 namespace PSR7Sessions\Storageless\Session;
 
 use JsonSerializable;
-use stdClass;
 
 use function array_key_exists;
 use function count;
@@ -53,7 +52,7 @@ final class DefaultSessionData implements SessionInterface
         $this->originalData = $originalData;
     }
 
-    public static function fromDecodedTokenData(stdClass $data): self
+    public static function fromDecodedTokenData(object $data): self
     {
         $arrayShapedData = self::convertValueToScalar($data);
 
