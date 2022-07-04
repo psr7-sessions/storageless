@@ -53,7 +53,7 @@ final class DefaultSessionData implements SessionInterface
         $this->originalData = $originalData;
     }
 
-    public static function fromDecodedTokenData(stdClass $data): self
+    public static function fromDecodedTokenData(object $data): self
     {
         $arrayShapedData = self::convertValueToScalar($data);
 
