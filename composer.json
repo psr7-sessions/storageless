@@ -41,6 +41,10 @@
         "vimeo/psalm":                            "^4.23.0"
     },
     "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "infection/extension-installer": false
+        },
         "sort-packages": true
     },
     "replace": {
