@@ -21,7 +21,6 @@ declare(strict_types=1);
 namespace PSR7Sessions\Storageless\Session;
 
 use JsonSerializable;
-use stdClass;
 
 use function array_key_exists;
 use function count;
