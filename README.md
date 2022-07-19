@@ -31,7 +31,7 @@ application, this would look like following:
 $app = new \Mezzio\Application(/* ... */);
 
 $app->pipe(\PSR7Sessions\Storageless\Http\SessionMiddleware::fromSymmetricKeyDefaults(
-    'mBC5v1sOKVvbdEitdSBenu59nfNfhwkedkJVNabosTw=', // replace this with a key of your own (see docs below)
+    \Lcobucci\JWT\Signer\Key\InMemory::plainText('mBC5v1sOKVvbdEitdSBenu59nfNfhwkedkJVNabosTw='), // replace this with a key of your own (see docs below)
     1200 // 20 minutes
 ));
 ```
