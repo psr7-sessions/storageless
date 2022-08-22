@@ -51,10 +51,10 @@ use PSR7SessionsTest\Storageless\Asset\MutableBadCookie;
 use ReflectionProperty;
 
 use function assert;
+use function base64_encode;
 use function date_default_timezone_get;
 use function random_bytes;
 use function random_int;
-use function str_repeat;
 use function time;
 use function uniqid;
 
@@ -854,7 +854,7 @@ final class SessionMiddlewareTest extends TestCase
         self::assertEquals(SameSite::lax(), $cookie->getSameSite());
         self::assertStringStartsWith('__Secure-', $cookie->getName());
     }
-    
+
     private static function makeRandomSymmetricKey(): Signer\Key\InMemory
     {
         return Signer\Key\InMemory::plainText(base64_encode(random_bytes(128)));
