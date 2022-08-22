@@ -52,7 +52,9 @@ use ReflectionProperty;
 
 use function assert;
 use function date_default_timezone_get;
+use function random_bytes;
 use function random_int;
+use function str_repeat;
 use function time;
 use function uniqid;
 
@@ -323,15 +325,15 @@ final class SessionMiddlewareTest extends TestCase
     public function testWillRefreshTokenWithIssuedAtExactlyAtTokenRefreshTimeThreshold(): void
     {
         // forcing ourselves to think of time as a mutable value:
-        $time = time() + random_int(-100, +100);
-        $now  = new DateTimeImmutable('@' . $time);
-
+        $time  = time() + random_int(-100, +100);
+        $now   = new DateTimeImmutable('@' . $time);
         $clock = new FrozenClock($now);
+        $key   = self::makeRandomSymmetricKey();
 
         $configuration = Configuration::forAsymmetricSigner(
             new Sha256(),
-            Signer\Key\InMemory::plainText('foo'),
-            Signer\Key\InMemory::plainText('foo')
+            $key,
+            $key
         );
         $middleware    = new SessionMiddleware(
             $configuration,
@@ -440,7 +442,7 @@ final class SessionMiddlewareTest extends TestCase
         $middleware               = new SessionMiddleware(
             Configuration::forSymmetricSigner(
                 new Sha256(),
-                Signer\Key\InMemory::plainText('foo'),
+                self::makeRandomSymmetricKey()
             ),
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             100,
@@ -449,7 +451,7 @@ final class SessionMiddlewareTest extends TestCase
         $middlewareWithAlteredKey = new SessionMiddleware(
             Configuration::forSymmetricSigner(
                 new Sha256(),
-                Signer\Key\InMemory::plainText('bar'),
+                self::makeRandomSymmetricKey()
             ),
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             100,
@@ -478,7 +480,7 @@ final class SessionMiddlewareTest extends TestCase
         $middleware = new SessionMiddleware(
             Configuration::forSymmetricSigner(
                 new Sha256(),
-                Signer\Key\InMemory::plainText('foo')
+                self::makeRandomSymmetricKey()
             ),
             $defaultCookie,
             123456,
@@ -503,6 +505,7 @@ final class SessionMiddlewareTest extends TestCase
 
     public function testSessionTokenParsingIsDelayedWhenSessionIsNotBeingUsed(): void
     {
+        $key    = self::makeRandomSymmetricKey();
         $signer = $this->createMock(Signer::class);
 
         $signer->expects(self::never())->method('verify');
@@ -513,7 +516,7 @@ final class SessionMiddlewareTest extends TestCase
         $middleware             = new SessionMiddleware(
             Configuration::forSymmetricSigner(
                 $signer,
-                Signer\Key\InMemory::plainText('foo')
+                $key
             ),
             $setCookie,
             100,
@@ -521,7 +524,7 @@ final class SessionMiddlewareTest extends TestCase
         );
         $configurationForBuiler = Configuration::forSymmetricSigner(
             new Sha256(),
-            Signer\Key\InMemory::plainText('foo')
+            $key
         );
         $request                = (new ServerRequest())
             ->withCookieParams([
@@ -550,7 +553,7 @@ final class SessionMiddlewareTest extends TestCase
         $dateTime      = new DateTimeImmutable();
         $configuration = Configuration::forSymmetricSigner(
             new Sha256(),
-            Signer\Key\InMemory::plainText('foo')
+            self::makeRandomSymmetricKey()
         );
         $middleware    = new SessionMiddleware(
             $configuration,
@@ -589,7 +592,7 @@ final class SessionMiddlewareTest extends TestCase
     {
         $configuration = Configuration::forSymmetricSigner(
             new Sha256(),
-            Signer\Key\InMemory::plainText('foo')
+            self::makeRandomSymmetricKey()
         );
         $middleware    = new SessionMiddleware(
             $configuration,
@@ -624,7 +627,7 @@ final class SessionMiddlewareTest extends TestCase
                     return new SessionMiddleware(
                         Configuration::forSymmetricSigner(
                             new Signer\Hmac\Sha512(),
-                            Signer\Key\InMemory::plainText('not relevant')
+                            self::makeRandomSymmetricKey()
                         ),
                         SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
                         100,
@@ -644,7 +647,7 @@ final class SessionMiddlewareTest extends TestCase
             'from-symmetric' => [
                 static function (): SessionMiddleware {
                     return SessionMiddleware::fromSymmetricKeyDefaults(
-                        Signer\Key\InMemory::plainText('not relevant'),
+                        self::makeRandomSymmetricKey(),
                         100
                     );
                 },
@@ -669,7 +672,7 @@ final class SessionMiddlewareTest extends TestCase
 
         $configuration = Configuration::forSymmetricSigner(
             new Sha256(),
-            Signer\Key\InMemory::plainText('foo')
+            self::makeRandomSymmetricKey()
         );
         $middleware    = new SessionMiddleware(
             $configuration,
@@ -850,5 +853,10 @@ final class SessionMiddlewareTest extends TestCase
         self::assertSame('/', $cookie->getPath());
         self::assertEquals(SameSite::lax(), $cookie->getSameSite());
         self::assertStringStartsWith('__Secure-', $cookie->getName());
+    }
+    
+    private static function makeRandomSymmetricKey(): Signer\Key\InMemory
+    {
+        return Signer\Key\InMemory::plainText(base64_encode(random_bytes(128)));
     }
 }
