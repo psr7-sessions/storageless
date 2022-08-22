@@ -857,6 +857,6 @@ final class SessionMiddlewareTest extends TestCase
 
     private static function makeRandomSymmetricKey(): Signer\Key\InMemory
     {
-        return Signer\Key\InMemory::plainText(base64_encode(random_bytes(128)));
+        return Signer\Key\InMemory::plainText('test-key_' . base64_encode(random_bytes(128)));
     }
 }
