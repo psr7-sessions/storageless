@@ -31,7 +31,7 @@
         "psr/http-server-middleware":      "^1.0.1"
     },
     "require-dev": {
-        "doctrine/coding-standard":               "^9.0.2",
+        "doctrine/coding-standard":               "^10.0.0",
         "laminas/laminas-diactoros":              "^2.16.0",
         "laminas/laminas-httphandlerrunner":      "^2.1.0",
         "phpunit/phpunit":                        "^9.5.23",

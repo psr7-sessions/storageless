@@ -28,9 +28,7 @@ use PSR7SessionsTest\Storageless\Asset\MakeSession;
 
 use function uniqid;
 
-/**
- * @covers \PSR7Sessions\Storageless\Session\LazySession
- */
+/** @covers \PSR7Sessions\Storageless\Session\LazySession */
 final class LazySessionTest extends TestCase
 {
     /** @var SessionInterface&MockObject */
@@ -67,7 +65,7 @@ final class LazySessionTest extends TestCase
             ->method('hasChanged')
             ->willReturnOnConsecutiveCalls(
                 true,
-                false
+                false,
             );
 
         $this->forceWrappedSessionInitialization();
@@ -148,7 +146,7 @@ final class LazySessionTest extends TestCase
             ->method('isEmpty')
             ->willReturnOnConsecutiveCalls(
                 true,
-                false
+                false,
             );
 
         self::assertTrue($this->lazySession->isEmpty());
@@ -165,7 +163,7 @@ final class LazySessionTest extends TestCase
             ->method('jsonSerialize')
             ->willReturnOnConsecutiveCalls(
                 (object) ['foo' => 'bar'],
-                (object) ['baz' => 'tab']
+                (object) ['baz' => 'tab'],
             );
 
         self::assertEquals((object) ['foo' => 'bar'], $this->lazySession->jsonSerialize());

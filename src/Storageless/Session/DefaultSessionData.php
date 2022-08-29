@@ -34,22 +34,14 @@ final class DefaultSessionData implements SessionInterface
 {
     private const DEFAULT_JSON_DECODE_DEPTH = 512;
 
-    /** @var array<string, int|bool|string|float|mixed[]|null> */
-    private array $data;
-
-    /** @var array<string, int|bool|string|float|mixed[]|null> */
-    private array $originalData;
-
     /**
      * @param array<string, int|bool|string|float|mixed[]|null> $data
      * @param array<string, int|bool|string|float|mixed[]|null> $originalData
      */
     private function __construct(
-        array $data,
-        array $originalData
+        private array $data,
+        private array $originalData,
     ) {
-        $this->data         = $data;
-        $this->originalData = $originalData;
     }
 
     public static function fromDecodedTokenData(object $data): self
@@ -59,9 +51,7 @@ final class DefaultSessionData implements SessionInterface
         return new self($arrayShapedData, $arrayShapedData);
     }
 
-    /**
-     * @param array<int|bool|string|float|mixed[]|object|JsonSerializable|null> $data
-     */
+    /** @param array<int|bool|string|float|mixed[]|object|JsonSerializable|null> $data */
     public static function fromTokenData(array $data): self
     {
         $instance = new self([], []);
@@ -147,7 +137,7 @@ final class DefaultSessionData implements SessionInterface
             json_encode($value, JSON_PRESERVE_ZERO_FRACTION | JSON_THROW_ON_ERROR),
             true,
             self::DEFAULT_JSON_DECODE_DEPTH,
-            JSON_THROW_ON_ERROR
+            JSON_THROW_ON_ERROR,
         );
 
         return $decoded;

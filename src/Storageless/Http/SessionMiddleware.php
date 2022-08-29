@@ -58,26 +58,17 @@ final class SessionMiddleware implements MiddlewareInterface
 
     private Configuration $config;
 
-    private int $expirationTime;
-
-    private int $refreshTime;
-
     private SetCookie $defaultCookie;
-
-    private Clock $clock;
 
     public function __construct(
         Configuration $configuration,
         SetCookie $defaultCookie,
-        int $expirationTime,
-        Clock $clock,
-        int $refreshTime = self::DEFAULT_REFRESH_TIME
+        private int $expirationTime,
+        private Clock $clock,
+        private int $refreshTime = self::DEFAULT_REFRESH_TIME,
     ) {
-        $this->config         = $configuration;
-        $this->defaultCookie  = clone $defaultCookie;
-        $this->expirationTime = $expirationTime;
-        $this->clock          = $clock;
-        $this->refreshTime    = $refreshTime;
+        $this->config        = $configuration;
+        $this->defaultCookie = clone $defaultCookie;
     }
 
     /**
@@ -88,11 +79,11 @@ final class SessionMiddleware implements MiddlewareInterface
         return new self(
             Configuration::forSymmetricSigner(
                 new Signer\Hmac\Sha256(),
-                $symmetricKey
+                $symmetricKey,
             ),
             self::buildDefaultCookie(),
             $expirationTime,
-            new SystemClock(new DateTimeZone(date_default_timezone_get()))
+            new SystemClock(new DateTimeZone(date_default_timezone_get())),
         );
     }
 
@@ -103,17 +94,17 @@ final class SessionMiddleware implements MiddlewareInterface
     public static function fromRsaAsymmetricKeyDefaults(
         Signer\Key $privateRsaKey,
         Signer\Key $publicRsaKey,
-        int $expirationTime
+        int $expirationTime,
     ): self {
         return new self(
             Configuration::forAsymmetricSigner(
                 new Signer\Rsa\Sha256(),
                 $privateRsaKey,
-                $publicRsaKey
+                $publicRsaKey,
             ),
             self::buildDefaultCookie(),
             $expirationTime,
-            new SystemClock(new DateTimeZone(date_default_timezone_get()))
+            new SystemClock(new DateTimeZone(date_default_timezone_get())),
         );
     }
 
@@ -142,14 +133,14 @@ final class SessionMiddleware implements MiddlewareInterface
         return $this->appendToken(
             $sessionContainer,
             $handler->handle($request->withAttribute(self::SESSION_ATTRIBUTE, $sessionContainer)),
-            $token
+            $token,
         );
     }
 
     /**
      * Extract the token from the given request object
      */
-    private function parseToken(Request $request): ?UnencryptedToken
+    private function parseToken(Request $request): UnencryptedToken|null
     {
         /** @var array<string, string> $cookies */
         $cookies    = $request->getCookieParams();
@@ -181,10 +172,8 @@ final class SessionMiddleware implements MiddlewareInterface
         return $token;
     }
 
-    /**
-     * @throws OutOfBoundsException
-     */
-    private function extractSessionContainer(?UnencryptedToken $token): SessionInterface
+    /** @throws OutOfBoundsException */
+    private function extractSessionContainer(UnencryptedToken|null $token): SessionInterface
     {
         if (! $token) {
             return DefaultSessionData::newEmptySession();
@@ -192,9 +181,9 @@ final class SessionMiddleware implements MiddlewareInterface
 
         try {
             return DefaultSessionData::fromDecodedTokenData(
-                (object) $token->claims()->get(self::SESSION_CLAIM, new stdClass())
+                (object) $token->claims()->get(self::SESSION_CLAIM, new stdClass()),
             );
-        } catch (BadMethodCallException $invalidToken) {
+        } catch (BadMethodCallException) {
             return DefaultSessionData::newEmptySession();
         }
     }
@@ -203,7 +192,7 @@ final class SessionMiddleware implements MiddlewareInterface
      * @throws BadMethodCallException
      * @throws InvalidArgumentException
      */
-    private function appendToken(SessionInterface $sessionContainer, Response $response, ?Token $token): Response
+    private function appendToken(SessionInterface $sessionContainer, Response $response, Token|null $token): Response
     {
         $sessionContainerChanged = $sessionContainer->hasChanged();
 
@@ -218,15 +207,13 @@ final class SessionMiddleware implements MiddlewareInterface
         return $response;
     }
 
-    private function shouldTokenBeRefreshed(?Token $token): bool
+    private function shouldTokenBeRefreshed(Token|null $token): bool
     {
         return $token !== null
             && $token->hasBeenIssuedBefore($this->clock->now()->sub(new DateInterval(sprintf('PT%sS', $this->refreshTime))));
     }
 
-    /**
-     * @throws BadMethodCallException
-     */
+    /** @throws BadMethodCallException */
     private function getTokenCookie(SessionInterface $sessionContainer): SetCookie
     {
         $now       = $this->clock->now();
@@ -241,7 +228,7 @@ final class SessionMiddleware implements MiddlewareInterface
                     ->expiresAt($expiresAt)
                     ->withClaim(self::SESSION_CLAIM, $sessionContainer)
                     ->getToken($this->config->signer(), $this->config->signingKey())
-                    ->toString()
+                    ->toString(),
             )
             ->withExpires($expiresAt);
     }

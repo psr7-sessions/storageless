@@ -33,20 +33,18 @@ use function json_encode;
 use const PHP_INT_MAX;
 use const PHP_INT_MIN;
 
-/**
- * @covers \PSR7Sessions\Storageless\Session\DefaultSessionData
- */
+/** @covers \PSR7Sessions\Storageless\Session\DefaultSessionData */
 final class DefaultSessionDataTest extends TestCase
 {
     public function testEqualityOfEmptySessions(): void
     {
         self::assertEquals(
             DefaultSessionData::fromTokenData([]),
-            DefaultSessionData::newEmptySession()
+            DefaultSessionData::newEmptySession(),
         );
         self::assertEquals(
             DefaultSessionData::fromDecodedTokenData((object) []),
-            DefaultSessionData::newEmptySession()
+            DefaultSessionData::newEmptySession(),
         );
     }
 
@@ -102,7 +100,7 @@ final class DefaultSessionDataTest extends TestCase
     {
         self::assertSame(
             '{"0":"a","1":"b","2":"c"}',
-            json_encode(DefaultSessionData::fromTokenData(['a', 'b', 'c']))
+            json_encode(DefaultSessionData::fromTokenData(['a', 'b', 'c'])),
         );
     }
 
@@ -265,7 +263,7 @@ final class DefaultSessionDataTest extends TestCase
                 $interfaces,
                 static function (ReflectionClass $interface) use ($method) {
                     return $interface->hasMethod($method->getName());
-                }
+                },
             ), $method->getName());
         }
     }
