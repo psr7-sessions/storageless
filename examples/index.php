@@ -44,14 +44,14 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $sessionMiddleware = new SessionMiddleware(
     Configuration::forSymmetricSigner(
         new Sha256(),
-        InMemory::plainText('c9UA8QKLSmDEn4DhNeJIad/4JugZd/HvrjyKrS0jOes=') // // signature key (important: change this to your own)
+        InMemory::plainText('c9UA8QKLSmDEn4DhNeJIad/4JugZd/HvrjyKrS0jOes='), // // signature key (important: change this to your own)
     ),
     SetCookie::create('an-example-cookie-name')
         ->withSecure(false) // false on purpose, unless you have https locally
         ->withHttpOnly(true)
         ->withPath('/'),
     1200, // 20 minutes
-    new SystemClock(new DateTimeZone(date_default_timezone_get()))
+    new SystemClock(new DateTimeZone(date_default_timezone_get())),
 );
 
 $myMiddleware = new class implements RequestHandlerInterface {

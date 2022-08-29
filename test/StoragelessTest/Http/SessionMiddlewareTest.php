@@ -152,18 +152,18 @@ final class SessionMiddlewareTest extends TestCase
                 self::assertTrue(
                     $session->hasChanged(),
                     'ensuring that the cookie is sent again: '
-                    . 'non-modified session containers are not to be re-serialized into a token'
+                    . 'non-modified session containers are not to be re-serialized into a token',
                 );
 
                 return new Response();
-            }
+            },
         );
 
         $firstResponse = $middleware->process(new ServerRequest(), $this->writingMiddleware($sessionValue));
 
         $response = $middleware->process(
             $this->requestWithResponseCookies($firstResponse),
-            $checkingMiddleware
+            $checkingMiddleware,
         );
 
         self::assertNotSame($response, $firstResponse);
@@ -188,14 +188,14 @@ final class SessionMiddlewareTest extends TestCase
                 self::assertFalse($session->hasChanged());
 
                 return new Response();
-            }
+            },
         );
 
         $this->createTokenWithCustomClaim(
             $middleware,
             new DateTimeImmutable('-1 day'),
             new DateTimeImmutable('+1 day'),
-            'not valid session data'
+            'not valid session data',
         );
 
         $middleware->process(
@@ -205,10 +205,10 @@ final class SessionMiddlewareTest extends TestCase
                         $middleware,
                         new DateTimeImmutable('-1 day'),
                         new DateTimeImmutable('+1 day'),
-                        $sessionValue
+                        $sessionValue,
                     ),
                 ]),
-            $checkingMiddleware
+            $checkingMiddleware,
         );
     }
 
@@ -225,7 +225,7 @@ final class SessionMiddlewareTest extends TestCase
                 SessionMiddleware::DEFAULT_COOKIE => $this->createToken(
                     $middleware,
                     new DateTimeImmutable('-1 day'),
-                    new DateTimeImmutable('-2 day')
+                    new DateTimeImmutable('-2 day'),
                 ),
             ]);
 
@@ -249,11 +249,11 @@ final class SessionMiddlewareTest extends TestCase
                 $configuration,
                 SetCookie::create('COOKIE_NAME'),
                 100,
-                new FrozenClock(new DateTimeImmutable())
+                new FrozenClock(new DateTimeImmutable()),
             ),
             (new ServerRequest())
                 ->withCookieParams(['COOKIE_NAME' => 'THE_COOKIE']),
-            $this->emptyValidationMiddleware()
+            $this->emptyValidationMiddleware(),
         );
     }
 
@@ -270,7 +270,7 @@ final class SessionMiddlewareTest extends TestCase
                 SessionMiddleware::DEFAULT_COOKIE => $this->createToken(
                     $middleware,
                     new DateTimeImmutable('+1 day'),
-                    new DateTimeImmutable('-2 day')
+                    new DateTimeImmutable('-2 day'),
                 ),
             ]);
 
@@ -333,14 +333,14 @@ final class SessionMiddlewareTest extends TestCase
         $configuration = Configuration::forAsymmetricSigner(
             new Sha256(),
             $key,
-            $key
+            $key,
         );
         $middleware    = new SessionMiddleware(
             $configuration,
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             1000,
             $clock,
-            100
+            100,
         );
 
         $requestWithTokenIssuedInThePast = (new ServerRequest())
@@ -378,7 +378,7 @@ final class SessionMiddlewareTest extends TestCase
         $this->ensureSameResponse(
             $middleware,
             $this->requestWithResponseCookies(
-                $middleware->process(new ServerRequest(), $this->writingMiddleware())
+                $middleware->process(new ServerRequest(), $this->writingMiddleware()),
             ),
             $this->fakeDelegate(
                 static function (ServerRequestInterface $request) {
@@ -391,8 +391,8 @@ final class SessionMiddlewareTest extends TestCase
                     self::assertFalse($session->hasChanged());
 
                     return new Response();
-                }
-            )
+                },
+            ),
         );
     }
 
@@ -407,7 +407,7 @@ final class SessionMiddlewareTest extends TestCase
         $this->ensureClearsSessionCookie(
             $middleware,
             $this->requestWithResponseCookies(
-                $middleware->process(new ServerRequest(), $this->writingMiddleware())
+                $middleware->process(new ServerRequest(), $this->writingMiddleware()),
             ),
             $this->fakeDelegate(
                 static function (ServerRequestInterface $request) {
@@ -417,8 +417,8 @@ final class SessionMiddlewareTest extends TestCase
                     $session->clear();
 
                     return new Response();
-                }
-            )
+                },
+            ),
         );
     }
 
@@ -433,7 +433,7 @@ final class SessionMiddlewareTest extends TestCase
         $this->ensureSameResponse(
             $middleware,
             (new ServerRequest())->withCookieParams([SessionMiddleware::DEFAULT_COOKIE => 'malformed content']),
-            $this->emptyValidationMiddleware()
+            $this->emptyValidationMiddleware(),
         );
     }
 
@@ -442,28 +442,28 @@ final class SessionMiddlewareTest extends TestCase
         $middleware               = new SessionMiddleware(
             Configuration::forSymmetricSigner(
                 new Sha256(),
-                self::makeRandomSymmetricKey()
+                self::makeRandomSymmetricKey(),
             ),
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             100,
-            new SystemClock(new DateTimeZone(date_default_timezone_get()))
+            new SystemClock(new DateTimeZone(date_default_timezone_get())),
         );
         $middlewareWithAlteredKey = new SessionMiddleware(
             Configuration::forSymmetricSigner(
                 new Sha256(),
-                self::makeRandomSymmetricKey()
+                self::makeRandomSymmetricKey(),
             ),
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             100,
-            new SystemClock(new DateTimeZone(date_default_timezone_get()))
+            new SystemClock(new DateTimeZone(date_default_timezone_get())),
         );
 
         $this->ensureSameResponse(
             $middlewareWithAlteredKey,
             $this->requestWithResponseCookies(
-                $middleware->process(new ServerRequest(), $this->writingMiddleware())
+                $middleware->process(new ServerRequest(), $this->writingMiddleware()),
             ),
-            $this->emptyValidationMiddleware()
+            $this->emptyValidationMiddleware(),
         );
     }
 
@@ -480,12 +480,12 @@ final class SessionMiddlewareTest extends TestCase
         $middleware = new SessionMiddleware(
             Configuration::forSymmetricSigner(
                 new Sha256(),
-                self::makeRandomSymmetricKey()
+                self::makeRandomSymmetricKey(),
             ),
             $defaultCookie,
             123456,
             new FrozenClock($dateTime),
-            123
+            123,
         );
 
         $response = $middleware->process(new ServerRequest(), $this->writingMiddleware());
@@ -516,15 +516,15 @@ final class SessionMiddlewareTest extends TestCase
         $middleware             = new SessionMiddleware(
             Configuration::forSymmetricSigner(
                 $signer,
-                $key
+                $key,
             ),
             $setCookie,
             100,
-            $currentTimeProvider
+            $currentTimeProvider,
         );
         $configurationForBuiler = Configuration::forSymmetricSigner(
             new Sha256(),
-            $key
+            $key,
         );
         $request                = (new ServerRequest())
             ->withCookieParams([
@@ -540,11 +540,11 @@ final class SessionMiddlewareTest extends TestCase
             $this->fakeDelegate(static function (ServerRequestInterface $request) {
                 self::assertInstanceOf(
                     SessionInterface::class,
-                    $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE)
+                    $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE),
                 );
 
                 return new Response();
-            })
+            }),
         );
     }
 
@@ -553,14 +553,14 @@ final class SessionMiddlewareTest extends TestCase
         $dateTime      = new DateTimeImmutable();
         $configuration = Configuration::forSymmetricSigner(
             new Sha256(),
-            self::makeRandomSymmetricKey()
+            self::makeRandomSymmetricKey(),
         );
         $middleware    = new SessionMiddleware(
             $configuration,
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             1000,
             new FrozenClock($dateTime),
-            300
+            300,
         );
 
         $expiringToken = (new ServerRequest())
@@ -592,14 +592,14 @@ final class SessionMiddlewareTest extends TestCase
     {
         $configuration = Configuration::forSymmetricSigner(
             new Sha256(),
-            self::makeRandomSymmetricKey()
+            self::makeRandomSymmetricKey(),
         );
         $middleware    = new SessionMiddleware(
             $configuration,
             SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
             1000,
             new SystemClock(new DateTimeZone(date_default_timezone_get())),
-            300
+            300,
         );
 
         $validToken = (new ServerRequest())
@@ -616,9 +616,7 @@ final class SessionMiddlewareTest extends TestCase
         $this->ensureSameResponse($middleware, $validToken);
     }
 
-    /**
-     * @return array<array<callable(): SessionMiddleware>>
-     */
+    /** @return array<array<callable(): SessionMiddleware>> */
     public function validMiddlewaresProvider(): array
     {
         return $this->defaultMiddlewaresProvider() + [
@@ -627,20 +625,18 @@ final class SessionMiddlewareTest extends TestCase
                     return new SessionMiddleware(
                         Configuration::forSymmetricSigner(
                             new Signer\Hmac\Sha512(),
-                            self::makeRandomSymmetricKey()
+                            self::makeRandomSymmetricKey(),
                         ),
                         SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
                         100,
-                        new SystemClock(new DateTimeZone(date_default_timezone_get()))
+                        new SystemClock(new DateTimeZone(date_default_timezone_get())),
                     );
                 },
             ],
         ];
     }
 
-    /**
-     * @return array<array<callable(): SessionMiddleware>>
-     */
+    /** @return array<array<callable(): SessionMiddleware>> */
     public function defaultMiddlewaresProvider(): array
     {
         return [
@@ -648,7 +644,7 @@ final class SessionMiddlewareTest extends TestCase
                 static function (): SessionMiddleware {
                     return SessionMiddleware::fromSymmetricKeyDefaults(
                         self::makeRandomSymmetricKey(),
-                        100
+                        100,
                     );
                 },
             ],
@@ -657,7 +653,7 @@ final class SessionMiddlewareTest extends TestCase
                     return SessionMiddleware::fromRsaAsymmetricKeyDefaults(
                         Signer\Key\InMemory::file(__DIR__ . '/../../keys/private_key.pem'),
                         Signer\Key\InMemory::file(__DIR__ . '/../../keys/public_key.pem'),
-                        200
+                        200,
                     );
                 },
             ],
@@ -672,13 +668,13 @@ final class SessionMiddlewareTest extends TestCase
 
         $configuration = Configuration::forSymmetricSigner(
             new Sha256(),
-            self::makeRandomSymmetricKey()
+            self::makeRandomSymmetricKey(),
         );
         $middleware    = new SessionMiddleware(
             $configuration,
             $cookie,
             1000,
-            new SystemClock(new DateTimeZone(date_default_timezone_get()))
+            new SystemClock(new DateTimeZone(date_default_timezone_get())),
         );
 
         $cookie->mutated = true;
@@ -687,14 +683,14 @@ final class SessionMiddlewareTest extends TestCase
             '__Secure-slsession=',
             $middleware
                 ->process(new ServerRequest(), $this->writingMiddleware())
-                ->getHeaderLine('Set-Cookie')
+                ->getHeaderLine('Set-Cookie'),
         );
     }
 
     private function ensureSameResponse(
         SessionMiddleware $middleware,
         ServerRequestInterface $request,
-        ?RequestHandlerInterface $next = null
+        RequestHandlerInterface|null $next = null,
     ): ResponseInterface {
         $initialResponse = new Response();
 
@@ -729,7 +725,7 @@ final class SessionMiddlewareTest extends TestCase
     private function ensureClearsSessionCookie(
         SessionMiddleware $middleware,
         ServerRequestInterface $request,
-        RequestHandlerInterface $next
+        RequestHandlerInterface $next,
     ): ResponseInterface {
         $response = $middleware->process($request, $next);
 
@@ -758,7 +754,7 @@ final class SessionMiddlewareTest extends TestCase
         SessionMiddleware $middleware,
         DateTimeImmutable $issuedAt,
         DateTimeImmutable $expiration,
-        mixed $claim
+        mixed $claim,
     ): string {
         $config = $this->getJwtConfiguration($middleware);
 
@@ -781,7 +777,7 @@ final class SessionMiddlewareTest extends TestCase
                 self::assertTrue($session->isEmpty());
 
                 return new Response();
-            }
+            },
         );
     }
 
@@ -794,7 +790,7 @@ final class SessionMiddlewareTest extends TestCase
                 $session->set('foo', $value);
 
                 return new Response();
-            }
+            },
         );
     }
 
@@ -811,9 +807,7 @@ final class SessionMiddlewareTest extends TestCase
         return $middleware;
     }
 
-    /**
-     * @return ServerRequest
-     */
+    /** @return ServerRequest */
     private function requestWithResponseCookies(ResponseInterface $response): ServerRequestInterface
     {
         return (new ServerRequest())->withCookieParams([

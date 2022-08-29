@@ -23,7 +23,7 @@ namespace PSR7Sessions\Storageless\Session;
 final class LazySession implements SessionInterface
 {
     /** @internal do not access directly: use {@see LazySession::getRealSession} instead */
-    private ?SessionInterface $realSession = null;
+    private SessionInterface|null $realSession = null;
 
     /**
      * @var callable
