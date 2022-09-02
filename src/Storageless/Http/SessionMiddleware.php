@@ -46,6 +46,7 @@ use PSR7Sessions\Storageless\Session\LazySession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
 use stdClass;
 
+use function assert;
 use function date_default_timezone_get;
 use function sprintf;
 
@@ -55,9 +56,7 @@ final class SessionMiddleware implements MiddlewareInterface
     public const SESSION_ATTRIBUTE    = 'session';
     public const DEFAULT_COOKIE       = '__Secure-slsession';
     public const DEFAULT_REFRESH_TIME = 60;
-
     private Configuration $config;
-
     private SetCookie $defaultCookie;
 
     public function __construct(
@@ -209,8 +208,12 @@ final class SessionMiddleware implements MiddlewareInterface
 
     private function shouldTokenBeRefreshed(Token|null $token): bool
     {
+        $refreshTime = $this->clock->now()->sub(new DateInterval(sprintf('PT%sS', $this->refreshTime)));
+
+        assert($refreshTime !== false);
+
         return $token !== null
-            && $token->hasBeenIssuedBefore($this->clock->now()->sub(new DateInterval(sprintf('PT%sS', $this->refreshTime))));
+            && $token->hasBeenIssuedBefore($refreshTime);
     }
 
     /** @throws BadMethodCallException */
@@ -236,6 +239,8 @@ final class SessionMiddleware implements MiddlewareInterface
     private function getExpirationCookie(): SetCookie
     {
         $expirationDate = $this->clock->now()->modify('-30 days');
+
+        assert($expirationDate !== false);
 
         return $this
             ->defaultCookie
