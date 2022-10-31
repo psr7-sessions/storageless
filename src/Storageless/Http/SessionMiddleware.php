@@ -199,7 +199,7 @@ final class SessionMiddleware implements MiddlewareInterface
             return FigResponseCookies::set($response, $this->getExpirationCookie());
         }
 
-        if ($sessionContainerChanged || ($this->shouldTokenBeRefreshed($token) && ! $sessionContainer->isEmpty())) {
+        if ($sessionContainerChanged || $this->shouldTokenBeRefreshed($token)) {
             return FigResponseCookies::set($response, $this->getTokenCookie($sessionContainer));
         }
 
@@ -208,12 +208,15 @@ final class SessionMiddleware implements MiddlewareInterface
 
     private function shouldTokenBeRefreshed(Token|null $token): bool
     {
+        if ($token === null) {
+            return false;
+        }
+
         $refreshTime = $this->clock->now()->sub(new DateInterval(sprintf('PT%sS', $this->refreshTime)));
 
         assert($refreshTime !== false);
 
-        return $token !== null
-            && $token->hasBeenIssuedBefore($refreshTime);
+        return $token->hasBeenIssuedBefore($refreshTime);
     }
 
     /** @throws BadMethodCallException */
