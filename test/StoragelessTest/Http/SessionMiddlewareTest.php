@@ -367,6 +367,33 @@ final class SessionMiddlewareTest extends TestCase
         self::assertEquals($now, $token->claims()->get(RegisteredClaims::ISSUED_AT), 'Token was refreshed');
     }
 
+    public function testWillNotRefreshATokenForARequestWithNoGivenTokenAndNoSessionModification(): void
+    {
+        $key        = self::makeRandomSymmetricKey();
+        $middleware = new SessionMiddleware(
+            Configuration::forAsymmetricSigner(
+                new Sha256(),
+                $key,
+                $key,
+            ),
+            SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
+            1000,
+            new FrozenClock(new DateTimeImmutable()),
+            100,
+        );
+
+        self::assertNull(
+            $this
+                ->getCookie($middleware->process(
+                    (new ServerRequest())
+                        ->withCookieParams([SessionMiddleware::DEFAULT_COOKIE => 'invalid-token']),
+                    $this->fakeDelegate(static fn (): ResponseInterface => new Response()),
+                ))
+                ->getValue(),
+            'No session cookie was set, since session data was not changed, and the token was not valid',
+        );
+    }
+
     /**
      * @param callable(): SessionMiddleware $middlewareFactory
      *
