@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "df4bcac6338df9e57f20680b08fd64f7",
+    "content-hash": "8100dfb0090641977cc3fa74a1592f10",
     "packages": [
         {
             "name": "azjezz/psl",
@@ -1325,27 +1325,27 @@
         },
         {
             "name": "roave/backward-compatibility-check",
-            "version": "7.3.0",
+            "version": "7.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/BackwardCompatibilityCheck.git",
-                "reference": "e164a07ced41637b33b2deffa0a98056fbef16f5"
+                "reference": "670a5cdaa2d60bc07658a5605f57c2154a1ece76"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/BackwardCompatibilityCheck/zipball/e164a07ced41637b33b2deffa0a98056fbef16f5",
-                "reference": "e164a07ced41637b33b2deffa0a98056fbef16f5",
+                "url": "https://api.github.com/repos/Roave/BackwardCompatibilityCheck/zipball/670a5cdaa2d60bc07658a5605f57c2154a1ece76",
+                "reference": "670a5cdaa2d60bc07658a5605f57c2154a1ece76",
                 "shasum": ""
             },
             "require": {
                 "azjezz/psl": "^2.0.4",
-                "composer/composer": "^2.4.2",
+                "composer/composer": "^2.4.4",
                 "ext-json": "*",
                 "nikolaposa/version": "^4.1.0",
-                "ocramius/package-versions": "^2.5.1",
+                "ocramius/package-versions": "^2.7.0",
                 "php": "~8.1.0 || ~8.2.0",
-                "roave/better-reflection": "^6.2.0",
-                "symfony/console": "^6.1.5"
+                "roave/better-reflection": "^6.3.0",
+                "symfony/console": "^6.1.7"
             },
             "conflict": {
                 "revolt/event-loop": "<0.2.5",
@@ -1354,9 +1354,9 @@
             "require-dev": {
                 "doctrine/coding-standard": "^10.0.0",
                 "php-standard-library/psalm-plugin": "^2.0.2",
-                "phpunit/phpunit": "^9.5.25",
+                "phpunit/phpunit": "^9.5.26",
                 "psalm/plugin-phpunit": "^0.17.0",
-                "roave/infection-static-analysis-plugin": "^1.23",
+                "roave/infection-static-analysis-plugin": "^1.25",
                 "roave/security-advisories": "dev-master",
                 "squizlabs/php_codesniffer": "^3.7.1",
                 "vimeo/psalm": "^4.29.0"
@@ -1387,22 +1387,22 @@
             "description": "Tool to compare two revisions of a public API to check for BC breaks",
             "support": {
                 "issues": "https://github.com/Roave/BackwardCompatibilityCheck/issues",
-                "source": "https://github.com/Roave/BackwardCompatibilityCheck/tree/7.3.0"
+                "source": "https://github.com/Roave/BackwardCompatibilityCheck/tree/7.4.0"
             },
-            "time": "2022-10-12T21:30:36+00:00"
+            "time": "2022-10-31T21:48:04+00:00"
         },
         {
             "name": "roave/better-reflection",
-            "version": "6.3.0",
+            "version": "6.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/BetterReflection.git",
-                "reference": "54bd4ad78eb76d98e0544fc9860937f865467ef8"
+                "reference": "6afe50d6465a41ff8f386b1660f88a86ae3bc9ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/BetterReflection/zipball/54bd4ad78eb76d98e0544fc9860937f865467ef8",
-                "reference": "54bd4ad78eb76d98e0544fc9860937f865467ef8",
+                "url": "https://api.github.com/repos/Roave/BetterReflection/zipball/6afe50d6465a41ff8f386b1660f88a86ae3bc9ae",
+                "reference": "6afe50d6465a41ff8f386b1660f88a86ae3bc9ae",
                 "shasum": ""
             },
             "require": {
@@ -1417,10 +1417,10 @@
             },
             "require-dev": {
                 "doctrine/coding-standard": "^10.0.0",
-                "phpstan/phpstan": "^1.8.9",
-                "phpstan/phpstan-phpunit": "^1.1.1",
+                "phpstan/phpstan": "^1.8.10",
+                "phpstan/phpstan-phpunit": "^1.2.2",
                 "phpunit/phpunit": "^9.5.25",
-                "roave/infection-static-analysis-plugin": "^1.23.0",
+                "roave/infection-static-analysis-plugin": "^1.25.0",
                 "vimeo/psalm": "^4.29"
             },
             "suggest": {
@@ -1461,9 +1461,9 @@
             "description": "Better Reflection - an improved code reflection API",
             "support": {
                 "issues": "https://github.com/Roave/BetterReflection/issues",
-                "source": "https://github.com/Roave/BetterReflection/tree/6.3.0"
+                "source": "https://github.com/Roave/BetterReflection/tree/6.4.0"
             },
-            "time": "2022-10-14T23:59:07+00:00"
+            "time": "2022-10-31T22:45:03+00:00"
         },
         {
             "name": "roave/signature",
