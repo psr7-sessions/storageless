@@ -46,7 +46,6 @@ use PSR7Sessions\Storageless\Session\LazySession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
 use stdClass;
 
-use function assert;
 use function date_default_timezone_get;
 use function sprintf;
 
@@ -212,11 +211,11 @@ final class SessionMiddleware implements MiddlewareInterface
             return false;
         }
 
-        $refreshTime = $this->clock->now()->sub(new DateInterval(sprintf('PT%sS', $this->refreshTime)));
-
-        assert($refreshTime !== false);
-
-        return $token->hasBeenIssuedBefore($refreshTime);
+        return $token->hasBeenIssuedBefore(
+            $this->clock
+                ->now()
+                ->sub(new DateInterval(sprintf('PT%sS', $this->refreshTime))),
+        );
     }
 
     /** @throws BadMethodCallException */
