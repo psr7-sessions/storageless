@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "azjezz/psl",
-            "version": "2.0.4",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/azjezz/psl.git",
-                "reference": "c34e6c2c5560007eafb158bf9f6040c4054c09ab"
+                "reference": "57a72ac6326c5ef5080306f4f97c27c6491f6547"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/azjezz/psl/zipball/c34e6c2c5560007eafb158bf9f6040c4054c09ab",
-                "reference": "c34e6c2c5560007eafb158bf9f6040c4054c09ab",
+                "url": "https://api.github.com/repos/azjezz/psl/zipball/57a72ac6326c5ef5080306f4f97c27c6491f6547",
+                "reference": "57a72ac6326c5ef5080306f4f97c27c6491f6547",
                 "shasum": ""
             },
             "require": {
@@ -27,7 +27,7 @@
                 "ext-mbstring": "*",
                 "ext-sodium": "*",
                 "php": "~8.1.0 || ~8.2.0",
-                "revolt/event-loop": "^0.2.0"
+                "revolt/event-loop": "^1.0.0"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.4.0",
@@ -70,7 +70,7 @@
             "description": "PHP Standard Library",
             "support": {
                 "issues": "https://github.com/azjezz/psl/issues",
-                "source": "https://github.com/azjezz/psl/tree/2.0.4"
+                "source": "https://github.com/azjezz/psl/tree/2.1.0"
             },
             "funding": [
                 {
@@ -78,7 +78,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2022-10-10T18:40:50+00:00"
+            "time": "2022-11-04T08:19:29+00:00"
         },
         {
             "name": "beberlei/assert",
@@ -479,16 +479,16 @@
         },
         {
             "name": "composer/pcre",
-            "version": "3.0.0",
+            "version": "3.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/pcre.git",
-                "reference": "e300eb6c535192decd27a85bc72a9290f0d6b3bd"
+                "reference": "4482b6409ca6bfc2af043a5711cd21ac3e7a8dfb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/pcre/zipball/e300eb6c535192decd27a85bc72a9290f0d6b3bd",
-                "reference": "e300eb6c535192decd27a85bc72a9290f0d6b3bd",
+                "url": "https://api.github.com/repos/composer/pcre/zipball/4482b6409ca6bfc2af043a5711cd21ac3e7a8dfb",
+                "reference": "4482b6409ca6bfc2af043a5711cd21ac3e7a8dfb",
                 "shasum": ""
             },
             "require": {
@@ -530,7 +530,7 @@
             ],
             "support": {
                 "issues": "https://github.com/composer/pcre/issues",
-                "source": "https://github.com/composer/pcre/tree/3.0.0"
+                "source": "https://github.com/composer/pcre/tree/3.0.2"
             },
             "funding": [
                 {
@@ -546,7 +546,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-02-25T20:21:48+00:00"
+            "time": "2022-11-03T20:24:16+00:00"
         },
         {
             "name": "composer/semver",
@@ -1253,16 +1253,16 @@
         },
         {
             "name": "revolt/event-loop",
-            "version": "v0.2.5",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/revoltphp/event-loop.git",
-                "reference": "4e7455506d9ff61f3705b76a20a8f12ad4dc1552"
+                "reference": "81dd825a0a7fa7a39cae25ef731bb944f3e18295"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/revoltphp/event-loop/zipball/4e7455506d9ff61f3705b76a20a8f12ad4dc1552",
-                "reference": "4e7455506d9ff61f3705b76a20a8f12ad4dc1552",
+                "url": "https://api.github.com/repos/revoltphp/event-loop/zipball/81dd825a0a7fa7a39cae25ef731bb944f3e18295",
+                "reference": "81dd825a0a7fa7a39cae25ef731bb944f3e18295",
                 "shasum": ""
             },
             "require": {
@@ -1319,9 +1319,9 @@
             ],
             "support": {
                 "issues": "https://github.com/revoltphp/event-loop/issues",
-                "source": "https://github.com/revoltphp/event-loop/tree/v0.2.5"
+                "source": "https://github.com/revoltphp/event-loop/tree/v1.0.0"
             },
-            "time": "2022-08-01T03:01:07+00:00"
+            "time": "2022-11-02T21:46:22+00:00"
         },
         {
             "name": "roave/backward-compatibility-check",
