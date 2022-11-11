@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "00f91856d7830ed726e7bd4266d96216",
+    "content-hash": "f7782e0bceae2e08592f966a189954b1",
     "packages": [
         {
             "name": "dflydev/fig-cookies",
@@ -1607,16 +1607,16 @@
         },
         {
             "name": "laminas/laminas-diactoros",
-            "version": "2.20.0",
+            "version": "2.21.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-diactoros.git",
-                "reference": "10696c809866bebd9d71dca14de6c0d6c1cac2f8"
+                "reference": "e5b6419fea007b8b4a71034edc8ec96c88d4c57d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-diactoros/zipball/10696c809866bebd9d71dca14de6c0d6c1cac2f8",
-                "reference": "10696c809866bebd9d71dca14de6c0d6c1cac2f8",
+                "url": "https://api.github.com/repos/laminas/laminas-diactoros/zipball/e5b6419fea007b8b4a71034edc8ec96c88d4c57d",
+                "reference": "e5b6419fea007b8b4a71034edc8ec96c88d4c57d",
                 "shasum": ""
             },
             "require": {
@@ -1639,9 +1639,9 @@
                 "http-interop/http-factory-tests": "^0.9.0",
                 "laminas/laminas-coding-standard": "^2.4.0",
                 "php-http/psr7-integration-tests": "^1.1.1",
-                "phpunit/phpunit": "^9.5.25",
-                "psalm/plugin-phpunit": "^0.17.0",
-                "vimeo/psalm": "^4.28"
+                "phpunit/phpunit": "^9.5.26",
+                "psalm/plugin-phpunit": "^0.18.0",
+                "vimeo/psalm": "^4.29.0"
             },
             "type": "library",
             "extra": {
@@ -1700,7 +1700,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2022-10-25T13:35:54+00:00"
+            "time": "2022-11-11T09:01:24+00:00"
         },
         {
             "name": "laminas/laminas-httphandlerrunner",
