@@ -851,8 +851,6 @@ final class SessionMiddlewareTest extends TestCase
     {
         $property = new ReflectionProperty(SessionMiddleware::class, 'config');
 
-        $property->setAccessible(true);
-
         $config = $property->getValue($middleware);
 
         assert($config instanceof Configuration);
