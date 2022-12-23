@@ -14,7 +14,7 @@ use PSR7Sessions\Storageless\Http\SessionMiddleware;
 
 $sessionMiddleware = SessionMiddleware::fromSymmetricKeyDefaults(
     InMemory::base64Encoded('OpcMuKmoxkhzW0Y1iESpjWwL/D3UBdDauJOe742BJ5Q='), // replace this with a key of your own (see below)
-    1200 // session lifetime, in seconds
+    1200 // session idle timeout, in seconds
 );
 ```
 
@@ -35,7 +35,7 @@ use PSR7Sessions\Storageless\Http\SessionMiddleware;
 $sessionMiddleware = SessionMiddleware::fromRsaAsymmetricKeyDefaults(
     InMemory::file('/path/to/private_key.pem'),
     InMemory::file('/path/to/public_key.pem'),
-    1200 // session lifetime, in seconds
+    1200 // session idle timeout, in seconds
 );
 ```
 
@@ -83,7 +83,7 @@ $sessionMiddleware = new SessionMiddleware(
         InMemory::base64Encoded('FW6ELbU3817sflp2XmnCQ3JJTIMihR1RctQu7VQ73Fg=')
     ),
     SessionMiddleware::buildDefaultCookie(),
-    1200, // session lifetime, in seconds
+    1200, // session idle timeout, in seconds
     SystemClock::fromSystemTimezone(),
     60    // session automatic refresh time, in seconds
 );
@@ -137,7 +137,7 @@ return new SessionMiddleware(
         ->withSecure(false)
         ->withHttpOnly(true)
         ->withPath('/'),
-    1200, // session lifetime, in seconds
+    1200, // session idle timeout, in seconds
     SystemClock::fromUTC(),
 );
 ```

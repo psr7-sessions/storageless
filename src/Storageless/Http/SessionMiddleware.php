@@ -61,7 +61,7 @@ final class SessionMiddleware implements MiddlewareInterface
     public function __construct(
         Configuration $configuration,
         SetCookie $defaultCookie,
-        private int $expirationTime,
+        private int $idleTimeout,
         private Clock $clock,
         private int $refreshTime = self::DEFAULT_REFRESH_TIME,
     ) {
@@ -72,7 +72,7 @@ final class SessionMiddleware implements MiddlewareInterface
     /**
      * This constructor simplifies instantiation when using HTTPS (REQUIRED!) and symmetric key encryption
      */
-    public static function fromSymmetricKeyDefaults(Signer\Key $symmetricKey, int $expirationTime): self
+    public static function fromSymmetricKeyDefaults(Signer\Key $symmetricKey, int $idleTimeout): self
     {
         return new self(
             Configuration::forSymmetricSigner(
@@ -80,7 +80,7 @@ final class SessionMiddleware implements MiddlewareInterface
                 $symmetricKey,
             ),
             self::buildDefaultCookie(),
-            $expirationTime,
+            $idleTimeout,
             new SystemClock(new DateTimeZone(date_default_timezone_get())),
         );
     }
@@ -92,7 +92,7 @@ final class SessionMiddleware implements MiddlewareInterface
     public static function fromRsaAsymmetricKeyDefaults(
         Signer\Key $privateRsaKey,
         Signer\Key $publicRsaKey,
-        int $expirationTime,
+        int $idleTimeout,
     ): self {
         return new self(
             Configuration::forAsymmetricSigner(
@@ -101,7 +101,7 @@ final class SessionMiddleware implements MiddlewareInterface
                 $publicRsaKey,
             ),
             self::buildDefaultCookie(),
-            $expirationTime,
+            $idleTimeout,
             new SystemClock(new DateTimeZone(date_default_timezone_get())),
         );
     }
@@ -222,7 +222,7 @@ final class SessionMiddleware implements MiddlewareInterface
     private function getTokenCookie(SessionInterface $sessionContainer): SetCookie
     {
         $now       = $this->clock->now();
-        $expiresAt = $now->add(new DateInterval(sprintf('PT%sS', $this->expirationTime)));
+        $expiresAt = $now->add(new DateInterval(sprintf('PT%sS', $this->idleTimeout)));
 
         return $this
             ->defaultCookie
