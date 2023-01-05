@@ -236,7 +236,10 @@ final class SessionMiddlewareTest extends TestCase
     {
         $unknownTokenType = $this->createMock(Token::class);
         $fakeParser       = $this->createMock(ParserInterface::class);
-        $configuration    = Configuration::forUnsecuredSigner();
+        $configuration    = Configuration::forSymmetricSigner(
+            new Sha256(),
+            self::makeRandomSymmetricKey(),
+        );
 
         $fakeParser->expects(self::atLeastOnce())
             ->method('parse')
@@ -285,7 +288,10 @@ final class SessionMiddlewareTest extends TestCase
     public function testWillIgnoreUnSignedTokens(callable $middlewareFactory): void
     {
         $middleware    = $middlewareFactory();
-        $configuration = Configuration::forUnsecuredSigner();
+        $configuration = Configuration::forSymmetricSigner(
+            new Sha256(),
+            self::makeRandomSymmetricKey(),
+        );
         $unsignedToken = (new ServerRequest())
             ->withCookieParams([
                 SessionMiddleware::DEFAULT_COOKIE => $configuration->builder()
