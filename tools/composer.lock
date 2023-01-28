@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "azjezz/psl",
-            "version": "2.3.1",
+            "version": "2.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/azjezz/psl.git",
-                "reference": "3ce5e7a24a0a5603ae482a0ec6d4aaf10311c45c"
+                "reference": "eacc90cfdfd7eafffd630e81ab69b113309e594b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/azjezz/psl/zipball/3ce5e7a24a0a5603ae482a0ec6d4aaf10311c45c",
-                "reference": "3ce5e7a24a0a5603ae482a0ec6d4aaf10311c45c",
+                "url": "https://api.github.com/repos/azjezz/psl/zipball/eacc90cfdfd7eafffd630e81ab69b113309e594b",
+                "reference": "eacc90cfdfd7eafffd630e81ab69b113309e594b",
                 "shasum": ""
             },
             "require": {
@@ -32,7 +32,7 @@
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.4.0",
                 "php-coveralls/php-coveralls": "^2.5.2",
-                "php-standard-library/psalm-plugin": "^2.1.0",
+                "php-standard-library/psalm-plugin": "^2.2",
                 "phpbench/phpbench": "^1.2.3",
                 "phpunit/phpunit": "^9.5.16",
                 "roave/infection-static-analysis-plugin": "^1.26.0",
@@ -70,7 +70,7 @@
             "description": "PHP Standard Library",
             "support": {
                 "issues": "https://github.com/azjezz/psl/issues",
-                "source": "https://github.com/azjezz/psl/tree/2.3.1"
+                "source": "https://github.com/azjezz/psl/tree/2.4.1"
             },
             "funding": [
                 {
@@ -78,7 +78,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2022-12-20T09:57:31+00:00"
+            "time": "2023-01-26T12:53:04+00:00"
         },
         {
             "name": "beberlei/assert",
