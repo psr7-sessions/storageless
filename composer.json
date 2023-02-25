@@ -34,7 +34,7 @@
         "doctrine/coding-standard":               "^11.1.0",
         "laminas/laminas-diactoros":              "^2.24.0",
         "laminas/laminas-httphandlerrunner":      "^2.5.0",
-        "phpunit/phpunit":                        "^9.6.3",
+        "phpunit/phpunit":                        "^10.0.12",
         "psalm/plugin-phpunit":                   "^0.18.4",
         "roave/infection-static-analysis-plugin": "^1.29.0",
         "squizlabs/php_codesniffer":              "^3.7.2",
