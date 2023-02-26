@@ -124,6 +124,7 @@ final class SessionMiddlewareTest extends TestCase
         $token = $this->getCookie($response)->getValue();
 
         self::assertIsString($token);
+        self::assertTrue($token !== '');
         $parsedToken = (new Parser(new JoseEncoder()))->parse($token);
         self::assertInstanceOf(Plain::class, $parsedToken);
         self::assertEquals(['foo' => 'bar'], $parsedToken->claims()->get('session-data'));
@@ -328,6 +329,20 @@ final class SessionMiddlewareTest extends TestCase
         $this->ensureSameResponse($middleware, $unsignedToken, $this->emptyValidationMiddleware());
     }
 
+    /**
+     * @param callable(): SessionMiddleware $middlewareFactory
+     *
+     * @dataProvider validMiddlewaresProvider
+     */
+    public function testWillIgnoreRequestsWithEmptyStringCookie(callable $middlewareFactory): void
+    {
+        $middleware   = $middlewareFactory();
+        $expiredToken = (new ServerRequest())
+            ->withCookieParams([SessionMiddleware::DEFAULT_COOKIE => '']);
+
+        $this->ensureSameResponse($middleware, $expiredToken, $this->emptyValidationMiddleware());
+    }
+
     public function testWillRefreshTokenWithIssuedAtExactlyAtTokenRefreshTimeThreshold(): void
     {
         // forcing ourselves to think of time as a mutable value:
@@ -367,7 +382,7 @@ final class SessionMiddlewareTest extends TestCase
             ->getValue();
 
         self::assertIsString($tokenString);
-
+        self::assertTrue($tokenString !== '');
         $token = (new Parser(new JoseEncoder()))->parse($tokenString);
         self::assertInstanceOf(Plain::class, $token);
         self::assertEquals($now, $token->claims()->get(RegisteredClaims::ISSUED_AT), 'Token was refreshed');
