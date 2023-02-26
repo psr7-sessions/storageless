@@ -33,7 +33,8 @@ use function uniqid;
 final class LazySessionTest extends TestCase
 {
     private SessionInterface&MockObject $wrappedSession;
-
+    // phpcs:ignore SlevomatCodingStandard.TypeHints.PropertyTypeHint.UselessAnnotation
+    /** @var MakeSession&MockObject */
     private MakeSession&MockObject $sessionLoader;
 
     private LazySession $lazySession;
