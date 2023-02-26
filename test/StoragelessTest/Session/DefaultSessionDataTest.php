@@ -279,7 +279,7 @@ final class DefaultSessionDataTest extends TestCase
      * @return (int|bool|string|float|mixed[]|object|JsonSerializable|null)[][]
      * @psalm-return non-empty-array<non-empty-string, array{(int|bool|string|float|object|array<mixed>|null), (int|bool|string|float|array<mixed>|null)}>
      */
-    public function storageNonScalarDataProvider(): array
+    public static function storageNonScalarDataProvider(): array
     {
         return [
             'null' => [
@@ -354,7 +354,7 @@ final class DefaultSessionDataTest extends TestCase
      * @return (int|bool|string|float|mixed[]|null)[][]
      * @psalm-return non-empty-array<non-empty-string, array{string, int|bool|string|float|array<mixed>|null}>
      */
-    public function storageScalarDataProvider(): array
+    public static function storageScalarDataProvider(): array
     {
         return [
             'string'             => ['foo', 'bar'],

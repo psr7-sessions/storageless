@@ -665,9 +665,9 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     /** @return array<array<callable(): SessionMiddleware>> */
-    public function validMiddlewaresProvider(): array
+    public static function validMiddlewaresProvider(): array
     {
-        return $this->defaultMiddlewaresProvider() + [
+        return self::defaultMiddlewaresProvider() + [
             'from-constructor' => [
                 static function (): SessionMiddleware {
                     return new SessionMiddleware(
@@ -685,7 +685,7 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     /** @return array<array<callable(): SessionMiddleware>> */
-    public function defaultMiddlewaresProvider(): array
+    public static function defaultMiddlewaresProvider(): array
     {
         return [
             'from-symmetric' => [
