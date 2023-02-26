@@ -148,8 +148,13 @@ final class SessionMiddleware implements MiddlewareInterface
             return null;
         }
 
+        $cookie = $cookies[$cookieName];
+        if ($cookie === '') {
+            return null;
+        }
+
         try {
-            $token = $this->config->parser()->parse($cookies[$cookieName]);
+            $token = $this->config->parser()->parse($cookie);
         } catch (InvalidArgumentException) {
             return null;
         }
