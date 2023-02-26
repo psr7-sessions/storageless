@@ -5,6 +5,7 @@
         "This file is @generated automatically"
     ],
 <<<<<<< HEAD
+<<<<<<< HEAD
     "content-hash": "b67f8d0fb05683bfd014d53cf6e6278b",
 =======
 <<<<<<< HEAD
@@ -13,6 +14,9 @@
     "content-hash": "2d95a91d0fdf9532a4c45146c128da41",
 >>>>>>> 58cf654 (Set data providers as `static`)
 >>>>>>> 91b2f8f (Set data providers as `static`)
+=======
+    "content-hash": "5a34fcdb59995aeb64502a6178b40dcc",
+>>>>>>> 2ad855c (Update composer.lock)
     "packages": [
         {
             "name": "dflydev/fig-cookies",
@@ -2528,6 +2532,7 @@
         {
             "name": "phpunit/php-code-coverage",
 <<<<<<< HEAD
+<<<<<<< HEAD
             "version": "9.2.26",
 =======
 <<<<<<< HEAD
@@ -2547,6 +2552,8 @@
                 "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/0e2b40518197a8c0d4b08bc34dfff1c99c508954",
                 "reference": "0e2b40518197a8c0d4b08bc34dfff1c99c508954",
 =======
+=======
+>>>>>>> 2ad855c (Update composer.lock)
             "version": "10.0.1",
             "source": {
                 "type": "git",
@@ -2557,8 +2564,11 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/b9c21a93dd8c8eed79879374884ee733259475cc",
                 "reference": "b9c21a93dd8c8eed79879374884ee733259475cc",
+<<<<<<< HEAD
 >>>>>>> 58cf654 (Set data providers as `static`)
 >>>>>>> 91b2f8f (Set data providers as `static`)
+=======
+>>>>>>> 2ad855c (Update composer.lock)
                 "shasum": ""
             },
             "require": {
@@ -2566,16 +2576,6 @@
                 "ext-libxml": "*",
                 "ext-xmlwriter": "*",
                 "nikic/php-parser": "^4.15",
-<<<<<<< HEAD
-                "php": ">=7.3",
-                "phpunit/php-file-iterator": "^3.0.3",
-                "phpunit/php-text-template": "^2.0.2",
-                "sebastian/code-unit-reverse-lookup": "^2.0.2",
-                "sebastian/complexity": "^2.0",
-                "sebastian/environment": "^5.1.2",
-                "sebastian/lines-of-code": "^1.0.3",
-                "sebastian/version": "^3.0.1",
-=======
                 "php": ">=8.1",
                 "phpunit/php-file-iterator": "^4.0",
                 "phpunit/php-text-template": "^3.0",
@@ -2584,7 +2584,6 @@
                 "sebastian/environment": "^6.0",
                 "sebastian/lines-of-code": "^2.0",
                 "sebastian/version": "^4.0",
->>>>>>> 58cf654 (Set data providers as `static`)
                 "theseer/tokenizer": "^1.2.0"
             },
             "require-dev": {
@@ -2626,6 +2625,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/php-code-coverage/issues",
 <<<<<<< HEAD
+<<<<<<< HEAD
                 "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.26"
 =======
 <<<<<<< HEAD
@@ -2634,6 +2634,9 @@
                 "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/10.0.1"
 >>>>>>> 58cf654 (Set data providers as `static`)
 >>>>>>> 91b2f8f (Set data providers as `static`)
+=======
+                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/10.0.1"
+>>>>>>> 2ad855c (Update composer.lock)
             },
             "funding": [
                 {
@@ -2641,6 +2644,7 @@
                     "type": "github"
                 }
             ],
+<<<<<<< HEAD
 <<<<<<< HEAD
             "time": "2023-03-06T12:58:08+00:00"
 =======
@@ -2650,6 +2654,9 @@
             "time": "2023-02-25T05:35:03+00:00"
 >>>>>>> 58cf654 (Set data providers as `static`)
 >>>>>>> 91b2f8f (Set data providers as `static`)
+=======
+            "time": "2023-02-25T05:35:03+00:00"
+>>>>>>> 2ad855c (Update composer.lock)
         },
         {
             "name": "phpunit/php-file-iterator",
