@@ -58,7 +58,7 @@ final class SessionMiddleware implements MiddlewareInterface
     private Configuration $config;
     private SetCookie $defaultCookie;
 
-    /** @param non-empty-string $sessionAttribute */
+    /** @param literal-string $sessionAttribute */
     public function __construct(
         Configuration $configuration,
         SetCookie $defaultCookie,
