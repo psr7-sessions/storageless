@@ -58,12 +58,14 @@ final class SessionMiddleware implements MiddlewareInterface
     private Configuration $config;
     private SetCookie $defaultCookie;
 
+    /** @param literal-string $sessionAttribute */
     public function __construct(
         Configuration $configuration,
         SetCookie $defaultCookie,
         private int $idleTimeout,
         private Clock $clock,
         private int $refreshTime = self::DEFAULT_REFRESH_TIME,
+        private string $sessionAttribute = self::SESSION_ATTRIBUTE,
     ) {
         $this->config        = $configuration;
         $this->defaultCookie = clone $defaultCookie;
@@ -130,7 +132,7 @@ final class SessionMiddleware implements MiddlewareInterface
 
         return $this->appendToken(
             $sessionContainer,
-            $handler->handle($request->withAttribute(self::SESSION_ATTRIBUTE, $sessionContainer)),
+            $handler->handle($request->withAttribute($this->sessionAttribute, $sessionContainer)),
             $token,
         );
     }
