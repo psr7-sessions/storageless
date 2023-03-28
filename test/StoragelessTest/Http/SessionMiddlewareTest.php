@@ -735,6 +735,34 @@ final class SessionMiddlewareTest extends TestCase
         );
     }
 
+    public function testAllowCustomRequestAttributeName(): void
+    {
+        $customAttributeName = uniqid('my_name_');
+        self::assertNotEmpty($customAttributeName);
+
+        $middleware = new SessionMiddleware(
+            Configuration::forSymmetricSigner(
+                new Sha256(),
+                self::makeRandomSymmetricKey(),
+            ),
+            SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
+            100,
+            SystemClock::fromSystemTimezone(),
+            100,
+            $customAttributeName,
+        );
+
+        $middleware->process(
+            new ServerRequest(),
+            $this->fakeDelegate(static function (ServerRequestInterface $request) use ($customAttributeName) {
+                self::assertInstanceOf(SessionInterface::class, $request->getAttribute($customAttributeName));
+                self::assertNull($request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE));
+
+                return new Response();
+            }),
+        );
+    }
+
     private function ensureSameResponse(
         SessionMiddleware $middleware,
         ServerRequestInterface $request,
