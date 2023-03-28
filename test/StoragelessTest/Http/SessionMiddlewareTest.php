@@ -737,7 +737,7 @@ final class SessionMiddlewareTest extends TestCase
 
     public function testAllowCustomRequestAttributeName(): void
     {
-        $customAttributeName = uniqid('my_name_');
+        $customAttributeName = 'my_custom_session_attribute_name';
         self::assertNotEmpty($customAttributeName);
 
         $middleware = new SessionMiddleware(
