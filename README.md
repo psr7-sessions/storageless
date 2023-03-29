@@ -65,6 +65,25 @@ Note that you can also use asymmetric keys by using either the
 `PSR7Sessions\Storageless\Http\SessionMiddleware` constructor or the named
 constructor `PSR7Sessions\Storageless\Http\SessionMiddleware::fromAsymmetricKeyDefaults()`
 
+#### Session Hijacking mitigation
+
+To mitigate the risks associated to cookie stealing and thus
+[session hijacking](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html#binding-the-session-id-to-other-user-properties),
+the additional `\PSR7Sessions\Storageless\Http\SessionHijackingMitigationMiddleware`
+is available to bind the user session to its `IP` and `USER_AGENT`:
+
+```php
+$app = new \Mezzio\Application(/* ... */);
+
+$app->pipe(\PSR7Sessions\Storageless\Http\SessionMiddleware::fromSymmetricKeyDefaults(
+    \Lcobucci\JWT\Signer\Key\InMemory::plainText('mBC5v1sOKVvbdEitdSBenu59nfNfhwkedkJVNabosTw='), // replace this with a key of your own (see docs below)
+    1200 // 20 minutes
+));
+
+// Be sure to pipe it *AFTER* the SessionMiddleware one
+$app->pipe(new \PSR7Sessions\Storageless\Http\SessionHijackingMitigationMiddleware());
+```
+
 ### Examples
 
 Simply browse to the `examples` directory in your console, then run
