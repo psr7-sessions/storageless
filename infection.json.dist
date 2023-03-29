@@ -13,7 +13,8 @@
     "mutators": {
         "@default": true,
         "global-ignoreSourceCodeByRegex": [
-            "assert\\(\\$token instanceof UnencryptedToken\\);"
+            "assert\\(\\$token instanceof UnencryptedToken\\);",
+            "assert\\(\\$session instanceof SessionInterface\\);"
         ]
     },
     "minMsi": 100,
