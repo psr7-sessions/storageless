@@ -11,11 +11,7 @@
         }
     },
     "mutators": {
-        "@default": true,
-        "global-ignoreSourceCodeByRegex": [
-            "assert\\(\\$token instanceof UnencryptedToken\\);",
-            "assert\\(\\$session instanceof SessionInterface\\);"
-        ]
+        "@default": true
     },
     "minMsi": 100,
     "minCoveredMsi": 100

@@ -36,11 +36,15 @@ use Lcobucci\JWT\Token;
 use Lcobucci\JWT\Token\Parser;
 use Lcobucci\JWT\Token\Plain;
 use Lcobucci\JWT\Token\RegisteredClaims;
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use PSR7Sessions\Storageless\Http\ClientFingerprint\Configuration as FingerprintConfig;
+use PSR7Sessions\Storageless\Http\ClientFingerprint\SameOriginRequest;
+use PSR7Sessions\Storageless\Http\ClientFingerprint\Source;
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
 use PSR7Sessions\Storageless\Http\SessionMiddlewareConfiguration;
 use PSR7Sessions\Storageless\Session\DefaultSessionData;
@@ -529,6 +533,91 @@ final class SessionMiddlewareTest extends TestCase
 
                 return new Response();
             }),
+        );
+    }
+
+    public function testDefaultConfigurationShouldNotUseClientFingerprinting(): void
+    {
+        $middleware = SessionMiddleware::fromSymmetricKeyDefaults(
+            self::makeRandomSymmetricKey(),
+            100,
+        );
+        $response   = $middleware->process(new ServerRequest(), $this->writingMiddleware());
+        $token      = $this->getCookie($response)->getValue();
+
+        self::assertIsString($token);
+        self::assertTrue($token !== '');
+        $parsedToken = (new Parser(new JoseEncoder()))->parse($token);
+        self::assertInstanceOf(Plain::class, $parsedToken);
+        self::assertFalse($parsedToken->claims()->has(SameOriginRequest::CLAIM));
+    }
+
+    public function testWithNonEmptyClientFingerprintConfigurationItShouldAddAndValidateFingerprint(): void
+    {
+        $serverParamKey   = 'foo';
+        $serverParamValue = 'bar';
+
+        $source = new class ($serverParamKey) implements Source {
+            /** @param non-empty-string $serverParam */
+            public function __construct(private readonly string $serverParam)
+            {
+            }
+
+            public function extractFrom(ServerRequestInterface $request): string
+            {
+                $value = $request->getServerParams()[$this->serverParam];
+                Assert::assertIsString($value);
+                Assert::assertNotEmpty($value);
+
+                return $value;
+            }
+        };
+
+        $middleware = new SessionMiddleware(
+            Configuration::forSymmetricSigner(
+                new Sha256(),
+                self::makeRandomSymmetricKey(),
+            ),
+            SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
+            100,
+            SystemClock::fromSystemTimezone(),
+            fingerprintConfig: new FingerprintConfig($source),
+        );
+
+        $request      = new ServerRequest([$serverParamKey => $serverParamValue]);
+        $sessionValue = uniqid('fp_');
+        $response     = $middleware->process($request, $this->writingMiddleware($sessionValue));
+        $token        = $this->getCookie($response)->getValue();
+
+        self::assertIsString($token);
+        self::assertTrue($token !== '');
+        $parsedToken = (new Parser(new JoseEncoder()))->parse($token);
+        self::assertInstanceOf(Plain::class, $parsedToken);
+        self::assertTrue($parsedToken->claims()->has(SameOriginRequest::CLAIM));
+
+        $validNewRequest = $request->withCookieParams([SessionMiddleware::DEFAULT_COOKIE => $token]);
+
+        $middleware->process(
+            $validNewRequest,
+            $this->fakeDelegate(
+                static function (ServerRequestInterface $request) use ($sessionValue) {
+                    $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                    assert($session instanceof SessionInterface);
+
+                    self::assertSame($sessionValue, $session->get('foo'));
+
+                    return new Response();
+                },
+            ),
+        );
+
+        $invalidNewRequest = (new ServerRequest([
+            $serverParamKey => $serverParamValue . ' changed',
+        ]))->withCookieParams([SessionMiddleware::DEFAULT_COOKIE => $token]);
+
+        $middleware->process(
+            $invalidNewRequest,
+            $this->emptyValidationMiddleware(),
         );
     }
 
