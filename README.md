@@ -5,7 +5,7 @@
 [![Packagist](https://img.shields.io/packagist/v/psr7-sessions/storageless.svg)](https://packagist.org/packages/psr7-sessions/storageless)
 [![Packagist](https://img.shields.io/packagist/vpre/psr7-sessions/storageless.svg)](https://packagist.org/packages/psr7-sessions/storageless)
 
-**PSR7Session** is a [PSR-7](http://www.php-fig.org/psr/psr-7/) and 
+**PSR7Session** is a [PSR-7](http://www.php-fig.org/psr/psr-7/) and
 [PSR-15](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-15-request-handlers.md)
 compatible [middleware](https://mwop.net/blog/2015-01-08-on-http-middleware-and-psr-7.html) that enables
 session without I/O usage in PSR-7 based applications.
@@ -20,7 +20,7 @@ composer require psr7-sessions/storageless
 
 ### Usage
 
-You can use the `PSR7Sessions\Storageless\Http\SessionMiddleware` in any 
+You can use the `PSR7Sessions\Storageless\Http\SessionMiddleware` in any
 [PSR-15](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-15-request-handlers.md)
 compatible middleware.
 
@@ -41,7 +41,7 @@ has access to the `Psr\Http\Message\ServerRequestInterface` attributes:
 
 ```php
 $app->get('/get', function (ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface {
-    /* @var \PSR7Sessions\Storageless\Session\Data $session */
+    /** @var \PSR7Sessions\Storageless\Session\SessionInterface $session */
     $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
     $session->set('counter', $session->get('counter', 0) + 1);
 
@@ -87,7 +87,7 @@ identifier to a visiting user-agent.
 This is all fair and nice, except for:
 
  * relying on the `$_SESSION` superglobal
- * relying on the shutdown handlers in order to "commit" sessions to the 
+ * relying on the shutdown handlers in order to "commit" sessions to the
    storage
  * having a huge limitation of number of active users (due to storage)
  * having a lot of I/O due to storage
@@ -130,7 +130,7 @@ tokens.
 ### Advantages
 
  * no storage required
- * no sticky sessions required (any server having a copy of the private or 
+ * no sticky sessions required (any server having a copy of the private or
    public keys can generate sessions or consume them)
  * can transmit cleartext information to the client, allowing it to share
    some information with the server (a standard example is about sharing the
