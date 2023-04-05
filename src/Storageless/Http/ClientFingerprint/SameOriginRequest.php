@@ -12,9 +12,11 @@ use Lcobucci\JWT\Validation\ConstraintViolation;
 use Psr\Http\Message\ServerRequestInterface;
 
 use function assert;
-use function base64_encode;
 use function implode;
+use function sodium_bin2base64;
 use function sodium_crypto_generichash;
+
+use const SODIUM_BASE64_VARIANT_ORIGINAL_NO_PADDING;
 
 /** @immutable */
 final class SameOriginRequest implements Constraint
@@ -71,7 +73,10 @@ final class SameOriginRequest implements Constraint
             $fingerprintSource[] = $source->extractFrom($serverRequest);
         }
 
-        $fingerprint = base64_encode(sodium_crypto_generichash(implode("\x00", $fingerprintSource)));
+        $fingerprint = sodium_bin2base64(
+            sodium_crypto_generichash(implode("\x00", $fingerprintSource)),
+            SODIUM_BASE64_VARIANT_ORIGINAL_NO_PADDING,
+        );
         assert($fingerprint !== '');
 
         return $fingerprint;
