@@ -32,6 +32,7 @@ use SplObjectStorage;
 
 use function random_bytes;
 
+/** @covers \PSR7Sessions\Storageless\Http\Config */
 final class ConfigTest extends TestCase
 {
     private Configuration $jwtConfig;

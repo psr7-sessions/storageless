@@ -37,7 +37,7 @@ final class Config
     /** @var positive-int */
     private int $refreshTime = 60;
     /** @var literal-string */
-    private string $sessionAttribute = 'session';
+    private string $sessionAttribute = SessionMiddleware::SESSION_ATTRIBUTE;
 
     public function __construct(
         Configuration $jwtConfiguration,
