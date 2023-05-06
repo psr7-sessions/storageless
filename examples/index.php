@@ -30,6 +30,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use PSR7Sessions\Storageless\Http\Configuration;
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
+use PSR7Sessions\Storageless\Service\StoragelessSession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -41,6 +42,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 // simply run `php -S localhost:9999 index.php`
 // then point your browser at `http://localhost:9999/`
 
+$clock             = SystemClock::fromUTC();
 $sessionMiddleware = new SessionMiddleware(
     (new Configuration(
         JwtConfig::forSymmetricSigner(
