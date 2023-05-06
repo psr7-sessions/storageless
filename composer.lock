@@ -1820,16 +1820,16 @@
         },
         {
             "name": "laminas/laminas-httphandlerrunner",
-            "version": "2.6.0",
+            "version": "2.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-httphandlerrunner.git",
-                "reference": "4845298215708c660f76a2d5d8b78e67979457c5"
+                "reference": "a894a341ec2b0995919265db4f463fb1d5128134"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-httphandlerrunner/zipball/4845298215708c660f76a2d5d8b78e67979457c5",
-                "reference": "4845298215708c660f76a2d5d8b78e67979457c5",
+                "url": "https://api.github.com/repos/laminas/laminas-httphandlerrunner/zipball/a894a341ec2b0995919265db4f463fb1d5128134",
+                "reference": "a894a341ec2b0995919265db4f463fb1d5128134",
                 "shasum": ""
             },
             "require": {
@@ -1840,10 +1840,10 @@
             },
             "require-dev": {
                 "laminas/laminas-coding-standard": "~2.5.0",
-                "laminas/laminas-diactoros": "^2.25.1",
-                "phpunit/phpunit": "^10.0.19",
+                "laminas/laminas-diactoros": "^2.25.2",
+                "phpunit/phpunit": "^10.1.2",
                 "psalm/plugin-phpunit": "^0.18.4",
-                "vimeo/psalm": "^5.9"
+                "vimeo/psalm": "^5.11"
             },
             "type": "library",
             "extra": {
@@ -1883,7 +1883,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2023-04-09T21:49:08+00:00"
+            "time": "2023-05-05T16:09:27+00:00"
         },
         {
             "name": "myclabs/deep-copy",
