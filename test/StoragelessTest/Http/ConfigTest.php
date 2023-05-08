@@ -28,7 +28,6 @@ use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use PHPUnit\Framework\TestCase;
 use PSR7Sessions\Storageless\Http\Config;
-use SplObjectStorage;
 
 use function random_bytes;
 
@@ -81,42 +80,37 @@ final class ConfigTest extends TestCase
 
     public function testImmutability(): void
     {
-        $map = new SplObjectStorage();
+        $leftConfig = new Config($this->jwtConfig);
+        self::assertNotSame($this->jwtConfig, $leftConfig->getJwtConfiguration());
 
-        $config       = new Config($this->jwtConfig);
-        $map[$config] = true;
-        self::assertNotSame($this->jwtConfig, $config->getJwtConfiguration());
+        $jwtConfig   = clone $this->jwtConfig;
+        $rightConfig = $leftConfig->withJwtConfiguration($jwtConfig);
+        self::assertNotSame($leftConfig, $rightConfig);
+        self::assertNotSame($jwtConfig, $rightConfig->getJwtConfiguration());
 
-        $jwtConfig    = clone $this->jwtConfig;
-        $config       = $config->withJwtConfiguration($jwtConfig);
-        $map[$config] = true;
-        self::assertNotSame($jwtConfig, $config->getJwtConfiguration());
+        $clock      = FrozenClock::fromUTC();
+        $leftConfig = $rightConfig->withClock($clock);
+        self::assertNotSame($leftConfig, $rightConfig);
+        self::assertNotSame($clock, $leftConfig->getClock());
 
-        $clock        = FrozenClock::fromUTC();
-        $config       = $config->withClock($clock);
-        $map[$config] = true;
-        self::assertNotSame($clock, $config->getClock());
+        $cookie      = SetCookie::create('foo');
+        $rightConfig = $leftConfig->withCookie($cookie);
+        self::assertNotSame($leftConfig, $rightConfig);
+        self::assertNotSame($cookie, $rightConfig->getCookie());
 
-        $cookie       = SetCookie::create('foo');
-        $config       = $config->withCookie($cookie);
-        $map[$config] = true;
-        self::assertNotSame($cookie, $config->getCookie());
+        $idleTimeout = $leftConfig->getIdleTimeout() + 1;
+        $leftConfig  = $rightConfig->withIdleTimeout($idleTimeout);
+        self::assertNotSame($leftConfig, $rightConfig);
+        self::assertSame($idleTimeout, $leftConfig->getIdleTimeout());
 
-        $idleTimeout  = $config->getIdleTimeout() + 1;
-        $config       = $config->withIdleTimeout($idleTimeout);
-        $map[$config] = true;
-        self::assertSame($idleTimeout, $config->getIdleTimeout());
+        $refreshTime = $leftConfig->getRefreshTime() + 1;
+        $rightConfig = $leftConfig->withRefreshTime($refreshTime);
+        self::assertNotSame($leftConfig, $rightConfig);
+        self::assertSame($refreshTime, $rightConfig->getRefreshTime());
 
-        $refreshTime  = $config->getRefreshTime() + 1;
-        $config       = $config->withRefreshTime($refreshTime);
-        $map[$config] = true;
-        self::assertSame($refreshTime, $config->getRefreshTime());
-
-        $sessionAttribute = $config->getSessionAttribute() . 'foo';
-        $config           = $config->withSessionAttribute($sessionAttribute);
-        $map[$config]     = true;
-        self::assertSame($sessionAttribute, $config->getSessionAttribute());
-
-        self::assertCount(7, $map);
+        $sessionAttribute = $leftConfig->getSessionAttribute() . 'foo';
+        $leftConfig       = $rightConfig->withSessionAttribute($sessionAttribute);
+        self::assertNotSame($leftConfig, $rightConfig);
+        self::assertSame($sessionAttribute, $leftConfig->getSessionAttribute());
     }
 }

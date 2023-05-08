@@ -22,13 +22,13 @@ use Dflydev\FigCookies\SetCookie;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
-use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use PSR7Sessions\Storageless\Http\Config;
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
 use PSR7Sessions\Storageless\Session\SessionInterface;
 
@@ -42,16 +42,17 @@ require_once __DIR__ . '/../vendor/autoload.php';
 // then point your browser at `http://localhost:8888/`
 
 $sessionMiddleware = new SessionMiddleware(
-    Configuration::forSymmetricSigner(
-        new Sha256(),
-        InMemory::plainText('c9UA8QKLSmDEn4DhNeJIad/4JugZd/HvrjyKrS0jOes='), // // signature key (important: change this to your own)
-    ),
-    SetCookie::create('an-example-cookie-name')
-        ->withSecure(false) // false on purpose, unless you have https locally
-        ->withHttpOnly(true)
-        ->withPath('/'),
-    1200, // 20 minutes
-    new SystemClock(new DateTimeZone(date_default_timezone_get())),
+    (new Config(
+        Configuration::forSymmetricSigner(
+            new Sha256(),
+            InMemory::plainText('c9UA8QKLSmDEn4DhNeJIad/4JugZd/HvrjyKrS0jOes='), // // signature key (important: change this to your own)
+        ),
+    ))->withCookie(
+        SetCookie::create('an-example-cookie-name')
+            ->withSecure(false) // false on purpose, unless you have https locally
+            ->withHttpOnly(true)
+            ->withPath('/'),
+    )->withIdleTimeout(1200), // 20 minutes
 );
 
 $myMiddleware = new class implements RequestHandlerInterface {
