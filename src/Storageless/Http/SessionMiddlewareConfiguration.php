@@ -27,7 +27,7 @@ use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Configuration;
 
 /** @immutable */
-final class Config
+final class SessionMiddlewareConfiguration
 {
     private Configuration $jwtConfiguration;
     private Clock $clock;

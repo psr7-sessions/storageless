@@ -28,8 +28,8 @@ use Lcobucci\JWT\Signer\Key\InMemory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use PSR7Sessions\Storageless\Http\Config;
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
+use PSR7Sessions\Storageless\Http\SessionMiddlewareConfiguration;
 use PSR7Sessions\Storageless\Session\SessionInterface;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -42,7 +42,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 // then point your browser at `http://localhost:8888/`
 
 $sessionMiddleware = new SessionMiddleware(
-    (new Config(
+    (new SessionMiddlewareConfiguration(
         Configuration::forSymmetricSigner(
             new Sha256(),
             InMemory::plainText('c9UA8QKLSmDEn4DhNeJIad/4JugZd/HvrjyKrS0jOes='), // // signature key (important: change this to your own)

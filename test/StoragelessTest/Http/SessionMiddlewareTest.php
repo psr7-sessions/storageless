@@ -41,8 +41,8 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use PSR7Sessions\Storageless\Http\Config;
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
+use PSR7Sessions\Storageless\Http\SessionMiddlewareConfiguration;
 use PSR7Sessions\Storageless\Session\DefaultSessionData;
 use PSR7Sessions\Storageless\Session\SessionInterface;
 
@@ -56,12 +56,12 @@ use function uniqid;
 /** @covers \PSR7Sessions\Storageless\Http\SessionMiddleware */
 final class SessionMiddlewareTest extends TestCase
 {
-    private Config $config;
+    private SessionMiddlewareConfiguration $config;
     private SessionMiddleware $middleware;
 
     protected function setUp(): void
     {
-        $this->config     = new Config(Configuration::forSymmetricSigner(
+        $this->config     = new SessionMiddlewareConfiguration(Configuration::forSymmetricSigner(
             new Sha256(),
             $this->makeRandomSymmetricKey(),
         ));
@@ -582,7 +582,7 @@ final class SessionMiddlewareTest extends TestCase
         return $response;
     }
 
-    private function createToken(Config $config, DateTimeImmutable $issuedAt, DateTimeImmutable $expiration): string
+    private function createToken(SessionMiddlewareConfiguration $config, DateTimeImmutable $issuedAt, DateTimeImmutable $expiration): string
     {
         $jwtConfiguration = $config->getJwtConfiguration();
 
@@ -596,7 +596,7 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     private function createTokenWithCustomClaim(
-        Config $config,
+        SessionMiddlewareConfiguration $config,
         DateTimeImmutable $issuedAt,
         DateTimeImmutable $expiration,
         mixed $claim,

@@ -27,11 +27,11 @@ use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use PHPUnit\Framework\TestCase;
-use PSR7Sessions\Storageless\Http\Config;
+use PSR7Sessions\Storageless\Http\SessionMiddlewareConfiguration;
 
 use function random_bytes;
 
-/** @covers \PSR7Sessions\Storageless\Http\Config */
+/** @covers \PSR7Sessions\Storageless\Http\SessionMiddlewareConfiguration */
 final class ConfigTest extends TestCase
 {
     private Configuration $jwtConfig;
@@ -46,7 +46,7 @@ final class ConfigTest extends TestCase
 
     public function testProvideADefaultSystemClock(): void
     {
-        $clock = (new Config($this->jwtConfig))->getClock();
+        $clock = (new SessionMiddlewareConfiguration($this->jwtConfig))->getClock();
 
         self::assertGreaterThan(0, $clock->now()->getTimestamp());
     }
@@ -60,7 +60,7 @@ final class ConfigTest extends TestCase
      */
     public function testProvideADefaultSecureCookie(): void
     {
-        $cookie = (new Config($this->jwtConfig))->getCookie();
+        $cookie = (new SessionMiddlewareConfiguration($this->jwtConfig))->getCookie();
 
         self::assertTrue($cookie->getSecure());
         self::assertTrue($cookie->getHttpOnly());
@@ -71,7 +71,7 @@ final class ConfigTest extends TestCase
 
     public function testProvideNonEmptyDefaultsForScalarAttributes(): void
     {
-        $config = new Config($this->jwtConfig);
+        $config = new SessionMiddlewareConfiguration($this->jwtConfig);
 
         self::assertGreaterThan(0, $config->getIdleTimeout());
         self::assertGreaterThan(0, $config->getRefreshTime());
@@ -80,7 +80,7 @@ final class ConfigTest extends TestCase
 
     public function testImmutability(): void
     {
-        $leftConfig = new Config($this->jwtConfig);
+        $leftConfig = new SessionMiddlewareConfiguration($this->jwtConfig);
         self::assertNotSame($this->jwtConfig, $leftConfig->getJwtConfiguration());
 
         $jwtConfig   = clone $this->jwtConfig;

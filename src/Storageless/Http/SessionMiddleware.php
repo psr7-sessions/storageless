@@ -49,7 +49,7 @@ final class SessionMiddleware implements MiddlewareInterface
     public const SESSION_ATTRIBUTE = 'session';
 
     public function __construct(
-        private readonly Config $config,
+        private readonly SessionMiddlewareConfiguration $config,
     ) {
     }
 
