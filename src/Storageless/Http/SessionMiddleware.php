@@ -22,16 +22,10 @@ namespace PSR7Sessions\Storageless\Http;
 
 use BadMethodCallException;
 use DateInterval;
-use DateTimeZone;
 use Dflydev\FigCookies\FigResponseCookies;
-use Dflydev\FigCookies\Modifier\SameSite;
 use Dflydev\FigCookies\SetCookie;
 use InvalidArgumentException;
-use Lcobucci\Clock\Clock;
-use Lcobucci\Clock\SystemClock;
-use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Encoding\ChainedFormatter;
-use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\UnencryptedToken;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
@@ -46,75 +40,17 @@ use PSR7Sessions\Storageless\Session\LazySession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
 use stdClass;
 
-use function date_default_timezone_get;
 use function sprintf;
 
+/** @immutable  */
 final class SessionMiddleware implements MiddlewareInterface
 {
-    public const SESSION_CLAIM        = 'session-data';
-    public const SESSION_ATTRIBUTE    = 'session';
-    public const DEFAULT_COOKIE       = '__Secure-slsession';
-    public const DEFAULT_REFRESH_TIME = 60;
-    private Configuration $config;
-    private SetCookie $defaultCookie;
+    public const SESSION_CLAIM     = 'session-data';
+    public const SESSION_ATTRIBUTE = 'session';
 
-    /** @param literal-string $sessionAttribute */
     public function __construct(
-        Configuration $configuration,
-        SetCookie $defaultCookie,
-        private int $idleTimeout,
-        private Clock $clock,
-        private int $refreshTime = self::DEFAULT_REFRESH_TIME,
-        private string $sessionAttribute = self::SESSION_ATTRIBUTE,
+        private readonly SessionMiddlewareConfiguration $config,
     ) {
-        $this->config        = $configuration;
-        $this->defaultCookie = clone $defaultCookie;
-    }
-
-    /**
-     * This constructor simplifies instantiation when using HTTPS (REQUIRED!) and symmetric key encryption
-     */
-    public static function fromSymmetricKeyDefaults(Signer\Key $symmetricKey, int $idleTimeout): self
-    {
-        return new self(
-            Configuration::forSymmetricSigner(
-                new Signer\Hmac\Sha256(),
-                $symmetricKey,
-            ),
-            self::buildDefaultCookie(),
-            $idleTimeout,
-            new SystemClock(new DateTimeZone(date_default_timezone_get())),
-        );
-    }
-
-    /**
-     * This constructor simplifies instantiation when using HTTPS (REQUIRED!) and asymmetric key encryption
-     * based on RSA keys
-     */
-    public static function fromRsaAsymmetricKeyDefaults(
-        Signer\Key $privateRsaKey,
-        Signer\Key $publicRsaKey,
-        int $idleTimeout,
-    ): self {
-        return new self(
-            Configuration::forAsymmetricSigner(
-                new Signer\Rsa\Sha256(),
-                $privateRsaKey,
-                $publicRsaKey,
-            ),
-            self::buildDefaultCookie(),
-            $idleTimeout,
-            new SystemClock(new DateTimeZone(date_default_timezone_get())),
-        );
-    }
-
-    public static function buildDefaultCookie(): SetCookie
-    {
-        return SetCookie::create(self::DEFAULT_COOKIE)
-            ->withSecure(true)
-            ->withHttpOnly(true)
-            ->withSameSite(SameSite::lax())
-            ->withPath('/');
     }
 
     /**
@@ -132,7 +68,7 @@ final class SessionMiddleware implements MiddlewareInterface
 
         return $this->appendToken(
             $sessionContainer,
-            $handler->handle($request->withAttribute($this->sessionAttribute, $sessionContainer)),
+            $handler->handle($request->withAttribute($this->config->getSessionAttribute(), $sessionContainer)),
             $token,
         );
     }
@@ -144,7 +80,7 @@ final class SessionMiddleware implements MiddlewareInterface
     {
         /** @var array<string, string> $cookies */
         $cookies    = $request->getCookieParams();
-        $cookieName = $this->defaultCookie->getName();
+        $cookieName = $this->config->getCookie()->getName();
 
         if (! isset($cookies[$cookieName])) {
             return null;
@@ -155,8 +91,9 @@ final class SessionMiddleware implements MiddlewareInterface
             return null;
         }
 
+        $jwtConfiguration = $this->config->getJwtConfiguration();
         try {
-            $token = $this->config->parser()->parse($cookie);
+            $token = $jwtConfiguration->parser()->parse($cookie);
         } catch (InvalidArgumentException) {
             return null;
         }
@@ -166,11 +103,11 @@ final class SessionMiddleware implements MiddlewareInterface
         }
 
         $constraints = [
-            new StrictValidAt($this->clock),
-            new SignedWith($this->config->signer(), $this->config->verificationKey()),
+            new StrictValidAt($this->config->getClock()),
+            new SignedWith($jwtConfiguration->signer(), $jwtConfiguration->verificationKey()),
         ];
 
-        if (! $this->config->validator()->validate($token, ...$constraints)) {
+        if (! $jwtConfiguration->validator()->validate($token, ...$constraints)) {
             return null;
         }
 
@@ -219,27 +156,29 @@ final class SessionMiddleware implements MiddlewareInterface
         }
 
         return $token->hasBeenIssuedBefore(
-            $this->clock
+            $this->config->getClock()
                 ->now()
-                ->sub(new DateInterval(sprintf('PT%sS', $this->refreshTime))),
+                ->sub(new DateInterval(sprintf('PT%sS', $this->config->getRefreshTime()))),
         );
     }
 
     /** @throws BadMethodCallException */
     private function getTokenCookie(SessionInterface $sessionContainer): SetCookie
     {
-        $now       = $this->clock->now();
-        $expiresAt = $now->add(new DateInterval(sprintf('PT%sS', $this->idleTimeout)));
+        $now       = $this->config->getClock()->now();
+        $expiresAt = $now->add(new DateInterval(sprintf('PT%sS', $this->config->getIdleTimeout())));
+
+        $jwtConfiguration = $this->config->getJwtConfiguration();
 
         return $this
-            ->defaultCookie
+            ->config->getCookie()
             ->withValue(
-                $this->config->builder(ChainedFormatter::withUnixTimestampDates())
+                $jwtConfiguration->builder(ChainedFormatter::withUnixTimestampDates())
                     ->issuedAt($now)
                     ->canOnlyBeUsedAfter($now)
                     ->expiresAt($expiresAt)
                     ->withClaim(self::SESSION_CLAIM, $sessionContainer)
-                    ->getToken($this->config->signer(), $this->config->signingKey())
+                    ->getToken($jwtConfiguration->signer(), $jwtConfiguration->signingKey())
                     ->toString(),
             )
             ->withExpires($expiresAt);
@@ -248,10 +187,10 @@ final class SessionMiddleware implements MiddlewareInterface
     private function getExpirationCookie(): SetCookie
     {
         return $this
-            ->defaultCookie
+            ->config->getCookie()
             ->withValue(null)
             ->withExpires(
-                $this->clock
+                $this->config->getClock()
                     ->now()
                     ->modify('-30 days'),
             );
