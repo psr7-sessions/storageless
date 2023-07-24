@@ -35,7 +35,6 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use PSR7Sessions\Storageless\Http\ClientFingerprint\Configuration as FingerprintConfig;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\SameOriginRequest;
 use PSR7Sessions\Storageless\Session\DefaultSessionData;
 use PSR7Sessions\Storageless\Session\LazySession;
@@ -63,7 +62,7 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     public function process(Request $request, RequestHandlerInterface $handler): Response
     {
-        $sameOriginRequest = new SameOriginRequest($this->fingerprintConfig, $request);
+        $sameOriginRequest = new SameOriginRequest($this->config->getClientFingerprintConfiguration(), $request);
         $token             = $this->parseToken($request, $sameOriginRequest);
         $sessionContainer  = LazySession::fromContainerBuildingCallback(function () use ($token): SessionInterface {
             return $this->extractSessionContainer($token);
@@ -179,7 +178,7 @@ final class SessionMiddleware implements MiddlewareInterface
 
         $jwtConfiguration = $this->config->getJwtConfiguration();
 
-        $builder = $this->config->builder(ChainedFormatter::withUnixTimestampDates())
+        $builder = $jwtConfiguration->builder(ChainedFormatter::withUnixTimestampDates())
             ->issuedAt($now)
             ->canOnlyBeUsedAfter($now)
             ->expiresAt($expiresAt)
@@ -191,7 +190,7 @@ final class SessionMiddleware implements MiddlewareInterface
             ->config->getCookie()
             ->withValue(
                 $builder
-                    ->getToken($this->config->signer(), $this->config->signingKey())
+                    ->getToken($jwtConfiguration->signer(), $jwtConfiguration->signingKey())
                     ->toString(),
             )
             ->withExpires($expiresAt);

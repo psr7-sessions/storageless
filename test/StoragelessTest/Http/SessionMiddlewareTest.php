@@ -538,12 +538,8 @@ final class SessionMiddlewareTest extends TestCase
 
     public function testDefaultConfigurationShouldNotUseClientFingerprinting(): void
     {
-        $middleware = SessionMiddleware::fromSymmetricKeyDefaults(
-            self::makeRandomSymmetricKey(),
-            100,
-        );
-        $response   = $middleware->process(new ServerRequest(), $this->writingMiddleware());
-        $token      = $this->getCookie($response)->getValue();
+        $response = $this->middleware->process(new ServerRequest(), $this->writingMiddleware());
+        $token    = $this->getCookie($response)->getValue();
 
         self::assertIsString($token);
         self::assertTrue($token !== '');
@@ -574,14 +570,7 @@ final class SessionMiddlewareTest extends TestCase
         };
 
         $middleware = new SessionMiddleware(
-            Configuration::forSymmetricSigner(
-                new Sha256(),
-                self::makeRandomSymmetricKey(),
-            ),
-            SetCookie::create(SessionMiddleware::DEFAULT_COOKIE),
-            100,
-            SystemClock::fromSystemTimezone(),
-            fingerprintConfig: new FingerprintConfig($source),
+            $this->config->withClientFingerprintConfiguration(new FingerprintConfig($source)),
         );
 
         $request      = new ServerRequest([$serverParamKey => $serverParamValue]);
@@ -595,7 +584,7 @@ final class SessionMiddlewareTest extends TestCase
         self::assertInstanceOf(Plain::class, $parsedToken);
         self::assertTrue($parsedToken->claims()->has(SameOriginRequest::CLAIM));
 
-        $validNewRequest = $request->withCookieParams([SessionMiddleware::DEFAULT_COOKIE => $token]);
+        $validNewRequest = $request->withCookieParams([$this->config->getCookie()->getName() => $token]);
 
         $middleware->process(
             $validNewRequest,
@@ -613,7 +602,7 @@ final class SessionMiddlewareTest extends TestCase
 
         $invalidNewRequest = (new ServerRequest([
             $serverParamKey => $serverParamValue . ' changed',
-        ]))->withCookieParams([SessionMiddleware::DEFAULT_COOKIE => $token]);
+        ]))->withCookieParams([$this->config->getCookie()->getName() => $token]);
 
         $middleware->process(
             $invalidNewRequest,
