@@ -32,7 +32,7 @@ use PSR7Sessions\Storageless\Http\SessionMiddlewareConfiguration;
 use function random_bytes;
 
 /** @covers \PSR7Sessions\Storageless\Http\SessionMiddlewareConfiguration */
-final class ConfigTest extends TestCase
+final class SessionMiddlewareConfigurationTest extends TestCase
 {
     private Configuration $jwtConfig;
 
