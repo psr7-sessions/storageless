@@ -65,7 +65,7 @@ Note that you can also use asymmetric keys by using either the
 `PSR7Sessions\Storageless\Http\SessionMiddleware` constructor or the named
 constructor `PSR7Sessions\Storageless\Http\SessionMiddleware::fromAsymmetricKeyDefaults()`
 
-#### Session Hijacking mitigation
+### Session Hijacking mitigation
 
 To mitigate the risks associated to cookie stealing and thus
 [session hijacking](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html#binding-the-session-id-to-other-user-properties),
