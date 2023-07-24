@@ -13,12 +13,11 @@ use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
 
 use function assert;
-use function implode;
-use function sodium_bin2base64;
-use function sodium_crypto_generichash;
+use function json_encode;
+use function sha1;
 use function sprintf;
 
-use const SODIUM_BASE64_VARIANT_ORIGINAL_NO_PADDING;
+use const JSON_THROW_ON_ERROR;
 
 /** @immutable */
 final class SameOriginRequest implements Constraint
@@ -86,10 +85,7 @@ final class SameOriginRequest implements Constraint
             $fingerprintSource[] = $source->extractFrom($serverRequest);
         }
 
-        $fingerprint = sodium_bin2base64(
-            sodium_crypto_generichash(implode("\x00", $fingerprintSource)),
-            SODIUM_BASE64_VARIANT_ORIGINAL_NO_PADDING,
-        );
+        $fingerprint = sha1(json_encode($fingerprintSource, JSON_THROW_ON_ERROR));
         assert($fingerprint !== '');
 
         return $fingerprint;
