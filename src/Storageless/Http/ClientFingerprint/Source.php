@@ -8,6 +8,10 @@ use Psr\Http\Message\ServerRequestInterface;
 
 interface Source
 {
-    /** @return non-empty-string */
+    /**
+     * @return non-empty-string
+     *
+     * @throws SourceMissing
+     */
     public function extractFrom(ServerRequestInterface $request): string;
 }
