@@ -46,12 +46,14 @@ final class SessionMiddlewareConfiguration
     ) {
         $this->jwtConfiguration = clone $jwtConfiguration;
 
-        $this->clock                          = SystemClock::fromSystemTimezone();
-        $this->cookie                         = SetCookie::create('__Secure-slsession')
+        $this->clock = SystemClock::fromSystemTimezone();
+
+        $this->cookie = SetCookie::create('__Secure-slsession')
             ->withSecure(true)
             ->withHttpOnly(true)
             ->withSameSite(SameSite::lax())
             ->withPath('/');
+
         $this->clientFingerprintConfiguration = new FingerprintConfig();
     }
 

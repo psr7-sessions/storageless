@@ -4,11 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-<<<<<<< HEAD
-    "content-hash": "63cacc330e64ad513b8d414c941998f6",
-=======
-    "content-hash": "3f11e47f8a823ed898c95b8d98c212f7",
->>>>>>> 3d16cb8 (Add session hijacking mitigation middleware)
+    "content-hash": "9d530e5f666c41b43f57b551b5ee5c57",
     "packages": [
         {
             "name": "dflydev/fig-cookies",
@@ -2412,7 +2408,6 @@
         },
         {
             "name": "phpdocumentor/type-resolver",
-<<<<<<< HEAD
             "version": "1.7.2",
             "source": {
                 "type": "git",
@@ -2423,18 +2418,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/phpDocumentor/TypeResolver/zipball/b2fe4d22a5426f38e014855322200b97b5362c0d",
                 "reference": "b2fe4d22a5426f38e014855322200b97b5362c0d",
-=======
-            "version": "1.7.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/phpDocumentor/TypeResolver.git",
-                "reference": "dfc078e8af9c99210337325ff5aa152872c98714"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/phpDocumentor/TypeResolver/zipball/dfc078e8af9c99210337325ff5aa152872c98714",
-                "reference": "dfc078e8af9c99210337325ff5aa152872c98714",
->>>>>>> 3d16cb8 (Add session hijacking mitigation middleware)
                 "shasum": ""
             },
             "require": {
@@ -2477,41 +2460,22 @@
             "description": "A PSR-5 based resolver of Class names, Types and Structural Element Names",
             "support": {
                 "issues": "https://github.com/phpDocumentor/TypeResolver/issues",
-<<<<<<< HEAD
                 "source": "https://github.com/phpDocumentor/TypeResolver/tree/1.7.2"
             },
             "time": "2023-05-30T18:13:47+00:00"
         },
         {
             "name": "phpstan/phpdoc-parser",
-            "version": "1.22.1",
+            "version": "1.23.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpdoc-parser.git",
-                "reference": "65c39594fbd8c67abfc68bb323f86447bab79cc0"
+                "reference": "a2b24135c35852b348894320d47b3902a94bc494"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/65c39594fbd8c67abfc68bb323f86447bab79cc0",
-                "reference": "65c39594fbd8c67abfc68bb323f86447bab79cc0",
-=======
-                "source": "https://github.com/phpDocumentor/TypeResolver/tree/1.7.1"
-            },
-            "time": "2023-03-27T19:02:04+00:00"
-        },
-        {
-            "name": "phpstan/phpdoc-parser",
-            "version": "1.16.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/phpstan/phpdoc-parser.git",
-                "reference": "e27e92d939e2e3636f0a1f0afaba59692c0bf571"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/e27e92d939e2e3636f0a1f0afaba59692c0bf571",
-                "reference": "e27e92d939e2e3636f0a1f0afaba59692c0bf571",
->>>>>>> 3d16cb8 (Add session hijacking mitigation middleware)
+                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/a2b24135c35852b348894320d47b3902a94bc494",
+                "reference": "a2b24135c35852b348894320d47b3902a94bc494",
                 "shasum": ""
             },
             "require": {
@@ -2543,15 +2507,9 @@
             "description": "PHPDoc parser with support for nullable, intersection and generic types",
             "support": {
                 "issues": "https://github.com/phpstan/phpdoc-parser/issues",
-<<<<<<< HEAD
-                "source": "https://github.com/phpstan/phpdoc-parser/tree/1.22.1"
+                "source": "https://github.com/phpstan/phpdoc-parser/tree/1.23.0"
             },
-            "time": "2023-06-29T20:46:06+00:00"
-=======
-                "source": "https://github.com/phpstan/phpdoc-parser/tree/1.16.1"
-            },
-            "time": "2023-02-07T18:11:17+00:00"
->>>>>>> 3d16cb8 (Add session hijacking mitigation middleware)
+            "time": "2023-07-23T22:17:56+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -2873,7 +2831,6 @@
         },
         {
             "name": "phpunit/phpunit",
-<<<<<<< HEAD
             "version": "9.6.10",
             "source": {
                 "type": "git",
@@ -2884,18 +2841,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/a6d351645c3fe5a30f5e86be6577d946af65a328",
                 "reference": "a6d351645c3fe5a30f5e86be6577d946af65a328",
-=======
-            "version": "9.6.6",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "b65d59a059d3004a040c16a82e07bbdf6cfdd115"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/b65d59a059d3004a040c16a82e07bbdf6cfdd115",
-                "reference": "b65d59a059d3004a040c16a82e07bbdf6cfdd115",
->>>>>>> 3d16cb8 (Add session hijacking mitigation middleware)
                 "shasum": ""
             },
             "require": {
@@ -2969,11 +2914,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-<<<<<<< HEAD
                 "source": "https://github.com/sebastianbergmann/phpunit/tree/9.6.10"
-=======
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.6.6"
->>>>>>> 3d16cb8 (Add session hijacking mitigation middleware)
             },
             "funding": [
                 {
@@ -2989,11 +2930,7 @@
                     "type": "tidelift"
                 }
             ],
-<<<<<<< HEAD
             "time": "2023-07-10T04:04:23+00:00"
-=======
-            "time": "2023-03-27T11:43:46+00:00"
->>>>>>> 3d16cb8 (Add session hijacking mitigation middleware)
         },
         {
             "name": "psalm/plugin-phpunit",
@@ -4353,57 +4290,32 @@
         },
         {
             "name": "slevomat/coding-standard",
-<<<<<<< HEAD
-            "version": "8.13.1",
+            "version": "8.13.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/slevomat/coding-standard.git",
-                "reference": "a13c15e20f2d307a1ca8dec5313ec462a4466470"
+                "reference": "83fb531a75950b6c6c7c37d7813836c3df8fc8d1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/slevomat/coding-standard/zipball/a13c15e20f2d307a1ca8dec5313ec462a4466470",
-                "reference": "a13c15e20f2d307a1ca8dec5313ec462a4466470",
-=======
-            "version": "8.9.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/slevomat/coding-standard.git",
-                "reference": "3d4fe0c803ae15829ef72d90d3d4eee3dd9f79b2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/slevomat/coding-standard/zipball/3d4fe0c803ae15829ef72d90d3d4eee3dd9f79b2",
-                "reference": "3d4fe0c803ae15829ef72d90d3d4eee3dd9f79b2",
->>>>>>> 3d16cb8 (Add session hijacking mitigation middleware)
+                "url": "https://api.github.com/repos/slevomat/coding-standard/zipball/83fb531a75950b6c6c7c37d7813836c3df8fc8d1",
+                "reference": "83fb531a75950b6c6c7c37d7813836c3df8fc8d1",
                 "shasum": ""
             },
             "require": {
                 "dealerdirect/phpcodesniffer-composer-installer": "^0.6.2 || ^0.7 || ^1.0",
                 "php": "^7.2 || ^8.0",
-<<<<<<< HEAD
-                "phpstan/phpdoc-parser": "^1.22.0",
-=======
-                "phpstan/phpdoc-parser": ">=1.16.0 <1.17.0",
->>>>>>> 3d16cb8 (Add session hijacking mitigation middleware)
+                "phpstan/phpdoc-parser": "^1.23.0",
                 "squizlabs/php_codesniffer": "^3.7.1"
             },
             "require-dev": {
                 "phing/phing": "2.17.4",
                 "php-parallel-lint/php-parallel-lint": "1.3.2",
-<<<<<<< HEAD
-                "phpstan/phpstan": "1.10.21",
+                "phpstan/phpstan": "1.10.26",
                 "phpstan/phpstan-deprecation-rules": "1.1.3",
                 "phpstan/phpstan-phpunit": "1.3.13",
                 "phpstan/phpstan-strict-rules": "1.5.1",
-                "phpunit/phpunit": "7.5.20|8.5.21|9.6.8|10.2.2"
-=======
-                "phpstan/phpstan": "1.4.10|1.10.8",
-                "phpstan/phpstan-deprecation-rules": "1.1.3",
-                "phpstan/phpstan-phpunit": "1.0.0|1.3.10",
-                "phpstan/phpstan-strict-rules": "1.5.0",
-                "phpunit/phpunit": "7.5.20|8.5.21|9.6.5"
->>>>>>> 3d16cb8 (Add session hijacking mitigation middleware)
+                "phpunit/phpunit": "7.5.20|8.5.21|9.6.8|10.2.6"
             },
             "type": "phpcodesniffer-standard",
             "extra": {
@@ -4427,11 +4339,7 @@
             ],
             "support": {
                 "issues": "https://github.com/slevomat/coding-standard/issues",
-<<<<<<< HEAD
-                "source": "https://github.com/slevomat/coding-standard/tree/8.13.1"
-=======
-                "source": "https://github.com/slevomat/coding-standard/tree/8.9.1"
->>>>>>> 3d16cb8 (Add session hijacking mitigation middleware)
+                "source": "https://github.com/slevomat/coding-standard/tree/8.13.2"
             },
             "funding": [
                 {
@@ -4443,11 +4351,7 @@
                     "type": "tidelift"
                 }
             ],
-<<<<<<< HEAD
-            "time": "2023-06-25T12:52:34+00:00"
-=======
-            "time": "2023-03-27T11:00:16+00:00"
->>>>>>> 3d16cb8 (Add session hijacking mitigation middleware)
+            "time": "2023-07-24T10:09:44+00:00"
         },
         {
             "name": "spatie/array-to-xml",
