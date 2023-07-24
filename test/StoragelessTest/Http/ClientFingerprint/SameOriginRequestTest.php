@@ -64,7 +64,7 @@ final class SameOriginRequestTest extends TestCase
                 return $this->data;
             }
         };
-        $this->configuration = new Configuration($this->source);
+        $this->configuration = Configuration::forSources($this->source);
         $this->request       = new ServerRequest();
         $this->constraint    = new SameOriginRequest($this->configuration, $this->request);
         $this->builder       = new Token\Builder(new JoseEncoder(), ChainedFormatter::withUnixTimestampDates());
@@ -146,10 +146,10 @@ final class SameOriginRequestTest extends TestCase
             }
         };
 
-        $constraintOne          = new SameOriginRequest(new Configuration($sourceOne), $this->request);
-        $constraintOneTwo       = new SameOriginRequest(new Configuration($sourceOne, $sourceTwo), $this->request);
-        $constraintTwoOne       = new SameOriginRequest(new Configuration($sourceTwo, $sourceOne), $this->request);
-        $constraintOneTwoHacked = new SameOriginRequest(new Configuration($sourceOneTwoHacked), $this->request);
+        $constraintOne          = new SameOriginRequest(Configuration::forSources($sourceOne), $this->request);
+        $constraintOneTwo       = new SameOriginRequest(Configuration::forSources($sourceOne, $sourceTwo), $this->request);
+        $constraintTwoOne       = new SameOriginRequest(Configuration::forSources($sourceTwo, $sourceOne), $this->request);
+        $constraintOneTwoHacked = new SameOriginRequest(Configuration::forSources($sourceOneTwoHacked), $this->request);
 
         $claimsOne          = $constraintOne->configure($this->builder)->getToken($this->signer, $this->key)->claims();
         $claimsOneTwo       = $constraintOneTwo->configure($this->builder)->getToken($this->signer, $this->key)->claims();
@@ -204,7 +204,7 @@ final class SameOriginRequestTest extends TestCase
         $request->expects(self::never())->method('getMethod');
 
         return new SameOriginRequest(
-            new Configuration(),
+            Configuration::disabled(),
             $request,
         );
     }

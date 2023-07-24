@@ -83,7 +83,7 @@ final class SessionMiddlewareConfigurationTest extends TestCase
     {
         $config = new SessionMiddlewareConfiguration($this->jwtConfig);
 
-        self::assertFalse($config->getClientFingerprintConfiguration()->enabled());
+        self::assertEquals(FingerprintConfig::disabled(), $config->getClientFingerprintConfiguration());
     }
 
     public function testImmutability(): void

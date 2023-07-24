@@ -23,6 +23,8 @@ final class SameOriginRequest implements Constraint
 {
     public const CLAIM = 'fp';
 
+    /** @var list<Source> */
+    private readonly array $sources;
     /** @var non-empty-string */
     private readonly string $currentRequestFingerprint;
 
@@ -30,16 +32,17 @@ final class SameOriginRequest implements Constraint
         private readonly Configuration $configuration,
         ServerRequestInterface $serverRequest,
     ) {
-        if (! $this->configuration->enabled()) {
+        $this->sources = $this->configuration->sources();
+        if ($this->sources === []) {
             return;
         }
 
-        $this->currentRequestFingerprint = self::getCurrentFingerprint($this->configuration, $serverRequest);
+        $this->currentRequestFingerprint = self::getCurrentFingerprint($this->sources, $serverRequest);
     }
 
     public function assert(Token $token): void
     {
-        if (! $this->configuration->enabled()) {
+        if ($this->sources === []) {
             return;
         }
 
@@ -58,18 +61,22 @@ final class SameOriginRequest implements Constraint
 
     public function configure(Builder $builder): Builder
     {
-        if (! $this->configuration->enabled()) {
+        if ($this->sources === []) {
             return $builder;
         }
 
         return $builder->withClaim(self::CLAIM, $this->currentRequestFingerprint);
     }
 
-    /** @return non-empty-string */
-    private static function getCurrentFingerprint(Configuration $configuration, ServerRequestInterface $serverRequest): string
+    /**
+     * @param non-empty-list<Source> $sources
+     *
+     * @return non-empty-string
+     */
+    private static function getCurrentFingerprint(array $sources, ServerRequestInterface $serverRequest): string
     {
         $fingerprintSource = [];
-        foreach ($configuration->sources() as $source) {
+        foreach ($sources as $source) {
             $fingerprintSource[] = $source->extractFrom($serverRequest);
         }
 

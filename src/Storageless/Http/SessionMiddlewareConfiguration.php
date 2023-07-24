@@ -54,7 +54,7 @@ final class SessionMiddlewareConfiguration
             ->withSameSite(SameSite::lax())
             ->withPath('/');
 
-        $this->clientFingerprintConfiguration = new FingerprintConfig();
+        $this->clientFingerprintConfiguration = FingerprintConfig::disabled();
     }
 
     public function getJwtConfiguration(): Configuration

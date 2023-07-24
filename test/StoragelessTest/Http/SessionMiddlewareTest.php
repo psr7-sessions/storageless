@@ -570,7 +570,7 @@ final class SessionMiddlewareTest extends TestCase
         };
 
         $middleware = new SessionMiddleware(
-            $this->config->withClientFingerprintConfiguration(new FingerprintConfig($source)),
+            $this->config->withClientFingerprintConfiguration(FingerprintConfig::forSources($source)),
         );
 
         $request      = new ServerRequest([$serverParamKey => $serverParamValue]);

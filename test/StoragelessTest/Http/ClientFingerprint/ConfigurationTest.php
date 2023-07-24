@@ -25,29 +25,31 @@ use PSR7Sessions\Storageless\Http\ClientFingerprint\Configuration;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\RemoteAddr;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\Source;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\UserAgent;
-use RuntimeException;
 
 use function array_map;
 
 /** @covers \PSR7Sessions\Storageless\Http\ClientFingerprint\Configuration */
 final class ConfigurationTest extends TestCase
 {
-    public function testByDefaultIsDisabled(): void
+    public function testDisabled(): void
     {
-        $configuration = new Configuration();
+        $configuration = Configuration::disabled();
 
-        self::assertFalse($configuration->enabled());
+        self::assertSame([], $configuration->sources());
+    }
 
-        $this->expectException(RuntimeException::class);
+    public function testCustomSourcesFactory(): void
+    {
+        $source = $this->createMock(Source::class);
 
-        $configuration->sources();
+        $configuration = Configuration::forSources($source);
+
+        self::assertSame([$source], $configuration->sources());
     }
 
     public function testEnabledFactoryProvidesRemoteAddrAndUserAgentSources(): void
     {
         $configuration = Configuration::forIpAndUserAgent();
-
-        self::assertTrue($configuration->enabled());
 
         $sources = array_map(
             static fn (Source $source) => $source::class,
