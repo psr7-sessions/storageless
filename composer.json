@@ -32,7 +32,7 @@
     },
     "require-dev": {
         "doctrine/coding-standard":               "^12.0.0",
-        "laminas/laminas-diactoros":              "^2.24.0",
+        "laminas/laminas-diactoros":              "^3.0.0",
         "laminas/laminas-httphandlerrunner":      "^2.5.0",
         "phpunit/phpunit":                        "^9.6.5",
         "psalm/plugin-phpunit":                   "^0.18.4",
