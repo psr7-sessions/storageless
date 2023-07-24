@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace PSR7SessionsTest\Storageless\Session;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use PSR7Sessions\Storageless\Session\LazySession;
@@ -28,14 +29,13 @@ use PSR7SessionsTest\Storageless\Asset\MakeSession;
 
 use function uniqid;
 
-/** @covers \PSR7Sessions\Storageless\Session\LazySession */
+#[CoversClass(LazySession::class)]
 final class LazySessionTest extends TestCase
 {
-    /** @var SessionInterface&MockObject */
-    private SessionInterface $wrappedSession;
-
+    private SessionInterface&MockObject $wrappedSession;
+    // phpcs:ignore SlevomatCodingStandard.TypeHints.PropertyTypeHint.UselessAnnotation
     /** @var MakeSession&MockObject */
-    private MakeSession $sessionLoader;
+    private MakeSession&MockObject $sessionLoader;
 
     private LazySession $lazySession;
 

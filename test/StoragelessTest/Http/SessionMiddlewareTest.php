@@ -39,6 +39,8 @@ use Lcobucci\JWT\Token;
 use Lcobucci\JWT\Token\Parser;
 use Lcobucci\JWT\Token\Plain;
 use Lcobucci\JWT\Token\RegisteredClaims;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -60,12 +62,9 @@ use function uniqid;
 
 final class SessionMiddlewareTest extends TestCase
 {
-    /**
-     * @param callable(): SessionMiddleware $middlewareFactory
-     *
-     * @dataProvider defaultMiddlewaresProvider
-     * @group #46
-     */
+    /** @param callable(): SessionMiddleware $middlewareFactory */
+    #[DataProvider('defaultMiddlewaresProvider')]
+    #[Group('#46')]
     public function testDefaultMiddlewareConfiguresASecureCookie(callable $middlewareFactory): void
     {
         $middleware = $middlewareFactory();
@@ -83,11 +82,8 @@ final class SessionMiddlewareTest extends TestCase
         self::assertCookieIsSecure($cookie);
     }
 
-    /**
-     * @param callable(): SessionMiddleware $middlewareFactory
-     *
-     * @dataProvider validMiddlewaresProvider
-     */
+    /** @param callable(): SessionMiddleware $middlewareFactory */
+    #[DataProvider('validMiddlewaresProvider')]
     public function testSkipsInjectingSessionCookieOnEmptyContainer(callable $middlewareFactory): void
     {
         $middleware = $middlewareFactory();
@@ -96,22 +92,16 @@ final class SessionMiddlewareTest extends TestCase
         self::assertNull($this->getCookie($response)->getValue());
     }
 
-    /**
-     * @param callable(): SessionMiddleware $middlewareFactory
-     *
-     * @dataProvider validMiddlewaresProvider
-     */
+    /** @param callable(): SessionMiddleware $middlewareFactory */
+    #[DataProvider('validMiddlewaresProvider')]
     public function testExtractsSessionContainerFromEmptyRequest(callable $middlewareFactory): void
     {
         $middleware = $middlewareFactory();
         $this->ensureSameResponse($middleware, new ServerRequest(), $this->emptyValidationMiddleware());
     }
 
-    /**
-     * @param callable(): SessionMiddleware $middlewareFactory
-     *
-     * @dataProvider validMiddlewaresProvider
-     */
+    /** @param callable(): SessionMiddleware $middlewareFactory */
+    #[DataProvider('validMiddlewaresProvider')]
     public function testInjectsSessionInResponseCookies(callable $middlewareFactory): void
     {
         $middleware      = $middlewareFactory();
@@ -130,11 +120,8 @@ final class SessionMiddlewareTest extends TestCase
         self::assertEquals(['foo' => 'bar'], $parsedToken->claims()->get('session-data'));
     }
 
-    /**
-     * @param callable(): SessionMiddleware $middlewareFactory
-     *
-     * @dataProvider validMiddlewaresProvider
-     */
+    /** @param callable(): SessionMiddleware $middlewareFactory */
+    #[DataProvider('validMiddlewaresProvider')]
     public function testSessionContainerCanBeReusedOverMultipleRequests(callable $middlewareFactory): void
     {
         $middleware   = $middlewareFactory();
@@ -170,11 +157,8 @@ final class SessionMiddlewareTest extends TestCase
         self::assertNotSame($response, $firstResponse);
     }
 
-    /**
-     * @param callable(): SessionMiddleware $middlewareFactory
-     *
-     * @dataProvider validMiddlewaresProvider
-     */
+    /** @param callable(): SessionMiddleware $middlewareFactory */
+    #[DataProvider('validMiddlewaresProvider')]
     public function testSessionContainerCanBeCreatedEvenIfTokenDataIsMalformed(callable $middlewareFactory): void
     {
         $middleware   = $middlewareFactory();
@@ -213,11 +197,8 @@ final class SessionMiddlewareTest extends TestCase
         );
     }
 
-    /**
-     * @param callable(): SessionMiddleware $middlewareFactory
-     *
-     * @dataProvider validMiddlewaresProvider
-     */
+    /** @param callable(): SessionMiddleware $middlewareFactory */
+    #[DataProvider('validMiddlewaresProvider')]
     public function testWillIgnoreRequestsWithExpiredTokens(callable $middlewareFactory): void
     {
         $middleware   = $middlewareFactory();
@@ -261,11 +242,8 @@ final class SessionMiddlewareTest extends TestCase
         );
     }
 
-    /**
-     * @param callable(): SessionMiddleware $middlewareFactory
-     *
-     * @dataProvider validMiddlewaresProvider
-     */
+    /** @param callable(): SessionMiddleware $middlewareFactory */
+    #[DataProvider('validMiddlewaresProvider')]
     public function testWillIgnoreRequestsWithTokensFromFuture(callable $middlewareFactory): void
     {
         $middleware    = $middlewareFactory();
@@ -281,11 +259,8 @@ final class SessionMiddlewareTest extends TestCase
         $this->ensureSameResponse($middleware, $tokenInFuture, $this->emptyValidationMiddleware());
     }
 
-    /**
-     * @param callable(): SessionMiddleware $middlewareFactory
-     *
-     * @dataProvider validMiddlewaresProvider
-     */
+    /** @param callable(): SessionMiddleware $middlewareFactory */
+    #[DataProvider('validMiddlewaresProvider')]
     public function testWillIgnoreUnSignedTokens(callable $middlewareFactory): void
     {
         $middleware    = $middlewareFactory();
@@ -307,11 +282,8 @@ final class SessionMiddlewareTest extends TestCase
         $this->ensureSameResponse($middleware, $unsignedToken, $this->emptyValidationMiddleware());
     }
 
-    /**
-     * @param callable(): SessionMiddleware $middlewareFactory
-     *
-     * @dataProvider validMiddlewaresProvider
-     */
+    /** @param callable(): SessionMiddleware $middlewareFactory */
+    #[DataProvider('validMiddlewaresProvider')]
     public function testWillIgnoreSignedTokensWithoutIssuedAt(callable $middlewareFactory): void
     {
         $middleware    = $middlewareFactory();
@@ -415,11 +387,8 @@ final class SessionMiddlewareTest extends TestCase
         );
     }
 
-    /**
-     * @param callable(): SessionMiddleware $middlewareFactory
-     *
-     * @dataProvider validMiddlewaresProvider
-     */
+    /** @param callable(): SessionMiddleware $middlewareFactory */
+    #[DataProvider('validMiddlewaresProvider')]
     public function testWillSkipInjectingSessionCookiesWhenSessionIsNotChanged(callable $middlewareFactory): void
     {
         $middleware = $middlewareFactory();
@@ -444,11 +413,8 @@ final class SessionMiddlewareTest extends TestCase
         );
     }
 
-    /**
-     * @param callable(): SessionMiddleware $middlewareFactory
-     *
-     * @dataProvider validMiddlewaresProvider
-     */
+    /** @param callable(): SessionMiddleware $middlewareFactory */
+    #[DataProvider('validMiddlewaresProvider')]
     public function testWillSendExpirationCookieWhenSessionContentsAreCleared(callable $middlewareFactory): void
     {
         $middleware = $middlewareFactory();
@@ -470,11 +436,8 @@ final class SessionMiddlewareTest extends TestCase
         );
     }
 
-    /**
-     * @param callable(): SessionMiddleware $middlewareFactory
-     *
-     * @dataProvider validMiddlewaresProvider
-     */
+    /** @param callable(): SessionMiddleware $middlewareFactory */
+    #[DataProvider('validMiddlewaresProvider')]
     public function testWillIgnoreMalformedTokens(callable $middlewareFactory): void
     {
         $middleware = $middlewareFactory();
@@ -665,9 +628,9 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     /** @return array<array<callable(): SessionMiddleware>> */
-    public function validMiddlewaresProvider(): array
+    public static function validMiddlewaresProvider(): array
     {
-        return $this->defaultMiddlewaresProvider() + [
+        return self::defaultMiddlewaresProvider() + [
             'from-constructor' => [
                 static function (): SessionMiddleware {
                     return new SessionMiddleware(
@@ -685,7 +648,7 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     /** @return array<array<callable(): SessionMiddleware>> */
-    public function defaultMiddlewaresProvider(): array
+    public static function defaultMiddlewaresProvider(): array
     {
         return [
             'from-symmetric' => [
@@ -802,15 +765,13 @@ final class SessionMiddlewareTest extends TestCase
         SessionMiddleware $middleware,
         ServerRequestInterface $request,
         RequestHandlerInterface $next,
-    ): ResponseInterface {
+    ): void {
         $response = $middleware->process($request, $next);
 
         $cookie = $this->getCookie($response);
 
         self::assertLessThan((new DateTime('-29 day'))->getTimestamp(), $cookie->getExpires());
         self::assertEmpty($cookie->getValue());
-
-        return $response;
     }
 
     private function createToken(SessionMiddleware $middleware, DateTimeImmutable $issuedAt, DateTimeImmutable $expiration): string

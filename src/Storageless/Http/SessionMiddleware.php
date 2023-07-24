@@ -62,9 +62,9 @@ final class SessionMiddleware implements MiddlewareInterface
     public function __construct(
         Configuration $configuration,
         SetCookie $defaultCookie,
-        private int $idleTimeout,
+        private readonly int $idleTimeout,
         private Clock $clock,
-        private int $refreshTime = self::DEFAULT_REFRESH_TIME,
+        private readonly int $refreshTime = self::DEFAULT_REFRESH_TIME,
         private string $sessionAttribute = self::SESSION_ATTRIBUTE,
     ) {
         $this->config        = $configuration;
