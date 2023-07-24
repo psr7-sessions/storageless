@@ -32,13 +32,13 @@
     },
     "require-dev": {
         "doctrine/coding-standard":               "^11.1.0",
-        "laminas/laminas-diactoros":              "^2.24.0",
-        "laminas/laminas-httphandlerrunner":      "^2.5.0",
-        "phpunit/phpunit":                        "^10.0.12",
+        "laminas/laminas-diactoros":              "^2.25.2",
+        "laminas/laminas-httphandlerrunner":      "^2.6.1",
+        "phpunit/phpunit":                        "^10.2.6",
         "psalm/plugin-phpunit":                   "^0.18.4",
-        "roave/infection-static-analysis-plugin": "^1.29.0",
+        "roave/infection-static-analysis-plugin": "^1.32.0",
         "squizlabs/php_codesniffer":              "^3.7.2",
-        "vimeo/psalm":                            "^5.8.0"
+        "vimeo/psalm":                            "^5.13.1"
     },
     "config": {
         "allow-plugins": {
