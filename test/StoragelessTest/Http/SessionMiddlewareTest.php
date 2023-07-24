@@ -192,13 +192,6 @@ final class SessionMiddlewareTest extends TestCase
             },
         );
 
-        $this->createTokenWithCustomClaim(
-            $middleware,
-            new DateTimeImmutable('-1 day'),
-            new DateTimeImmutable('+1 day'),
-            'not valid session data',
-        );
-
         $middleware->process(
             (new ServerRequest())
                 ->withCookieParams([
