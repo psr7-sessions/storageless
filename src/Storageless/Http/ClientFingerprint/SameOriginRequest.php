@@ -10,11 +10,13 @@ use Lcobucci\JWT\UnencryptedToken;
 use Lcobucci\JWT\Validation\Constraint;
 use Lcobucci\JWT\Validation\ConstraintViolation;
 use Psr\Http\Message\ServerRequestInterface;
+use RuntimeException;
 
 use function assert;
 use function implode;
 use function sodium_bin2base64;
 use function sodium_crypto_generichash;
+use function sprintf;
 
 use const SODIUM_BASE64_VARIANT_ORIGINAL_NO_PADDING;
 
@@ -47,7 +49,11 @@ final class SameOriginRequest implements Constraint
         }
 
         if (! $token instanceof UnencryptedToken) {
-            throw ConstraintViolation::error('You should pass a plain token', $this);
+            throw new RuntimeException(sprintf(
+                'It was expected an %s, %s given',
+                UnencryptedToken::class,
+                $token::class,
+            ));
         }
 
         if (! $token->claims()->has(self::CLAIM)) {

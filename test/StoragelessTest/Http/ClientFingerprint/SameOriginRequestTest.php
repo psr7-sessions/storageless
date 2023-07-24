@@ -36,6 +36,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\Configuration;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\SameOriginRequest;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\Source;
+use RuntimeException;
 
 /** @covers \PSR7Sessions\Storageless\Http\ClientFingerprint\SameOriginRequest */
 final class SameOriginRequestTest extends TestCase
@@ -82,8 +83,8 @@ final class SameOriginRequestTest extends TestCase
 
     public function testShouldRaiseExceptionWhenTokenIsNotAPlainToken(): void
     {
-        $this->expectException(ConstraintViolation::class);
-        $this->expectExceptionMessage('You should pass a plain token');
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('It was expected an Lcobucci\\JWT\\UnencryptedToken');
 
         $this->constraint->assert($this->createMock(Token::class));
     }
