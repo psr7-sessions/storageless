@@ -23,22 +23,22 @@
     "require": {
         "php":                             "~8.1.0 || ~8.2.0",
         "ext-json":                        "*",
-        "dflydev/fig-cookies":             "^3.0.0",
+        "dflydev/fig-cookies":             "^3.1.0",
         "lcobucci/jwt":                    "^4.3.0 || ^5.0.0",
-        "lcobucci/clock":                  "^3.0.0",
+        "lcobucci/clock":                  "^3.1.0",
         "psr/http-message":                "^1.1 || ^2.0",
-        "psr/http-server-handler":         "^1.0.1",
-        "psr/http-server-middleware":      "^1.0.1"
+        "psr/http-server-handler":         "^1.0.2",
+        "psr/http-server-middleware":      "^1.0.2"
     },
     "require-dev": {
         "doctrine/coding-standard":               "^12.0.0",
         "laminas/laminas-diactoros":              "^3.0.0",
-        "laminas/laminas-httphandlerrunner":      "^2.5.0",
-        "phpunit/phpunit":                        "^9.6.5",
+        "laminas/laminas-httphandlerrunner":      "^2.6.1",
+        "phpunit/phpunit":                        "^9.6.10",
         "psalm/plugin-phpunit":                   "^0.18.4",
-        "roave/infection-static-analysis-plugin": "^1.29.0",
+        "roave/infection-static-analysis-plugin": "^1.32.0",
         "squizlabs/php_codesniffer":              "^3.7.2",
-        "vimeo/psalm":                            "^5.8.0"
+        "vimeo/psalm":                            "^5.13.1"
     },
     "config": {
         "allow-plugins": {
