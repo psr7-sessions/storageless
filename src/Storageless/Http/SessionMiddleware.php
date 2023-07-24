@@ -118,7 +118,7 @@ final class SessionMiddleware implements MiddlewareInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @throws BadMethodCallException
      * @throws InvalidArgumentException
