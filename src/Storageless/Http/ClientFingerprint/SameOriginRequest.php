@@ -19,7 +19,11 @@ use function sprintf;
 
 use const JSON_THROW_ON_ERROR;
 
-/** @immutable */
+/**
+ * @internal
+ *
+ * @immutable
+ */
 final class SameOriginRequest implements Constraint
 {
     public const CLAIM = 'fp';
