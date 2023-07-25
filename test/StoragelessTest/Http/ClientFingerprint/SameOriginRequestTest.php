@@ -38,6 +38,8 @@ use PSR7Sessions\Storageless\Http\ClientFingerprint\SameOriginRequest;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\Source;
 use RuntimeException;
 
+use function strlen;
+
 /** @covers \PSR7Sessions\Storageless\Http\ClientFingerprint\SameOriginRequest */
 final class SameOriginRequestTest extends TestCase
 {
@@ -124,6 +126,11 @@ final class SameOriginRequestTest extends TestCase
         $claims     = $newBuilder->getToken($this->signer, $this->key)->claims();
 
         self::assertTrue($claims->has(SameOriginRequest::CLAIM));
+
+        $fingerprintClaim = $claims->get(SameOriginRequest::CLAIM);
+        self::assertIsString($fingerprintClaim);
+        self::assertNotEmpty($fingerprintClaim);
+        self::assertSame(44, strlen($fingerprintClaim));
     }
 
     public function testFingerprintShouldDependOnAllConfiguredSources(): void

@@ -89,6 +89,6 @@ final class SameOriginRequest implements Constraint
             $fingerprintSource[] = $source->extractFrom($serverRequest);
         }
 
-        return base64_encode(hash('sha256', json_encode($fingerprintSource, JSON_THROW_ON_ERROR)));
+        return base64_encode(hash('sha256', json_encode($fingerprintSource, JSON_THROW_ON_ERROR), true));
     }
 }

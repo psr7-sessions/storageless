@@ -9,6 +9,7 @@
       <code>SameOriginRequest::CLAIM</code>
       <code>SameOriginRequest::CLAIM</code>
       <code>SameOriginRequest::CLAIM</code>
+      <code>SameOriginRequest::CLAIM</code>
       <code>new SameOriginRequest(
             Configuration::disabled(),
             $request,
