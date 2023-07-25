@@ -31,8 +31,7 @@ use PSR7Sessions\Storageless\Http\ClientFingerprint\UserAgent;
  */
 final class UserAgentTest extends TestCase
 {
-    private const REQUEST_ATTRIBUTE_NAME = 'HTTP_USER_AGENT';
-
+    private const HEADER_NAME = 'User-Agent';
     private UserAgent $source;
 
     protected function setUp(): void
@@ -43,7 +42,7 @@ final class UserAgentTest extends TestCase
     public function testReturnTheClientIp(): void
     {
         $ip      = 'Firefox';
-        $request = new ServerRequest([self::REQUEST_ATTRIBUTE_NAME => $ip]);
+        $request = new ServerRequest(headers: [self::HEADER_NAME => $ip]);
 
         self::assertSame($ip, $this->source->extractFrom($request));
     }
@@ -57,7 +56,7 @@ final class UserAgentTest extends TestCase
 
     public function testRequireParamToBeString(): void
     {
-        $request = new ServerRequest([self::REQUEST_ATTRIBUTE_NAME => []]);
+        $request = new ServerRequest(headers: [self::HEADER_NAME => '']);
 
         $this->expectException(SourceMissing::class);
 
@@ -66,7 +65,7 @@ final class UserAgentTest extends TestCase
 
     public function testRequireParamToBeNonEmptyString(): void
     {
-        $request = new ServerRequest([self::REQUEST_ATTRIBUTE_NAME => '']);
+        $request = new ServerRequest(headers: [self::HEADER_NAME => '']);
 
         $this->expectException(SourceMissing::class);
 
