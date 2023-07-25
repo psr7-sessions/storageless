@@ -24,13 +24,13 @@ use Dflydev\FigCookies\Modifier\SameSite;
 use Dflydev\FigCookies\SetCookie;
 use Lcobucci\Clock\Clock;
 use Lcobucci\Clock\SystemClock;
-use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Configuration as JwtConfig;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\Configuration as FingerprintConfig;
 
 /** @immutable */
-final class SessionMiddlewareConfiguration
+final class Configuration
 {
-    private Configuration $jwtConfiguration;
+    private JwtConfig $jwtConfiguration;
     private Clock $clock;
     private SetCookie $cookie;
     /** @var positive-int */
@@ -42,7 +42,7 @@ final class SessionMiddlewareConfiguration
     private FingerprintConfig $clientFingerprintConfiguration;
 
     public function __construct(
-        Configuration $jwtConfiguration,
+        JwtConfig $jwtConfiguration,
     ) {
         $this->jwtConfiguration = clone $jwtConfiguration;
 
@@ -57,7 +57,7 @@ final class SessionMiddlewareConfiguration
         $this->clientFingerprintConfiguration = FingerprintConfig::disabled();
     }
 
-    public function getJwtConfiguration(): Configuration
+    public function getJwtConfiguration(): JwtConfig
     {
         return $this->jwtConfiguration;
     }
@@ -95,7 +95,7 @@ final class SessionMiddlewareConfiguration
         return $this->clientFingerprintConfiguration;
     }
 
-    public function withJwtConfiguration(Configuration $jwtConfiguration): self
+    public function withJwtConfiguration(JwtConfig $jwtConfiguration): self
     {
         $new                   = clone $this;
         $new->jwtConfiguration = clone $jwtConfiguration;
