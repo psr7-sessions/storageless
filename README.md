@@ -118,7 +118,7 @@ $app->pipe(new SessionMiddleware(
             FingerprintConfig::forSources(new class implements Source{
                  public function extractFrom(ServerRequestInterface $request): string
                  {
-                     return $request->getServerParams()['HTTP_X_REAL_IP'];
+                     return $request->getHeaderLine('X-Real-IP');
                  }
             })
         )
