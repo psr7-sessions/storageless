@@ -31,6 +31,7 @@ use PSR7Sessions\Storageless\Http\ClientFingerprint\SourceMissing;
  */
 final class RemoteAddrTest extends TestCase
 {
+    private const REQUEST_ATTRIBUTE_NAME = 'REMOTE_ADDR';
     private RemoteAddr $source;
 
     protected function setUp(): void
@@ -41,7 +42,7 @@ final class RemoteAddrTest extends TestCase
     public function testReturnTheClientIp(): void
     {
         $ip      = '1.1.1.1';
-        $request = new ServerRequest([RemoteAddr::REQUEST_ATTRIBUTE_NAME => $ip]);
+        $request = new ServerRequest([self::REQUEST_ATTRIBUTE_NAME => $ip]);
 
         self::assertSame($ip, $this->source->extractFrom($request));
     }
@@ -55,7 +56,7 @@ final class RemoteAddrTest extends TestCase
 
     public function testRequireParamToBeString(): void
     {
-        $request = new ServerRequest([RemoteAddr::REQUEST_ATTRIBUTE_NAME => []]);
+        $request = new ServerRequest([self::REQUEST_ATTRIBUTE_NAME => []]);
 
         $this->expectException(SourceMissing::class);
 
@@ -64,7 +65,7 @@ final class RemoteAddrTest extends TestCase
 
     public function testRequireParamToBeNonEmptyString(): void
     {
-        $request = new ServerRequest([RemoteAddr::REQUEST_ATTRIBUTE_NAME => '']);
+        $request = new ServerRequest([self::REQUEST_ATTRIBUTE_NAME => '']);
 
         $this->expectException(SourceMissing::class);
 

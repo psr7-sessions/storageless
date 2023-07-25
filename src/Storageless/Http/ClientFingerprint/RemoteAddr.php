@@ -12,7 +12,7 @@ use function is_string;
 /** @immutable */
 final class RemoteAddr implements Source
 {
-    public const REQUEST_ATTRIBUTE_NAME = 'REMOTE_ADDR';
+    private const REQUEST_ATTRIBUTE_NAME = 'REMOTE_ADDR';
 
     public function extractFrom(ServerRequestInterface $request): string
     {

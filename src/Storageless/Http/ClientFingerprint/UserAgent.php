@@ -12,7 +12,7 @@ use function is_string;
 /** @immutable */
 final class UserAgent implements Source
 {
-    public const REQUEST_ATTRIBUTE_NAME = 'HTTP_USER_AGENT';
+    private const REQUEST_ATTRIBUTE_NAME = 'HTTP_USER_AGENT';
 
     public function extractFrom(ServerRequestInterface $request): string
     {
