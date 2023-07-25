@@ -12,9 +12,9 @@ use Lcobucci\JWT\Validation\ConstraintViolation;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
 
-use function assert;
+use function base64_encode;
+use function hash;
 use function json_encode;
-use function sha1;
 use function sprintf;
 
 use const JSON_THROW_ON_ERROR;
@@ -89,9 +89,6 @@ final class SameOriginRequest implements Constraint
             $fingerprintSource[] = $source->extractFrom($serverRequest);
         }
 
-        $fingerprint = sha1(json_encode($fingerprintSource, JSON_THROW_ON_ERROR));
-        assert($fingerprint !== '');
-
-        return $fingerprint;
+        return base64_encode(hash('sha256', json_encode($fingerprintSource, JSON_THROW_ON_ERROR)));
     }
 }
