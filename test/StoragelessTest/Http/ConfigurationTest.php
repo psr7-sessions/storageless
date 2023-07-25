@@ -94,12 +94,12 @@ final class ConfigurationTest extends TestCase
         $jwtConfig   = clone $this->jwtConfig;
         $rightConfig = $leftConfig->withJwtConfiguration($jwtConfig);
         self::assertNotSame($leftConfig, $rightConfig);
-        self::assertNotSame($jwtConfig, $rightConfig->getJwtConfiguration());
+        self::assertSame($jwtConfig, $rightConfig->getJwtConfiguration());
 
         $clock      = FrozenClock::fromUTC();
         $leftConfig = $rightConfig->withClock($clock);
         self::assertNotSame($leftConfig, $rightConfig);
-        self::assertNotSame($clock, $leftConfig->getClock());
+        self::assertSame($clock, $leftConfig->getClock());
 
         $cookie      = SetCookie::create('foo');
         $rightConfig = $leftConfig->withCookie($cookie);

@@ -98,7 +98,7 @@ final class Configuration
     public function withJwtConfiguration(JwtConfig $jwtConfiguration): self
     {
         $new                   = clone $this;
-        $new->jwtConfiguration = clone $jwtConfiguration;
+        $new->jwtConfiguration = $jwtConfiguration;
 
         return $new;
     }
@@ -106,7 +106,7 @@ final class Configuration
     public function withClock(Clock $clock): self
     {
         $new        = clone $this;
-        $new->clock = clone $clock;
+        $new->clock = $clock;
 
         return $new;
     }
