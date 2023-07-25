@@ -38,8 +38,8 @@ require_once __DIR__ . '/../vendor/autoload.php';
 // $privateKey = new Key('file://private_key.pem');
 // $publicKey = new Key('file://public_key.pem');
 
-// simply run `php -S localhost:8888 index.php`
-// then point your browser at `http://localhost:8888/`
+// simply run `php -S localhost:9999 index.php`
+// then point your browser at `http://localhost:9999/`
 
 $sessionMiddleware = new SessionMiddleware(
     (new Configuration(

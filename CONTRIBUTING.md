@@ -11,7 +11,7 @@
 To install the project and run the tests, you need to clone it first:
 
 ```sh
-$ git clone git://github.com/psr7-sessions/storageless.git
+$ git clone git@github.com:psr7-sessions/storageless.git
 ```
 
 You will then need to run a composer installation:
@@ -24,7 +24,7 @@ $ php composer.phar update
 
 ## Testing
 
-The PHPUnit version to be used is the one installed as a dev- dependency via composer:
+The PHPUnit version to be used is the one installed as a dev-dependency via composer:
 
 ```sh
 $ ./vendor/bin/phpunit
