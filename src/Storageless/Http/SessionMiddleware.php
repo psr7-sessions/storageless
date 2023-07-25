@@ -35,6 +35,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use PSR7Sessions\Storageless\Http\ClientFingerprint\SameOriginRequest;
 use PSR7Sessions\Storageless\Session\DefaultSessionData;
 use PSR7Sessions\Storageless\Session\LazySession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
@@ -42,7 +43,7 @@ use stdClass;
 
 use function sprintf;
 
-/** @immutable  */
+/** @immutable */
 final class SessionMiddleware implements MiddlewareInterface
 {
     public const SESSION_CLAIM     = 'session-data';
@@ -61,8 +62,9 @@ final class SessionMiddleware implements MiddlewareInterface
      */
     public function process(Request $request, RequestHandlerInterface $handler): Response
     {
-        $token            = $this->parseToken($request);
-        $sessionContainer = LazySession::fromContainerBuildingCallback(function () use ($token): SessionInterface {
+        $sameOriginRequest = new SameOriginRequest($this->config->getClientFingerprintConfiguration(), $request);
+        $token             = $this->parseToken($request, $sameOriginRequest);
+        $sessionContainer  = LazySession::fromContainerBuildingCallback(function () use ($token): SessionInterface {
             return $this->extractSessionContainer($token);
         });
 
@@ -70,13 +72,14 @@ final class SessionMiddleware implements MiddlewareInterface
             $sessionContainer,
             $handler->handle($request->withAttribute($this->config->getSessionAttribute(), $sessionContainer)),
             $token,
+            $sameOriginRequest,
         );
     }
 
     /**
      * Extract the token from the given request object
      */
-    private function parseToken(Request $request): UnencryptedToken|null
+    private function parseToken(Request $request, SameOriginRequest $sameOriginRequest): UnencryptedToken|null
     {
         /** @var array<string, string> $cookies */
         $cookies    = $request->getCookieParams();
@@ -105,6 +108,7 @@ final class SessionMiddleware implements MiddlewareInterface
         $constraints = [
             new StrictValidAt($this->config->getClock()),
             new SignedWith($jwtConfiguration->signer(), $jwtConfiguration->verificationKey()),
+            $sameOriginRequest,
         ];
 
         if (! $jwtConfiguration->validator()->validate($token, ...$constraints)) {
@@ -134,8 +138,12 @@ final class SessionMiddleware implements MiddlewareInterface
      * @throws BadMethodCallException
      * @throws InvalidArgumentException
      */
-    private function appendToken(SessionInterface $sessionContainer, Response $response, Token|null $token): Response
-    {
+    private function appendToken(
+        SessionInterface $sessionContainer,
+        Response $response,
+        Token|null $token,
+        SameOriginRequest $sameOriginRequest,
+    ): Response {
         $sessionContainerChanged = $sessionContainer->hasChanged();
 
         if ($sessionContainerChanged && $sessionContainer->isEmpty()) {
@@ -143,7 +151,7 @@ final class SessionMiddleware implements MiddlewareInterface
         }
 
         if ($sessionContainerChanged || $this->shouldTokenBeRefreshed($token)) {
-            return FigResponseCookies::set($response, $this->getTokenCookie($sessionContainer));
+            return FigResponseCookies::set($response, $this->getTokenCookie($sessionContainer, $sameOriginRequest));
         }
 
         return $response;
@@ -163,21 +171,25 @@ final class SessionMiddleware implements MiddlewareInterface
     }
 
     /** @throws BadMethodCallException */
-    private function getTokenCookie(SessionInterface $sessionContainer): SetCookie
+    private function getTokenCookie(SessionInterface $sessionContainer, SameOriginRequest $sameOriginRequest): SetCookie
     {
         $now       = $this->config->getClock()->now();
         $expiresAt = $now->add(new DateInterval(sprintf('PT%sS', $this->config->getIdleTimeout())));
 
         $jwtConfiguration = $this->config->getJwtConfiguration();
 
+        $builder = $jwtConfiguration->builder(ChainedFormatter::withUnixTimestampDates())
+            ->issuedAt($now)
+            ->canOnlyBeUsedAfter($now)
+            ->expiresAt($expiresAt)
+            ->withClaim(self::SESSION_CLAIM, $sessionContainer);
+
+        $builder = $sameOriginRequest->configure($builder);
+
         return $this
             ->config->getCookie()
             ->withValue(
-                $jwtConfiguration->builder(ChainedFormatter::withUnixTimestampDates())
-                    ->issuedAt($now)
-                    ->canOnlyBeUsedAfter($now)
-                    ->expiresAt($expiresAt)
-                    ->withClaim(self::SESSION_CLAIM, $sessionContainer)
+                $builder
                     ->getToken($jwtConfiguration->signer(), $jwtConfiguration->signingKey())
                     ->toString(),
             )

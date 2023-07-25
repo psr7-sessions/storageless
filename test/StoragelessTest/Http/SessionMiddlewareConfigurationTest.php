@@ -27,6 +27,7 @@ use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use PHPUnit\Framework\TestCase;
+use PSR7Sessions\Storageless\Http\ClientFingerprint\Configuration as FingerprintConfig;
 use PSR7Sessions\Storageless\Http\SessionMiddlewareConfiguration;
 
 use function random_bytes;
@@ -78,6 +79,13 @@ final class SessionMiddlewareConfigurationTest extends TestCase
         self::assertNotEmpty($config->getSessionAttribute());
     }
 
+    public function testClientFingerprintConfigurationIsDisabled(): void
+    {
+        $config = new SessionMiddlewareConfiguration($this->jwtConfig);
+
+        self::assertEquals(FingerprintConfig::disabled(), $config->getClientFingerprintConfiguration());
+    }
+
     public function testImmutability(): void
     {
         $leftConfig = new SessionMiddlewareConfiguration($this->jwtConfig);
@@ -112,5 +120,11 @@ final class SessionMiddlewareConfigurationTest extends TestCase
         $leftConfig       = $rightConfig->withSessionAttribute($sessionAttribute);
         self::assertNotSame($leftConfig, $rightConfig);
         self::assertSame($sessionAttribute, $leftConfig->getSessionAttribute());
+
+        $clientFingerprintConfiguration = FingerprintConfig::forIpAndUserAgent();
+        $leftConfig                     = $rightConfig->withClientFingerprintConfiguration($clientFingerprintConfiguration);
+        self::assertNotSame($leftConfig, $rightConfig);
+        self::assertNotSame($clientFingerprintConfiguration, $leftConfig->getClientFingerprintConfiguration());
+        self::assertSame($clientFingerprintConfiguration->sources(), $leftConfig->getClientFingerprintConfiguration()->sources());
     }
 }

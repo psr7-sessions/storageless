@@ -25,6 +25,7 @@ use Dflydev\FigCookies\SetCookie;
 use Lcobucci\Clock\Clock;
 use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Configuration;
+use PSR7Sessions\Storageless\Http\ClientFingerprint\Configuration as FingerprintConfig;
 
 /** @immutable */
 final class SessionMiddlewareConfiguration
@@ -38,18 +39,22 @@ final class SessionMiddlewareConfiguration
     private int $refreshTime = 60;
     /** @var literal-string */
     private string $sessionAttribute = SessionMiddleware::SESSION_ATTRIBUTE;
+    private FingerprintConfig $clientFingerprintConfiguration;
 
     public function __construct(
         Configuration $jwtConfiguration,
     ) {
         $this->jwtConfiguration = clone $jwtConfiguration;
 
-        $this->clock  = SystemClock::fromSystemTimezone();
+        $this->clock = SystemClock::fromSystemTimezone();
+
         $this->cookie = SetCookie::create('__Secure-slsession')
             ->withSecure(true)
             ->withHttpOnly(true)
             ->withSameSite(SameSite::lax())
             ->withPath('/');
+
+        $this->clientFingerprintConfiguration = FingerprintConfig::disabled();
     }
 
     public function getJwtConfiguration(): Configuration
@@ -83,6 +88,11 @@ final class SessionMiddlewareConfiguration
     public function getSessionAttribute(): string
     {
         return $this->sessionAttribute;
+    }
+
+    public function getClientFingerprintConfiguration(): FingerprintConfig
+    {
+        return $this->clientFingerprintConfiguration;
     }
 
     public function withJwtConfiguration(Configuration $jwtConfiguration): self
@@ -132,6 +142,14 @@ final class SessionMiddlewareConfiguration
     {
         $new                   = clone $this;
         $new->sessionAttribute = $sessionAttribute;
+
+        return $new;
+    }
+
+    public function withClientFingerprintConfiguration(FingerprintConfig $clientFingerprintConfiguration): self
+    {
+        $new                                 = clone $this;
+        $new->clientFingerprintConfiguration = clone $clientFingerprintConfiguration;
 
         return $new;
     }

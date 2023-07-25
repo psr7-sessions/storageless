@@ -31,7 +31,7 @@ application, this would look like following:
 $app = new \Mezzio\Application(/* ... */);
 
 $app->pipe(\PSR7Sessions\Storageless\Http\SessionMiddleware::fromSymmetricKeyDefaults(
-    \Lcobucci\JWT\Signer\Key\InMemory::plainText('mBC5v1sOKVvbdEitdSBenu59nfNfhwkedkJVNabosTw='), // replace this with a key of your own (see docs below)
+    \Lcobucci\JWT\Signer\Key\InMemory::base64Encoded('mBC5v1sOKVvbdEitdSBenu59nfNfhwkedkJVNabosTw='), // replace this with a key of your own (see docs below)
     1200 // 20 minutes
 ));
 ```
@@ -64,6 +64,58 @@ to do this for you.
 Note that you can also use asymmetric keys by using either the
 `PSR7Sessions\Storageless\Http\SessionMiddleware` constructor or the named
 constructor `PSR7Sessions\Storageless\Http\SessionMiddleware::fromAsymmetricKeyDefaults()`
+
+### Session Hijacking mitigation
+
+To mitigate the risks associated to cookie stealing and thus
+[session hijacking](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html#binding-the-session-id-to-other-user-properties),
+you can bind the user session to its IP (`$_SERVER['REMOTE_ADDR']`) and
+User-Agent (`$_SERVER['HTTP_USER_AGENT']`) by enabling client fingerprinting:
+
+```php
+use PSR7Sessions\Storageless\Http\ClientFingerprint\Configuration as FingerprintConfig;
+
+$app = new \Mezzio\Application(/* ... */);
+
+$app->pipe(new \PSR7Sessions\Storageless\Http\SessionMiddleware(
+    \Lcobucci\JWT\Configuration::forSymmetricSigner(
+        new \Lcobucci\JWT\Signer\Hmac\Sha256(),
+        \Lcobucci\JWT\Signer\Key\InMemory::base64Encoded('mBC5v1sOKVvbdEitdSBenu59nfNfhwkedkJVNabosTw='), // replace this with a key of your own (see docs below)
+    ),
+    \PSR7Sessions\Storageless\Http\SessionMiddleware::buildDefaultCookie(),
+    100,
+    \Lcobucci\Clock\SystemClock::fromSystemTimezone(),
+    fingerprintConfig: FingerprintConfig::forIpAndUserAgent()
+));
+```
+
+If your PHP service is behind a reverse proxy of yours, [you may need to retrieve the client IP from a different source of truth](https://adam-p.ca/blog/2022/03/x-forwarded-for/).
+In such cases you can extract the information you need by writing a custom
+`\PSR7Sessions\Storageless\Http\ClientFingerprint\Source` implementation:
+
+```php
+use Psr\Http\Message\ServerRequestInterface;
+use PSR7Sessions\Storageless\Http\ClientFingerprint\Configuration as FingerprintConfig;
+use PSR7Sessions\Storageless\Http\ClientFingerprint\Source;
+
+$app = new \Mezzio\Application(/* ... */);
+
+$app->pipe(new \PSR7Sessions\Storageless\Http\SessionMiddleware(
+    \Lcobucci\JWT\Configuration::forSymmetricSigner(
+        new \Lcobucci\JWT\Signer\Hmac\Sha256(),
+        \Lcobucci\JWT\Signer\Key\InMemory::base64Encoded('mBC5v1sOKVvbdEitdSBenu59nfNfhwkedkJVNabosTw='), // replace this with a key of your own (see docs below)
+    ),
+    \PSR7Sessions\Storageless\Http\SessionMiddleware::buildDefaultCookie(),
+    100,
+    \Lcobucci\Clock\SystemClock::fromSystemTimezone(),
+    fingerprintConfig: new FingerprintConfig(new class implements Source{
+         public function extractFrom(\Psr\Http\Message\ServerRequestInterface $request): string
+         {
+             return $request->getServerParams()['HTTP_X_REAL_IP'];
+         }
+    })
+));
+```
 
 ### Examples
 
