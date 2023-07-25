@@ -1,55 +1,35 @@
 ## Configuring PSR7Session
 
-In most HTTPS-based setups, PSR7Session can be initialized with some sane
+In most HTTPS-based setups, `PSR7Session` can be initialized with some sane
 defaults.
 
-#### Symmetric key
+Since version 9, the only configuration needed to be explicitly set is the algorithm and key type
+to sign the session with.
 
-You can set up symmetric key based signatures via the
-`PSR7Sessions::fromSymmetricKeyDefaults` named constructor:
+Here is a basic example with a symmetric key based signature:
 
 ```php
+use Lcobucci\JWT\Configuration as JwtConfig;
+use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
+use PSR7Sessions\Storageless\Http\Configuration as StoragelessConfig;
 
-$sessionMiddleware = SessionMiddleware::fromSymmetricKeyDefaults(
-    InMemory::base64Encoded('OpcMuKmoxkhzW0Y1iESpjWwL/D3UBdDauJOe742BJ5Q='), // replace this with a key of your own (see below)
-    1200 // session idle timeout, in seconds
+$sessionMiddleware = new SessionMiddleware(
+    new StoragelessConfig(
+        JwtConfig::forSymmetricSigner(
+            new Signer\Hmac\Sha256(),
+            InMemory::base64Encoded('OpcMuKmoxkhzW0Y1iESpjWwL/D3UBdDauJOe742BJ5Q='), // replace this with a key of your own (see below)
+        )
+    )
 );
 ```
 
-Please use a fairly long symmetric key: it is suggested to use a
-[cryptographically secure pseudo-random number generator (CSPRNG)](https://en.wikipedia.org/wiki/Cryptographically_secure_pseudorandom_number_generator),
-such as the [CryptoKey tool](https://github.com/AndrewCarterUK/CryptoKey),
-for this purpose.
+More information on the JWT signature can be found in [`lcobucci/jwt`](https://packagist.org/packages/lcobucci/jwt)
+documentation:
 
-#### Asymmetric key
-
-You can set up symmetric key based signatures via the
-`PSR7Sessions::fromAsymmetricKeyDefaults` named constructor:
-
-```php
-use Lcobucci\JWT\Signer\Key\InMemory;
-use PSR7Sessions\Storageless\Http\SessionMiddleware;
-
-$sessionMiddleware = SessionMiddleware::fromRsaAsymmetricKeyDefaults(
-    InMemory::file('/path/to/private_key.pem'),
-    InMemory::file('/path/to/public_key.pem'),
-    1200 // session idle timeout, in seconds
-);
-```
-
-You can generate a private and a public key with [GPG](https://www.gnupg.org/), via:
-
-```sh
-gpg --gen-key
-```
-
-Beware that asymmetric key signatures are more resource-greedy, and therefore
-you may have higher CPU usage.
-
-`PSR7Session` will only parse and regenerate the sessions lazily, when strictly
-needed, therefore performance shouldn't be a problem for most setups.
+1. The `Configuration` object: https://lcobucci-jwt.readthedocs.io/en/stable/configuration/
+2. Supported algorithms: https://lcobucci-jwt.readthedocs.io/en/stable/supported-algorithms/
 
 ### Fine-tuning
 
@@ -61,35 +41,34 @@ you need to require them as well, since with this sort of setup you are explicit
 those components:
 
 ```sh
-composer require "lcobucci/jwt:^4.1"
-composer require "lcobucci/clock:^2.0"
+composer require "lcobucci/jwt:^5.0"
+composer require "lcobucci/clock:^3.0"
 composer require "dflydev/fig-cookies:^3.0"
 ```
 
 If you want to fine-tune more settings of `PSR7Session`, then simply use the
-`PSR7Sessions\Storageless\Http\SessionMiddleware` constructor.
+`PSR7Sessions\Storageless\Http\Configuration` API.
 
 ```php
 use Lcobucci\Clock\SystemClock;
-use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Configuration as JwtConfig;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
+use PSR7Sessions\Storageless\Http\Configuration as StoragelessConfig;
 
 $sessionMiddleware = new SessionMiddleware(
-    Configuration::forAsymmetricSigner(
-        new Signer\Eddsa(),
-        InMemory::base64Encoded('dv6B60wqqFVDpt8+TnW7T6NtRpVQjiQP/PoqonDWBZkVboQttTfzXux+WnZeacJDcklMgyKFHVFy1C7tVDvcWA=='),
-        InMemory::base64Encoded('FW6ELbU3817sflp2XmnCQ3JJTIMihR1RctQu7VQ73Fg=')
-    ),
-    SessionMiddleware::buildDefaultCookie(),
-    1200, // session idle timeout, in seconds
-    SystemClock::fromSystemTimezone(),
-    60    // session automatic refresh time, in seconds
+    (new StoragelessConfig(
+        JwtConfig::forAsymmetricSigner(
+            new Signer\Eddsa(),
+            InMemory::base64Encoded('dv6B60wqqFVDpt8+TnW7T6NtRpVQjiQP/PoqonDWBZkVboQttTfzXux+WnZeacJDcklMgyKFHVFy1C7tVDvcWA=='),
+            InMemory::base64Encoded('FW6ELbU3817sflp2XmnCQ3JJTIMihR1RctQu7VQ73Fg=')
+        )
+    ))
+        ->withIdleTimeout(1200) // in seconds
+        ->withRefreshTime(60) // in seconds
 );
 ```
-
-It is recommended not to use this setup.
 
 ### Defaults
 
@@ -120,24 +99,27 @@ When running applications locally on `http://localhost`, some settings may need 
 ```php
 use Dflydev\FigCookies\SetCookie;
 use Lcobucci\Clock\SystemClock;
-use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Configuration as JwtConfig;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
+use PSR7Sessions\Storageless\Http\Configuration as StoragelessConfig;
 
 $key = '<random key>';
 return new SessionMiddleware(
-    Configuration::forSymmetricSigner(
-        new Signer\Hmac\Sha256(),
-        InMemory::plainText($key)
-    ),
-    // Override the default `__Secure-slsession` which only works on HTTPS
-    SetCookie::create('slsession')
-        // Disable mandatory HTTPS
-        ->withSecure(false)
-        ->withHttpOnly(true)
-        ->withPath('/'),
-    1200, // session idle timeout, in seconds
-    SystemClock::fromUTC(),
+    (new StoragelessConfig(
+        JwtConfig::forSymmetricSigner(
+            new Signer\Hmac\Sha256(),
+            InMemory::base64Encoded($key),
+        )
+    ))
+        // Override the default `__Secure-slsession` which only works on HTTPS
+        ->withCookie(
+            SetCookie::create('slsession')
+                // Disable mandatory HTTPS
+                ->withSecure(false)
+                ->withHttpOnly(true)
+                ->withPath('/')
+        )
 );
 ```

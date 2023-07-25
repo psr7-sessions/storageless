@@ -5,7 +5,7 @@
 [![Packagist](https://img.shields.io/packagist/v/psr7-sessions/storageless.svg)](https://packagist.org/packages/psr7-sessions/storageless)
 [![Packagist](https://img.shields.io/packagist/vpre/psr7-sessions/storageless.svg)](https://packagist.org/packages/psr7-sessions/storageless)
 
-**PSR7Session** is a [PSR-7](http://www.php-fig.org/psr/psr-7/) and
+**PSR7Session** is a [PSR-7](https://www.php-fig.org/psr/psr-7/) and
 [PSR-15](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-15-request-handlers.md)
 compatible [middleware](https://mwop.net/blog/2015-01-08-on-http-middleware-and-psr-7.html) that enables
 session without I/O usage in PSR-7 based applications.
@@ -28,11 +28,21 @@ In a [`mezzio/mezzio`](https://github.com/mezzio/mezzio)
 application, this would look like following:
 
 ```php
+use Lcobucci\JWT\Configuration as JwtConfig;
+use Lcobucci\JWT\Signer;
+use Lcobucci\JWT\Signer\Key\InMemory;
+use PSR7Sessions\Storageless\Http\SessionMiddleware;
+use PSR7Sessions\Storageless\Http\Configuration as StoragelessConfig;
+
 $app = new \Mezzio\Application(/* ... */);
 
-$app->pipe(\PSR7Sessions\Storageless\Http\SessionMiddleware::fromSymmetricKeyDefaults(
-    \Lcobucci\JWT\Signer\Key\InMemory::base64Encoded('mBC5v1sOKVvbdEitdSBenu59nfNfhwkedkJVNabosTw='), // replace this with a key of your own (see docs below)
-    1200 // 20 minutes
+$app->pipe(new SessionMiddleware(
+    new StoragelessConfig(
+        JwtConfig::forSymmetricSigner(
+            new Signer\Hmac\Sha256(),
+            InMemory::base64Encoded('OpcMuKmoxkhzW0Y1iESpjWwL/D3UBdDauJOe742BJ5Q='), // replace this with a key of your own (see below)
+        )
+    )
 ));
 ```
 
@@ -53,7 +63,7 @@ $app->get('/get', function (ServerRequestInterface $request, ResponseInterface $
 });
 ```
 
-You can do this also in asynchronous contexts and long running processes,
+You can do this also in asynchronous contexts and long-running processes,
 since no super-globals nor I/O are involved.
 
 It is recommended that you use a key with lots of entropy, preferably
@@ -61,9 +71,11 @@ generated using a cryptographically secure pseudo-random number generator
 (CSPRNG). You can use the [CryptoKey tool](https://github.com/AndrewCarterUK/CryptoKey)
 to do this for you.
 
-Note that you can also use asymmetric keys by using either the
-`PSR7Sessions\Storageless\Http\SessionMiddleware` constructor or the named
-constructor `PSR7Sessions\Storageless\Http\SessionMiddleware::fromAsymmetricKeyDefaults()`
+Note that you can also use asymmetric keys; please refer to
+[`lcobucci/jwt`](https://packagist.org/packages/lcobucci/jwt) documentation:
+
+1. The `Configuration` object: https://lcobucci-jwt.readthedocs.io/en/stable/configuration/
+2. Supported algorithms: https://lcobucci-jwt.readthedocs.io/en/stable/supported-algorithms/
 
 ### Session Hijacking mitigation
 
@@ -73,19 +85,17 @@ you can bind the user session to its IP (`$_SERVER['REMOTE_ADDR']`) and
 User-Agent (`$_SERVER['HTTP_USER_AGENT']`) by enabling client fingerprinting:
 
 ```php
+use PSR7Sessions\Storageless\Http\SessionMiddleware;
+use PSR7Sessions\Storageless\Http\Configuration as StoragelessConfig;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\Configuration as FingerprintConfig;
 
 $app = new \Mezzio\Application(/* ... */);
 
-$app->pipe(new \PSR7Sessions\Storageless\Http\SessionMiddleware(
-    \Lcobucci\JWT\Configuration::forSymmetricSigner(
-        new \Lcobucci\JWT\Signer\Hmac\Sha256(),
-        \Lcobucci\JWT\Signer\Key\InMemory::base64Encoded('mBC5v1sOKVvbdEitdSBenu59nfNfhwkedkJVNabosTw='), // replace this with a key of your own (see docs below)
-    ),
-    \PSR7Sessions\Storageless\Http\SessionMiddleware::buildDefaultCookie(),
-    100,
-    \Lcobucci\Clock\SystemClock::fromSystemTimezone(),
-    fingerprintConfig: FingerprintConfig::forIpAndUserAgent()
+$app->pipe(new SessionMiddleware(
+    (new StoragelessConfig(/* ... */))
+        ->withClientFingerprintConfiguration(
+            FingerprintConfig::forIpAndUserAgent()
+        )
 ));
 ```
 
@@ -95,25 +105,23 @@ In such cases you can extract the information you need by writing a custom
 
 ```php
 use Psr\Http\Message\ServerRequestInterface;
+use PSR7Sessions\Storageless\Http\SessionMiddleware;
+use PSR7Sessions\Storageless\Http\Configuration as StoragelessConfig;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\Configuration as FingerprintConfig;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\Source;
 
 $app = new \Mezzio\Application(/* ... */);
 
-$app->pipe(new \PSR7Sessions\Storageless\Http\SessionMiddleware(
-    \Lcobucci\JWT\Configuration::forSymmetricSigner(
-        new \Lcobucci\JWT\Signer\Hmac\Sha256(),
-        \Lcobucci\JWT\Signer\Key\InMemory::base64Encoded('mBC5v1sOKVvbdEitdSBenu59nfNfhwkedkJVNabosTw='), // replace this with a key of your own (see docs below)
-    ),
-    \PSR7Sessions\Storageless\Http\SessionMiddleware::buildDefaultCookie(),
-    100,
-    \Lcobucci\Clock\SystemClock::fromSystemTimezone(),
-    fingerprintConfig: new FingerprintConfig(new class implements Source{
-         public function extractFrom(\Psr\Http\Message\ServerRequestInterface $request): string
-         {
-             return $request->getServerParams()['HTTP_X_REAL_IP'];
-         }
-    })
+$app->pipe(new SessionMiddleware(
+    (new StoragelessConfig(/* ... */))
+        ->withClientFingerprintConfiguration(
+            FingerprintConfig::forSources(new class implements Source{
+                 public function extractFrom(ServerRequestInterface $request): string
+                 {
+                     return $request->getServerParams()['HTTP_X_REAL_IP'];
+                 }
+            })
+        )
 ));
 ```
 

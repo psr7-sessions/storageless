@@ -23,23 +23,23 @@ namespace PSR7SessionsTest\Storageless\Http;
 use Dflydev\FigCookies\Modifier\SameSite;
 use Dflydev\FigCookies\SetCookie;
 use Lcobucci\Clock\FrozenClock;
-use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Configuration as JwtConfig;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use PHPUnit\Framework\TestCase;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\Configuration as FingerprintConfig;
-use PSR7Sessions\Storageless\Http\SessionMiddlewareConfiguration;
+use PSR7Sessions\Storageless\Http\Configuration;
 
 use function random_bytes;
 
-/** @covers \PSR7Sessions\Storageless\Http\SessionMiddlewareConfiguration */
-final class SessionMiddlewareConfigurationTest extends TestCase
+/** @covers \PSR7Sessions\Storageless\Http\Configuration */
+final class ConfigurationTest extends TestCase
 {
-    private Configuration $jwtConfig;
+    private JwtConfig $jwtConfig;
 
     protected function setUp(): void
     {
-        $this->jwtConfig = Configuration::forSymmetricSigner(
+        $this->jwtConfig = JwtConfig::forSymmetricSigner(
             new Sha256(),
             InMemory::plainText(random_bytes(32)),
         );
@@ -47,7 +47,7 @@ final class SessionMiddlewareConfigurationTest extends TestCase
 
     public function testProvideADefaultSystemClock(): void
     {
-        $clock = (new SessionMiddlewareConfiguration($this->jwtConfig))->getClock();
+        $clock = (new Configuration($this->jwtConfig))->getClock();
 
         self::assertGreaterThan(0, $clock->now()->getTimestamp());
     }
@@ -61,7 +61,7 @@ final class SessionMiddlewareConfigurationTest extends TestCase
      */
     public function testProvideADefaultSecureCookie(): void
     {
-        $cookie = (new SessionMiddlewareConfiguration($this->jwtConfig))->getCookie();
+        $cookie = (new Configuration($this->jwtConfig))->getCookie();
 
         self::assertTrue($cookie->getSecure());
         self::assertTrue($cookie->getHttpOnly());
@@ -72,7 +72,7 @@ final class SessionMiddlewareConfigurationTest extends TestCase
 
     public function testProvideNonEmptyDefaultsForScalarAttributes(): void
     {
-        $config = new SessionMiddlewareConfiguration($this->jwtConfig);
+        $config = new Configuration($this->jwtConfig);
 
         self::assertGreaterThan(0, $config->getIdleTimeout());
         self::assertGreaterThan(0, $config->getRefreshTime());
@@ -81,14 +81,14 @@ final class SessionMiddlewareConfigurationTest extends TestCase
 
     public function testClientFingerprintConfigurationIsDisabled(): void
     {
-        $config = new SessionMiddlewareConfiguration($this->jwtConfig);
+        $config = new Configuration($this->jwtConfig);
 
         self::assertEquals(FingerprintConfig::disabled(), $config->getClientFingerprintConfiguration());
     }
 
     public function testImmutability(): void
     {
-        $leftConfig = new SessionMiddlewareConfiguration($this->jwtConfig);
+        $leftConfig = new Configuration($this->jwtConfig);
         self::assertNotSame($this->jwtConfig, $leftConfig->getJwtConfiguration());
 
         $jwtConfig   = clone $this->jwtConfig;

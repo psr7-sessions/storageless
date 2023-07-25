@@ -22,14 +22,14 @@ use Dflydev\FigCookies\SetCookie;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
-use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Configuration as JwtConfig;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use PSR7Sessions\Storageless\Http\Configuration;
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
-use PSR7Sessions\Storageless\Http\SessionMiddlewareConfiguration;
 use PSR7Sessions\Storageless\Session\SessionInterface;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -38,12 +38,12 @@ require_once __DIR__ . '/../vendor/autoload.php';
 // $privateKey = new Key('file://private_key.pem');
 // $publicKey = new Key('file://public_key.pem');
 
-// simply run `php -S localhost:8888 index.php`
-// then point your browser at `http://localhost:8888/`
+// simply run `php -S localhost:9999 index.php`
+// then point your browser at `http://localhost:9999/`
 
 $sessionMiddleware = new SessionMiddleware(
-    (new SessionMiddlewareConfiguration(
-        Configuration::forSymmetricSigner(
+    (new Configuration(
+        JwtConfig::forSymmetricSigner(
             new Sha256(),
             InMemory::plainText('c9UA8QKLSmDEn4DhNeJIad/4JugZd/HvrjyKrS0jOes='), // // signature key (important: change this to your own)
         ),

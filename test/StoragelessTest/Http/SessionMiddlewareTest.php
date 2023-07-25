@@ -27,7 +27,7 @@ use Dflydev\FigCookies\SetCookie;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ServerRequest;
 use Lcobucci\Clock\FrozenClock;
-use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Configuration as JwtConfig;
 use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Parser as ParserInterface;
 use Lcobucci\JWT\Signer;
@@ -45,8 +45,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\Configuration as FingerprintConfig;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\SameOriginRequest;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\Source;
+use PSR7Sessions\Storageless\Http\Configuration;
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
-use PSR7Sessions\Storageless\Http\SessionMiddlewareConfiguration;
 use PSR7Sessions\Storageless\Session\DefaultSessionData;
 use PSR7Sessions\Storageless\Session\SessionInterface;
 
@@ -60,12 +60,12 @@ use function uniqid;
 /** @covers \PSR7Sessions\Storageless\Http\SessionMiddleware */
 final class SessionMiddlewareTest extends TestCase
 {
-    private SessionMiddlewareConfiguration $config;
+    private Configuration $config;
     private SessionMiddleware $middleware;
 
     protected function setUp(): void
     {
-        $this->config     = new SessionMiddlewareConfiguration(Configuration::forSymmetricSigner(
+        $this->config     = new Configuration(JwtConfig::forSymmetricSigner(
             new Sha256(),
             $this->makeRandomSymmetricKey(),
         ));
@@ -178,7 +178,7 @@ final class SessionMiddlewareTest extends TestCase
     {
         $unknownTokenType = $this->createMock(Token::class);
         $fakeParser       = $this->createMock(ParserInterface::class);
-        $jwtConfiguration = Configuration::forSymmetricSigner(
+        $jwtConfiguration = JwtConfig::forSymmetricSigner(
             new Sha256(),
             self::makeRandomSymmetricKey(),
         );
@@ -217,7 +217,7 @@ final class SessionMiddlewareTest extends TestCase
 
     public function testWillIgnoreUnSignedTokens(): void
     {
-        $jwtConfiguration = Configuration::forSymmetricSigner(
+        $jwtConfiguration = JwtConfig::forSymmetricSigner(
             new Sha256(),
             self::makeRandomSymmetricKey(),
         );
@@ -368,7 +368,7 @@ final class SessionMiddlewareTest extends TestCase
     {
         $middlewareWithAlteredKey = new SessionMiddleware(
             $this->config->withJwtConfiguration(
-                Configuration::forSymmetricSigner(
+                JwtConfig::forSymmetricSigner(
                     new Sha256(),
                     self::makeRandomSymmetricKey(),
                 ),
@@ -425,13 +425,13 @@ final class SessionMiddlewareTest extends TestCase
 
         $middleware                = new SessionMiddleware(
             $this->config->withJwtConfiguration(
-                Configuration::forSymmetricSigner(
+                JwtConfig::forSymmetricSigner(
                     $signer,
                     $key,
                 ),
             ),
         );
-        $jwtConfigurationForBuiler = Configuration::forSymmetricSigner(
+        $jwtConfigurationForBuiler = JwtConfig::forSymmetricSigner(
             new Sha256(),
             $key,
         );
@@ -660,7 +660,7 @@ final class SessionMiddlewareTest extends TestCase
         return $response;
     }
 
-    private function createToken(SessionMiddlewareConfiguration $config, DateTimeImmutable $issuedAt, DateTimeImmutable $expiration): string
+    private function createToken(Configuration $config, DateTimeImmutable $issuedAt, DateTimeImmutable $expiration): string
     {
         $jwtConfiguration = $config->getJwtConfiguration();
 
@@ -674,7 +674,7 @@ final class SessionMiddlewareTest extends TestCase
     }
 
     private function createTokenWithCustomClaim(
-        SessionMiddlewareConfiguration $config,
+        Configuration $config,
         DateTimeImmutable $issuedAt,
         DateTimeImmutable $expiration,
         mixed $claim,
