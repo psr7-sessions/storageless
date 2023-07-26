@@ -98,7 +98,7 @@ final class Configuration
     public function withJwtConfiguration(JwtConfig $jwtConfiguration): self
     {
         $new                   = clone $this;
-        $new->jwtConfiguration = $jwtConfiguration;
+        $new->jwtConfiguration = clone $jwtConfiguration;
 
         return $new;
     }
