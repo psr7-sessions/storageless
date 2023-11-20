@@ -1252,16 +1252,16 @@
         },
         {
             "name": "revolt/event-loop",
-            "version": "v1.0.4",
+            "version": "v1.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/revoltphp/event-loop.git",
-                "reference": "40292c18e53d9a1b7e6c807f4fda5908552e1ba5"
+                "reference": "fce6063869513de56f639aa522b2ef2fedbf8d73"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/revoltphp/event-loop/zipball/40292c18e53d9a1b7e6c807f4fda5908552e1ba5",
-                "reference": "40292c18e53d9a1b7e6c807f4fda5908552e1ba5",
+                "url": "https://api.github.com/repos/revoltphp/event-loop/zipball/fce6063869513de56f639aa522b2ef2fedbf8d73",
+                "reference": "fce6063869513de56f639aa522b2ef2fedbf8d73",
                 "shasum": ""
             },
             "require": {
@@ -1271,7 +1271,7 @@
                 "ext-json": "*",
                 "jetbrains/phpstorm-stubs": "^2019.3",
                 "phpunit/phpunit": "^9",
-                "psalm/phar": "^4.7"
+                "psalm/phar": "^5.15"
             },
             "type": "library",
             "extra": {
@@ -1318,9 +1318,9 @@
             ],
             "support": {
                 "issues": "https://github.com/revoltphp/event-loop/issues",
-                "source": "https://github.com/revoltphp/event-loop/tree/v1.0.4"
+                "source": "https://github.com/revoltphp/event-loop/tree/v1.0.5"
             },
-            "time": "2023-10-22T03:19:00+00:00"
+            "time": "2023-11-19T14:45:35+00:00"
         },
         {
             "name": "roave/backward-compatibility-check",
@@ -1393,16 +1393,16 @@
         },
         {
             "name": "roave/better-reflection",
-            "version": "6.16.0",
+            "version": "6.17.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/BetterReflection.git",
-                "reference": "919a20482e3c275f65aa88d93441abebfe73aaca"
+                "reference": "beb49d906821c2e3d5f7b44a7e2a3672ba27f7a2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/BetterReflection/zipball/919a20482e3c275f65aa88d93441abebfe73aaca",
-                "reference": "919a20482e3c275f65aa88d93441abebfe73aaca",
+                "url": "https://api.github.com/repos/Roave/BetterReflection/zipball/beb49d906821c2e3d5f7b44a7e2a3672ba27f7a2",
+                "reference": "beb49d906821c2e3d5f7b44a7e2a3672ba27f7a2",
                 "shasum": ""
             },
             "require": {
@@ -1461,9 +1461,9 @@
             "description": "Better Reflection - an improved code reflection API",
             "support": {
                 "issues": "https://github.com/Roave/BetterReflection/issues",
-                "source": "https://github.com/Roave/BetterReflection/tree/6.16.0"
+                "source": "https://github.com/Roave/BetterReflection/tree/6.17.0"
             },
-            "time": "2023-11-13T10:23:46+00:00"
+            "time": "2023-11-19T14:30:25+00:00"
         },
         {
             "name": "roave/signature",
