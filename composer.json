@@ -1,53 +1,44 @@
 {
-    "name":     "psr7-sessions/storageless",
+    "name": "psr7-sessions/storageless",
     "description": "Storageless PSR-7 Session support",
-    "license":  "MIT",
+    "license": "MIT",
+    "type": "library",
     "authors": [
         {
-            "name":     "Marco Pivetta",
-            "email":    "ocramius@gmail.com",
+            "name": "Marco Pivetta",
+            "email": "ocramius@gmail.com",
             "homepage": "http://ocramius.github.io/",
-            "role":     "Developer"
+            "role": "Developer"
         },
         {
-            "name":  "Jefersson Nathan",
+            "name": "Jefersson Nathan",
             "email": "malukenho@phpse.net",
-            "role":  "Developer"
+            "role": "Developer"
         },
         {
-            "name":  "Luís Otávio Cobucci Oblonczyk",
+            "name": "Luís Otávio Cobucci Oblonczyk",
             "email": "lcobucci@gmail.com",
-            "role":  "Developer"
+            "role": "Developer"
         }
     ],
     "require": {
-        "php":                             "~8.1.0 || ~8.2.0",
-        "dflydev/fig-cookies":             "^3.1.0",
-        "lcobucci/jwt":                    "^4.3.0 || ^5.0.0",
-        "lcobucci/clock":                  "^3.0.0",
-        "psr/http-message":                "^1.1 || ^2.0",
-        "psr/http-server-handler":         "^1.0.2",
-        "psr/http-server-middleware":      "^1.0.2"
+        "php": "~8.2.0 || ~8.3.0",
+        "dflydev/fig-cookies": "^3.1.0",
+        "lcobucci/clock": "^3.2.0",
+        "lcobucci/jwt": "^5.1.0",
+        "psr/http-message": "^1.1 || ^2.0",
+        "psr/http-server-handler": "^1.0.2",
+        "psr/http-server-middleware": "^1.0.2"
     },
     "require-dev": {
-        "doctrine/coding-standard":               "^12.0.0",
-        "laminas/laminas-diactoros":              "^3.0.0",
-        "laminas/laminas-httphandlerrunner":      "^2.6.1",
-        "phpunit/phpunit":                        "^9.6.10",
-        "psalm/plugin-phpunit":                   "^0.18.4",
-        "roave/infection-static-analysis-plugin": "^1.32.0",
-        "squizlabs/php_codesniffer":              "^3.7.2",
-        "vimeo/psalm":                            "^5.13.1"
-    },
-    "config": {
-        "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": true,
-            "infection/extension-installer": false
-        },
-        "platform": {
-            "php": "8.1.99"
-        },
-        "sort-packages": true
+        "doctrine/coding-standard": "^12.0.0",
+        "laminas/laminas-diactoros": "^3.3.0",
+        "laminas/laminas-httphandlerrunner": "^2.9.0",
+        "phpunit/phpunit": "^9.6.13",
+        "psalm/plugin-phpunit": "^0.18.4",
+        "roave/infection-static-analysis-plugin": "^1.33.0",
+        "squizlabs/php_codesniffer": "^3.7.2",
+        "vimeo/psalm": "^5.15.0"
     },
     "replace": {
         "ocramius/psr7-session": "self.version"
@@ -61,5 +52,15 @@
         "psr-4": {
             "PSR7SessionsTest\\Storageless\\": "test/StoragelessTest"
         }
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "infection/extension-installer": false
+        },
+        "platform": {
+            "php": "8.2.99"
+        },
+        "sort-packages": true
     }
 }
