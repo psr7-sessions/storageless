@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bbc444393786f75dc8903b1f2236d268",
+    "content-hash": "d69638ca14a4dd01b53ca8d320bcb312",
     "packages": [
         {
             "name": "dflydev/fig-cookies",
@@ -1885,16 +1885,16 @@
         },
         {
             "name": "laminas/laminas-httphandlerrunner",
-            "version": "2.9.0",
+            "version": "2.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-httphandlerrunner.git",
-                "reference": "d3e84755a17e563b1c5f8290cbfb150210501a77"
+                "reference": "35a0ba92e940a2f9533754f5a56187fa321f7693"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-httphandlerrunner/zipball/d3e84755a17e563b1c5f8290cbfb150210501a77",
-                "reference": "d3e84755a17e563b1c5f8290cbfb150210501a77",
+                "url": "https://api.github.com/repos/laminas/laminas-httphandlerrunner/zipball/35a0ba92e940a2f9533754f5a56187fa321f7693",
+                "reference": "35a0ba92e940a2f9533754f5a56187fa321f7693",
                 "shasum": ""
             },
             "require": {
@@ -1905,10 +1905,10 @@
             },
             "require-dev": {
                 "laminas/laminas-coding-standard": "~2.5.0",
-                "laminas/laminas-diactoros": "^3.0.0",
-                "phpunit/phpunit": "^10.1.2",
+                "laminas/laminas-diactoros": "^3.3.0",
+                "phpunit/phpunit": "^10.5.5",
                 "psalm/plugin-phpunit": "^0.18.4",
-                "vimeo/psalm": "^5.11"
+                "vimeo/psalm": "^5.18"
             },
             "type": "library",
             "extra": {
@@ -1948,7 +1948,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2023-09-04T10:43:03+00:00"
+            "time": "2024-01-04T10:50:34+00:00"
         },
         {
             "name": "myclabs/deep-copy",
