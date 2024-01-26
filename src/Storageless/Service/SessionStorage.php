@@ -27,7 +27,7 @@ use PSR7Sessions\Storageless\Session\SessionInterface;
 
 interface SessionStorage
 {
-    public function appendSession(SessionInterface $session, ServerRequestInterface $request, ResponseInterface|null $response, RequestHandlerInterface|null $handler = null): ResponseInterface;
+    public function appendSession(SessionInterface $session, ServerRequestInterface $request, ResponseInterface|null $response = null, RequestHandlerInterface|null $handler = null): ResponseInterface;
 
     public function getSession(ServerRequestInterface $request): SessionInterface;
 }
