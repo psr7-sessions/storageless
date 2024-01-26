@@ -30,7 +30,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use PSR7Sessions\Storageless\Http\Configuration;
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
-use PSR7Sessions\Storageless\Service\StoragelessSession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
 
 require_once __DIR__ . '/../vendor/autoload.php';

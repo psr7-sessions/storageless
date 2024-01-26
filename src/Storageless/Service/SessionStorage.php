@@ -20,15 +20,14 @@ declare(strict_types=1);
 
 namespace PSR7Sessions\Storageless\Service;
 
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use PSR7Sessions\Storageless\Session\SessionInterface;
 
 interface SessionStorage
 {
-    /** @psalm-return ($message is ResponseInterface ? ResponseInterface : RequestInterface) */
-    public function withSession(ServerRequestInterface|ResponseInterface $message, SessionInterface $session): RequestInterface|ResponseInterface;
+    public function appendSession(SessionInterface $session, ServerRequestInterface $request, ResponseInterface|null $response, RequestHandlerInterface|null $handler = null): ResponseInterface;
 
-    public function get(ServerRequestInterface|ResponseInterface $message): SessionInterface;
+    public function getSession(ServerRequestInterface $request): SessionInterface;
 }
