@@ -53,7 +53,7 @@ final class StoragelessSession implements SessionStorage
 
     public function appendSession(SessionInterface $session, ServerRequestInterface $request, Response|null $response = null, RequestHandlerInterface|null $handler = null): Response
     {
-        $sameOriginRequest = new SameOriginRequest($this->config->getClientFingerprintConfiguration(), $request);
+        $sameOriginRequest = $this->getSameOriginRequest($request);
 
         $handler ??= fn (ResponseInterface $response): RequestHandlerInterface => new class ($response) implements RequestHandlerInterface {
             public function __construct(
@@ -82,6 +82,42 @@ final class StoragelessSession implements SessionStorage
         return LazySession::fromToken($this->requestToToken($request));
     }
 
+    public function requestToToken(Request $request, SameOriginRequest|null $sameOriginRequest = null): UnencryptedToken|null
+    {
+        /** @var array<string, string> $cookies */
+        $cookies    = $request->getCookieParams();
+        $cookieName = $this->config->getCookie()->getName();
+
+        $cookie = $cookies[$cookieName] ?? '';
+
+        if ($cookie === '') {
+            return null;
+        }
+
+        $jwtConfiguration = $this->config->getJwtConfiguration();
+        try {
+            $token = $jwtConfiguration->parser()->parse($cookie);
+        } catch (InvalidArgumentException) {
+            return null;
+        }
+
+        if (! $token instanceof UnencryptedToken) {
+            return null;
+        }
+
+        $constraints = [
+            new StrictValidAt($this->config->getClock()),
+            new SignedWith($jwtConfiguration->signer(), $jwtConfiguration->verificationKey()),
+            $sameOriginRequest ?? $this->getSameOriginRequest($request),
+        ];
+
+        if (! $jwtConfiguration->validator()->validate($token, ...$constraints)) {
+            return null;
+        }
+
+        return $token;
+    }
+
     /**
      * @throws BadMethodCallException
      * @throws InvalidArgumentException
@@ -95,7 +131,18 @@ final class StoragelessSession implements SessionStorage
         $sessionContainerChanged = $sessionContainer->hasChanged();
 
         if ($sessionContainerChanged && $sessionContainer->isEmpty()) {
-            return FigResponseCookies::set($response, $this->getExpirationCookie());
+            return FigResponseCookies::set(
+                $response,
+                $this
+                    ->config
+                    ->getCookie()
+                    ->withValue(null)
+                    ->withExpires(
+                        $this->config->getClock()
+                            ->now()
+                            ->modify('-30 days'),
+                    ),
+            );
         }
 
         if ($sessionContainerChanged || $this->shouldTokenBeRefreshed($token)) {
@@ -103,6 +150,11 @@ final class StoragelessSession implements SessionStorage
         }
 
         return $response;
+    }
+
+    private function getSameOriginRequest(Request $request): SameOriginRequest
+    {
+        return new SameOriginRequest($this->config->getClientFingerprintConfiguration(), $request);
     }
 
     /** @throws BadMethodCallException */
@@ -129,59 +181,6 @@ final class StoragelessSession implements SessionStorage
                     ->toString(),
             )
             ->withExpires($expiresAt);
-    }
-
-    public function requestToToken(Request $request, SameOriginRequest|null $sameOriginRequest = null): UnencryptedToken|null
-    {
-        $sameOriginRequest ??= new SameOriginRequest($this->config->getClientFingerprintConfiguration(), $request);
-
-        /** @var array<string, string> $cookies */
-        $cookies    = $request->getCookieParams();
-        $cookieName = $this->config->getCookie()->getName();
-
-        if (! isset($cookies[$cookieName])) {
-            return null;
-        }
-
-        $cookie = $cookies[$cookieName];
-        if ($cookie === '') {
-            return null;
-        }
-
-        $jwtConfiguration = $this->config->getJwtConfiguration();
-        try {
-            $token = $jwtConfiguration->parser()->parse($cookie);
-        } catch (InvalidArgumentException) {
-            return null;
-        }
-
-        if (! $token instanceof UnencryptedToken) {
-            return null;
-        }
-
-        $constraints = [
-            new StrictValidAt($this->config->getClock()),
-            new SignedWith($jwtConfiguration->signer(), $jwtConfiguration->verificationKey()),
-            $sameOriginRequest,
-        ];
-
-        if (! $jwtConfiguration->validator()->validate($token, ...$constraints)) {
-            return null;
-        }
-
-        return $token;
-    }
-
-    private function getExpirationCookie(): SetCookie
-    {
-        return $this
-            ->config->getCookie()
-            ->withValue(null)
-            ->withExpires(
-                $this->config->getClock()
-                    ->now()
-                    ->modify('-30 days'),
-            );
     }
 
     private function shouldTokenBeRefreshed(Token|null $token): bool
