@@ -37,7 +37,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\SameOriginRequest;
 use PSR7Sessions\Storageless\Http\Configuration;
-use PSR7Sessions\Storageless\Http\SessionMiddleware;
 use PSR7Sessions\Storageless\Session\LazySession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
 
@@ -55,11 +54,7 @@ final class StoragelessSession implements SessionStorage
     public function appendSession(SessionInterface $session, ServerRequestInterface $request, Response|null $response = null, RequestHandlerInterface|null $handler = null): Response
     {
         $sameOriginRequest = new SameOriginRequest($this->config->getClientFingerprintConfiguration(), $request);
-        $token             = $this->requestToToken($request, $sameOriginRequest);
 
-        $middleware = new SessionMiddleware($this->config);
-
-        /** @var RequestHandlerInterface $handler */
         $handler ??= fn (ResponseInterface $response): RequestHandlerInterface => new class ($response) implements RequestHandlerInterface {
             public function __construct(
                 private readonly ResponseInterface $response,
@@ -77,19 +72,14 @@ final class StoragelessSession implements SessionStorage
         return $this->appendToken(
             $session,
             $response,
-            $token,
+            $this->requestToToken($request, $sameOriginRequest),
             $sameOriginRequest,
         );
-
-        return $middleware->process($request, $handler($response));
     }
 
     public function getSession(Request $request): SessionInterface
     {
-        $sameOriginRequest = new SameOriginRequest($this->config->getClientFingerprintConfiguration(), $request);
-        $token             = $this->requestToToken($request, $sameOriginRequest);
-
-        return LazySession::fromToken($token);
+        return LazySession::fromToken($this->requestToToken($request));
     }
 
     /**
