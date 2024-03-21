@@ -41,6 +41,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 // simply run `php -S localhost:9999 index.php`
 // then point your browser at `http://localhost:9999/`
 
+$clock             = SystemClock::fromUTC();
 $sessionMiddleware = new SessionMiddleware(
     (new Configuration(
         JwtConfig::forSymmetricSigner(

@@ -20,6 +20,11 @@ declare(strict_types=1);
 
 namespace PSR7Sessions\Storageless\Session;
 
+use BadMethodCallException;
+use Lcobucci\JWT\UnencryptedToken;
+use PSR7Sessions\Storageless\Http\SessionMiddleware;
+use stdClass;
+
 final class LazySession implements SessionInterface
 {
     /** @internal do not access directly: use {@see LazySession::getRealSession} instead */
@@ -45,6 +50,25 @@ final class LazySession implements SessionInterface
     public static function fromContainerBuildingCallback(callable $sessionLoader): self
     {
         return new self($sessionLoader);
+    }
+
+    public static function fromToken(UnencryptedToken|null $token): self
+    {
+        return self::fromContainerBuildingCallback(
+            static function () use ($token): SessionInterface {
+                if (! $token) {
+                    return DefaultSessionData::newEmptySession();
+                }
+
+                try {
+                    return DefaultSessionData::fromDecodedTokenData(
+                        (object) $token->claims()->get(SessionMiddleware::SESSION_CLAIM, new stdClass()),
+                    );
+                } catch (BadMethodCallException) {
+                    return DefaultSessionData::newEmptySession();
+                }
+            },
+        );
     }
 
     /**
