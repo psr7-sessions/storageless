@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "29871d96c6b0b843f0d5357c8cac2f2e",
+    "content-hash": "59449585ab98b3f5a24a8e9ba6649b8d",
     "packages": [
         {
             "name": "dflydev/fig-cookies",
@@ -1790,16 +1790,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "2.1.2",
+            "version": "2.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "7d08f569e582ade182a375c366cbd896eccadd3a"
+                "reference": "64ae44e48214f3deebdaeebf2694297a10a2bea9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/7d08f569e582ade182a375c366cbd896eccadd3a",
-                "reference": "7d08f569e582ade182a375c366cbd896eccadd3a",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/64ae44e48214f3deebdaeebf2694297a10a2bea9",
+                "reference": "64ae44e48214f3deebdaeebf2694297a10a2bea9",
                 "shasum": ""
             },
             "require": {
@@ -1844,7 +1844,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-01-21T14:54:06+00:00"
+            "time": "2025-02-07T15:05:24+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
