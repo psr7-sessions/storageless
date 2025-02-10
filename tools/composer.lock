@@ -1401,16 +1401,16 @@
         },
         {
             "name": "roave/better-reflection",
-            "version": "6.55.0",
+            "version": "6.56.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/BetterReflection.git",
-                "reference": "42e750c4e806ca1ff74959da2e221952f8bebee0"
+                "reference": "87fc50186197726e2e5aa24acf910743134951fe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/BetterReflection/zipball/42e750c4e806ca1ff74959da2e221952f8bebee0",
-                "reference": "42e750c4e806ca1ff74959da2e221952f8bebee0",
+                "url": "https://api.github.com/repos/Roave/BetterReflection/zipball/87fc50186197726e2e5aa24acf910743134951fe",
+                "reference": "87fc50186197726e2e5aa24acf910743134951fe",
                 "shasum": ""
             },
             "require": {
@@ -1424,7 +1424,7 @@
             },
             "require-dev": {
                 "phpbench/phpbench": "^1.4.0",
-                "phpunit/phpunit": "^11.5.6"
+                "phpunit/phpunit": "^11.5.7"
             },
             "suggest": {
                 "composer/composer": "Required to use the ComposerSourceLocator"
@@ -1464,9 +1464,9 @@
             "description": "Better Reflection - an improved code reflection API",
             "support": {
                 "issues": "https://github.com/Roave/BetterReflection/issues",
-                "source": "https://github.com/Roave/BetterReflection/tree/6.55.0"
+                "source": "https://github.com/Roave/BetterReflection/tree/6.56.0"
             },
-            "time": "2025-02-06T12:13:01+00:00"
+            "time": "2025-02-09T11:05:37+00:00"
         },
         {
             "name": "seld/jsonlint",
