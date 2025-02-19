@@ -1899,16 +1899,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "12.0.2",
+            "version": "12.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "69dde560510151f7d04315fac6c72016cc5d7bc8"
+                "reference": "2e3038bff41d56114e5396151060f5ac9d2d6751"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/69dde560510151f7d04315fac6c72016cc5d7bc8",
-                "reference": "69dde560510151f7d04315fac6c72016cc5d7bc8",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/2e3038bff41d56114e5396151060f5ac9d2d6751",
+                "reference": "2e3038bff41d56114e5396151060f5ac9d2d6751",
                 "shasum": ""
             },
             "require": {
@@ -1964,7 +1964,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/php-code-coverage/issues",
                 "security": "https://github.com/sebastianbergmann/php-code-coverage/security/policy",
-                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/12.0.2"
+                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/12.0.3"
             },
             "funding": [
                 {
@@ -1972,7 +1972,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-02-08T09:08:00+00:00"
+            "time": "2025-02-18T14:04:13+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -4458,16 +4458,16 @@
         },
         {
             "name": "thecodingmachine/safe",
-            "version": "v3.0.0",
+            "version": "v3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thecodingmachine/safe.git",
-                "reference": "1b99e649415872997e43c771c55ba9b08d601329"
+                "reference": "37123c3b729fb10dc35f91fa1ba9cec9c28cb393"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thecodingmachine/safe/zipball/1b99e649415872997e43c771c55ba9b08d601329",
-                "reference": "1b99e649415872997e43c771c55ba9b08d601329",
+                "url": "https://api.github.com/repos/thecodingmachine/safe/zipball/37123c3b729fb10dc35f91fa1ba9cec9c28cb393",
+                "reference": "37123c3b729fb10dc35f91fa1ba9cec9c28cb393",
                 "shasum": ""
             },
             "require": {
@@ -4577,7 +4577,7 @@
             "description": "PHP core functions that throw exceptions instead of returning FALSE on error",
             "support": {
                 "issues": "https://github.com/thecodingmachine/safe/issues",
-                "source": "https://github.com/thecodingmachine/safe/tree/v3.0.0"
+                "source": "https://github.com/thecodingmachine/safe/tree/v3.0.1"
             },
             "funding": [
                 {
@@ -4593,7 +4593,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-02-11T00:27:22+00:00"
+            "time": "2025-02-18T02:09:20+00:00"
         },
         {
             "name": "theseer/tokenizer",
