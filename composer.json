@@ -23,6 +23,7 @@
     ],
     "require": {
         "php": "~8.3.0 || ~8.4.0",
+        "ext-sodium": "*",
         "dflydev/fig-cookies": "^3.1.0",
         "lcobucci/jwt": "^5.5.0",
         "psr/clock": "^1.0.0",
