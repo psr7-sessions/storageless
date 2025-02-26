@@ -48,7 +48,7 @@ final class ConfigurationTest extends TestCase
 
     public function testProvideADefaultSystemClock(): void
     {
-        $clock = (new Configuration($this->jwtConfig))->getClock();
+        $clock = Configuration::fromJwtConfiguration($this->jwtConfig)->getClock();
 
         self::assertGreaterThan(0, $clock->now()->getTimestamp());
     }
@@ -62,7 +62,7 @@ final class ConfigurationTest extends TestCase
      */
     public function testProvideADefaultSecureCookie(): void
     {
-        $cookie = (new Configuration($this->jwtConfig))->getCookie();
+        $cookie = Configuration::fromJwtConfiguration($this->jwtConfig)->getCookie();
 
         self::assertTrue($cookie->getSecure());
         self::assertTrue($cookie->getHttpOnly());
@@ -73,7 +73,7 @@ final class ConfigurationTest extends TestCase
 
     public function testProvideNonEmptyDefaultsForScalarAttributes(): void
     {
-        $config = new Configuration($this->jwtConfig);
+        $config = Configuration::fromJwtConfiguration($this->jwtConfig);
 
         self::assertGreaterThan(0, $config->getIdleTimeout());
         self::assertGreaterThan(0, $config->getRefreshTime());
@@ -82,14 +82,14 @@ final class ConfigurationTest extends TestCase
 
     public function testClientFingerprintConfigurationIsDisabled(): void
     {
-        $config = new Configuration($this->jwtConfig);
+        $config = Configuration::fromJwtConfiguration($this->jwtConfig);
 
         self::assertEquals(FingerprintConfig::disabled(), $config->getClientFingerprintConfiguration());
     }
 
     public function testImmutability(): void
     {
-        $leftConfig = new Configuration($this->jwtConfig);
+        $leftConfig = Configuration::fromJwtConfiguration($this->jwtConfig);
         self::assertNotSame($this->jwtConfig, $leftConfig->getJwtConfiguration());
 
         $jwtConfig   = clone $this->jwtConfig;
