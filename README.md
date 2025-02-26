@@ -37,7 +37,7 @@ use PSR7Sessions\Storageless\Http\Configuration as StoragelessConfig;
 $app = new \Mezzio\Application(/* ... */);
 
 $app->pipe(new SessionMiddleware(
-    new StoragelessConfig(
+    StoragelessConfig::fromJwtConfiguration(
         JwtConfig::forSymmetricSigner(
             new Signer\Hmac\Sha256(),
             InMemory::base64Encoded('OpcMuKmoxkhzW0Y1iESpjWwL/D3UBdDauJOe742BJ5Q='), // replace this with a key of your own (see below)
@@ -51,8 +51,8 @@ has access to the `Psr\Http\Message\ServerRequestInterface` attributes:
 
 ```php
 $app->get('/get', function (ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface {
-    /** @var \PSR7Sessions\Storageless\Session\SessionInterface $session */
     $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+    assert($session instanceof \PSR7Sessions\Storageless\Session\SessionInterface);
     $session->set('counter', $session->get('counter', 0) + 1);
 
     $response
@@ -92,7 +92,7 @@ use PSR7Sessions\Storageless\Http\ClientFingerprint\Configuration as Fingerprint
 $app = new \Mezzio\Application(/* ... */);
 
 $app->pipe(new SessionMiddleware(
-    (new StoragelessConfig(/* ... */))
+    StoragelessConfig::fromJwtConfiguration(/* ... */)
         ->withClientFingerprintConfiguration(
             FingerprintConfig::forIpAndUserAgent()
         )
@@ -113,7 +113,7 @@ use PSR7Sessions\Storageless\Http\ClientFingerprint\Source;
 $app = new \Mezzio\Application(/* ... */);
 
 $app->pipe(new SessionMiddleware(
-    (new StoragelessConfig(/* ... */))
+    StoragelessConfig::fromJwtConfiguration(/* ... */)
         ->withClientFingerprintConfiguration(
             FingerprintConfig::forSources(new class implements Source{
                  public function extractFrom(ServerRequestInterface $request): string
