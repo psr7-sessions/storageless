@@ -13,8 +13,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
 
 use function base64_encode;
-use function hash;
 use function json_encode;
+use function sodium_crypto_generichash;
 use function sprintf;
 
 use const JSON_THROW_ON_ERROR;
@@ -89,6 +89,6 @@ final readonly class SameOriginRequest implements Constraint
             $fingerprintSource[] = $source->extractFrom($serverRequest);
         }
 
-        return base64_encode(hash('sha256', json_encode($fingerprintSource, JSON_THROW_ON_ERROR), true));
+        return base64_encode(sodium_crypto_generichash(json_encode($fingerprintSource, JSON_THROW_ON_ERROR)));
     }
 }
