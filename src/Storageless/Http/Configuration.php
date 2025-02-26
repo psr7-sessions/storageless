@@ -20,11 +20,11 @@ declare(strict_types=1);
 
 namespace PSR7Sessions\Storageless\Http;
 
+use DateTimeImmutable;
 use Dflydev\FigCookies\Modifier\SameSite;
 use Dflydev\FigCookies\SetCookie;
-use Lcobucci\Clock\Clock;
-use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Configuration as JwtConfig;
+use Psr\Clock\ClockInterface;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\Configuration as FingerprintConfig;
 
 /** @psalm-immutable */
@@ -45,7 +45,7 @@ final readonly class Configuration
      */
     private function __construct(
         JwtConfig $jwtConfiguration,
-        private Clock $clock,
+        private ClockInterface $clock,
         SetCookie $cookie,
         private int $idleTimeout,
         private int $refreshTime,
@@ -61,7 +61,13 @@ final readonly class Configuration
     {
         return new self(
             $jwtConfiguration,
-            SystemClock::fromSystemTimezone(),
+            new class implements ClockInterface
+            {
+                public function now(): DateTimeImmutable
+                {
+                    return new DateTimeImmutable();
+                }
+            },
             SetCookie::create(self::DEFAULT_COOKIE_NAME)
                 ->withSecure(true)
                 ->withHttpOnly(true)
@@ -79,7 +85,7 @@ final readonly class Configuration
         return $this->jwtConfiguration;
     }
 
-    public function getClock(): Clock
+    public function getClock(): ClockInterface
     {
         return $this->clock;
     }
@@ -125,7 +131,7 @@ final readonly class Configuration
         );
     }
 
-    public function withClock(Clock $clock): self
+    public function withClock(ClockInterface $clock): self
     {
         return new self(
             $this->jwtConfiguration,
