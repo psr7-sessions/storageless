@@ -28,33 +28,50 @@ use Lcobucci\JWT\Configuration as JwtConfig;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\Configuration as FingerprintConfig;
 
 /** @psalm-immutable */
-final class Configuration
+final readonly class Configuration
 {
+    public const int DEFAULT_IDLE_TIMEOUT   = 43200;
+    public const int DEFAULT_REFRESH_TIME   = 60;
+    public const string DEFAULT_COOKIE_NAME = '__Secure-slsession';
+
     private JwtConfig $jwtConfiguration;
-    private Clock $clock;
     private SetCookie $cookie;
-    /** @var positive-int */
-    private int $idleTimeout = 43200;
-    /** @var positive-int */
-    private int $refreshTime = 60;
-    /** @var literal-string */
-    private string $sessionAttribute = SessionMiddleware::SESSION_ATTRIBUTE;
     private FingerprintConfig $clientFingerprintConfiguration;
 
-    public function __construct(
+    /**
+     * @param positive-int   $idleTimeout
+     * @param positive-int   $refreshTime
+     * @param literal-string $sessionAttribute
+     */
+    private function __construct(
         JwtConfig $jwtConfiguration,
+        private Clock $clock,
+        SetCookie $cookie,
+        private int $idleTimeout,
+        private int $refreshTime,
+        private string $sessionAttribute,
+        FingerprintConfig $clientFingerprintConfiguration,
     ) {
-        $this->jwtConfiguration = clone $jwtConfiguration;
+        $this->jwtConfiguration               = clone $jwtConfiguration;
+        $this->cookie                         = clone $cookie;
+        $this->clientFingerprintConfiguration = clone $clientFingerprintConfiguration;
+    }
 
-        $this->clock = SystemClock::fromSystemTimezone();
-
-        $this->cookie = SetCookie::create('__Secure-slsession')
-            ->withSecure(true)
-            ->withHttpOnly(true)
-            ->withSameSite(SameSite::lax())
-            ->withPath('/');
-
-        $this->clientFingerprintConfiguration = FingerprintConfig::disabled();
+    public static function fromJwtConfiguration(JwtConfig $jwtConfiguration): self
+    {
+        return new self(
+            $jwtConfiguration,
+            SystemClock::fromSystemTimezone(),
+            SetCookie::create(self::DEFAULT_COOKIE_NAME)
+                ->withSecure(true)
+                ->withHttpOnly(true)
+                ->withSameSite(SameSite::lax())
+                ->withPath('/'),
+            self::DEFAULT_IDLE_TIMEOUT,
+            self::DEFAULT_REFRESH_TIME,
+            SessionMiddleware::SESSION_ATTRIBUTE,
+            FingerprintConfig::disabled(),
+        );
     }
 
     public function getJwtConfiguration(): JwtConfig
@@ -97,60 +114,95 @@ final class Configuration
 
     public function withJwtConfiguration(JwtConfig $jwtConfiguration): self
     {
-        $new                   = clone $this;
-        $new->jwtConfiguration = clone $jwtConfiguration;
-
-        return $new;
+        return new self(
+            $jwtConfiguration,
+            $this->clock,
+            $this->cookie,
+            $this->idleTimeout,
+            $this->refreshTime,
+            $this->sessionAttribute,
+            $this->clientFingerprintConfiguration,
+        );
     }
 
     public function withClock(Clock $clock): self
     {
-        $new        = clone $this;
-        $new->clock = $clock;
-
-        return $new;
+        return new self(
+            $this->jwtConfiguration,
+            $clock,
+            $this->cookie,
+            $this->idleTimeout,
+            $this->refreshTime,
+            $this->sessionAttribute,
+            $this->clientFingerprintConfiguration,
+        );
     }
 
     public function withCookie(SetCookie $cookie): self
     {
-        $new         = clone $this;
-        $new->cookie = clone $cookie;
-
-        return $new;
+        return new self(
+            $this->jwtConfiguration,
+            $this->clock,
+            $cookie,
+            $this->idleTimeout,
+            $this->refreshTime,
+            $this->sessionAttribute,
+            $this->clientFingerprintConfiguration,
+        );
     }
 
     /** @param positive-int $idleTimeout */
     public function withIdleTimeout(int $idleTimeout): self
     {
-        $new              = clone $this;
-        $new->idleTimeout = $idleTimeout;
-
-        return $new;
+        return new self(
+            $this->jwtConfiguration,
+            $this->clock,
+            $this->cookie,
+            $idleTimeout,
+            $this->refreshTime,
+            $this->sessionAttribute,
+            $this->clientFingerprintConfiguration,
+        );
     }
 
     /** @param positive-int $refreshTime */
     public function withRefreshTime(int $refreshTime): self
     {
-        $new              = clone $this;
-        $new->refreshTime = $refreshTime;
-
-        return $new;
+        return new self(
+            $this->jwtConfiguration,
+            $this->clock,
+            $this->cookie,
+            $this->idleTimeout,
+            $refreshTime,
+            $this->sessionAttribute,
+            $this->clientFingerprintConfiguration,
+        );
     }
 
     /** @param literal-string $sessionAttribute */
     public function withSessionAttribute(string $sessionAttribute): self
     {
-        $new                   = clone $this;
-        $new->sessionAttribute = $sessionAttribute;
-
-        return $new;
+        return new self(
+            $this->jwtConfiguration,
+            $this->clock,
+            $this->cookie,
+            $this->idleTimeout,
+            $this->refreshTime,
+            $sessionAttribute,
+            $this->clientFingerprintConfiguration,
+        );
     }
 
     public function withClientFingerprintConfiguration(FingerprintConfig $clientFingerprintConfiguration): self
     {
-        $new                                 = clone $this;
-        $new->clientFingerprintConfiguration = clone $clientFingerprintConfiguration;
-
-        return $new;
+        return new self(
+            $this->jwtConfiguration,
+            $this->clock,
+            $this->cookie,
+            $this->idleTimeout,
+            $this->refreshTime,
+            $this->sessionAttribute,
+            $clientFingerprintConfiguration,
+        );
     }
 }

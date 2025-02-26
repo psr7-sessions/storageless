@@ -66,7 +66,7 @@ final class SessionMiddlewareTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->config     = new Configuration(JwtConfig::forSymmetricSigner(
+        $this->config     = Configuration::fromJwtConfiguration(JwtConfig::forSymmetricSigner(
             new Sha256(),
             $this->makeRandomSymmetricKey(),
         ));
