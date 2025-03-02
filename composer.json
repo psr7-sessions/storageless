@@ -33,7 +33,7 @@
     },
     "require-dev": {
         "doctrine/coding-standard": "^12.0.0",
-        "infection/infection": "^0.29.13",
+        "infection/infection": "^0.29.14",
         "laminas/laminas-diactoros": "^3.5.0",
         "laminas/laminas-httphandlerrunner": "^2.11.0",
         "lcobucci/clock": "^3.3.1",
