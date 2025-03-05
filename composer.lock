@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a311670bb80ec2f5465c3af0121f2f25",
+    "content-hash": "91674c523ea3d3a36b24fca2a3889334",
     "packages": [
         {
             "name": "dflydev/fig-cookies",
@@ -1988,16 +1988,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "2.1.6",
+            "version": "2.1.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "6eaec7c6c9e90dcfe46ad1e1ffa5171e2dab641c"
+                "reference": "12567f91a74036d56ba0af6d56c8e73ac0e8d850"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/6eaec7c6c9e90dcfe46ad1e1ffa5171e2dab641c",
-                "reference": "6eaec7c6c9e90dcfe46ad1e1ffa5171e2dab641c",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/12567f91a74036d56ba0af6d56c8e73ac0e8d850",
+                "reference": "12567f91a74036d56ba0af6d56c8e73ac0e8d850",
                 "shasum": ""
             },
             "require": {
@@ -2042,7 +2042,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-02-19T15:46:42+00:00"
+            "time": "2025-03-05T13:43:55+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
@@ -2419,16 +2419,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "12.0.5",
+            "version": "12.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "0f177d7316ba155d36337c3811b11993b54dae32"
+                "reference": "a1c7e1e0466b6774de8edd72d91bc82400f7dfc0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/0f177d7316ba155d36337c3811b11993b54dae32",
-                "reference": "0f177d7316ba155d36337c3811b11993b54dae32",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/a1c7e1e0466b6774de8edd72d91bc82400f7dfc0",
+                "reference": "a1c7e1e0466b6774de8edd72d91bc82400f7dfc0",
                 "shasum": ""
             },
             "require": {
@@ -2442,7 +2442,7 @@
                 "phar-io/manifest": "^2.0.4",
                 "phar-io/version": "^3.2.1",
                 "php": ">=8.3",
-                "phpunit/php-code-coverage": "^12.0.3",
+                "phpunit/php-code-coverage": "^12.0.4",
                 "phpunit/php-file-iterator": "^6.0.0",
                 "phpunit/php-invoker": "^6.0.0",
                 "phpunit/php-text-template": "^5.0.0",
@@ -2496,7 +2496,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.0.5"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.0.6"
             },
             "funding": [
                 {
@@ -2512,7 +2512,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-02-25T06:13:04+00:00"
+            "time": "2025-03-05T07:38:55+00:00"
         },
         {
             "name": "psr/container",
