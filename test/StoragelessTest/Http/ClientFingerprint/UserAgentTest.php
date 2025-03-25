@@ -30,7 +30,7 @@ use PSR7Sessions\Storageless\Http\ClientFingerprint\UserAgent;
 #[CoversClass(SourceMissing::class)]
 final class UserAgentTest extends TestCase
 {
-    private const HEADER_NAME = 'User-Agent';
+    private const string HEADER_NAME = 'User-Agent';
     private UserAgent $source;
 
     protected function setUp(): void

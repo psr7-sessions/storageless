@@ -44,7 +44,7 @@ use function strlen;
 #[CoversClass(SameOriginRequest::class)]
 final class SameOriginRequestTest extends TestCase
 {
-    private const SOURCE_DATA = 'ID';
+    private const string SOURCE_DATA = 'ID';
 
     private Source $source;
     private Configuration $configuration;

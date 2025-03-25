@@ -12,7 +12,7 @@ use function is_string;
 /** @psalm-immutable */
 final readonly class RemoteAddr implements Source
 {
-    private const SERVER_PARAM_NAME = 'REMOTE_ADDR';
+    private const string SERVER_PARAM_NAME = 'REMOTE_ADDR';
 
     public function extractFrom(ServerRequestInterface $request): string
     {

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "44aa14ee8ba75ec6dbe0b6184614fe96",
+    "content-hash": "cb139015d9da3998f602d3d4b6efa7c7",
     "packages": [
         {
             "name": "dflydev/fig-cookies",
@@ -670,22 +670,22 @@
         },
         {
             "name": "doctrine/coding-standard",
-            "version": "12.0.0",
+            "version": "13.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/coding-standard.git",
-                "reference": "1b2b7dc58c68833af481fb9325c25abd40681c79"
+                "reference": "8132673b9075d648c07f7f69cb3f4cc436709b77"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/coding-standard/zipball/1b2b7dc58c68833af481fb9325c25abd40681c79",
-                "reference": "1b2b7dc58c68833af481fb9325c25abd40681c79",
+                "url": "https://api.github.com/repos/doctrine/coding-standard/zipball/8132673b9075d648c07f7f69cb3f4cc436709b77",
+                "reference": "8132673b9075d648c07f7f69cb3f4cc436709b77",
                 "shasum": ""
             },
             "require": {
                 "dealerdirect/phpcodesniffer-composer-installer": "^0.6.2 || ^0.7 || ^1.0.0",
-                "php": "^7.2 || ^8.0",
-                "slevomat/coding-standard": "^8.11",
+                "php": "^7.4 || ^8.0",
+                "slevomat/coding-standard": "^8.16",
                 "squizlabs/php_codesniffer": "^3.7"
             },
             "type": "phpcodesniffer-standard",
@@ -720,9 +720,9 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/coding-standard/issues",
-                "source": "https://github.com/doctrine/coding-standard/tree/12.0.0"
+                "source": "https://github.com/doctrine/coding-standard/tree/13.0.0"
             },
-            "time": "2023-04-24T17:43:28+00:00"
+            "time": "2025-03-23T15:38:56+00:00"
         },
         {
             "name": "fidry/cpu-core-counter",

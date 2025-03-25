@@ -46,8 +46,8 @@ use function sprintf;
 /** @psalm-immutable */
 final readonly class SessionMiddleware implements MiddlewareInterface
 {
-    public const SESSION_CLAIM     = 'session-data';
-    public const SESSION_ATTRIBUTE = 'session';
+    public const string SESSION_CLAIM     = 'session-data';
+    public const string SESSION_ATTRIBUTE = 'session';
 
     public function __construct(
         private Configuration $config,
