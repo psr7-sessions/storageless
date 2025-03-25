@@ -956,16 +956,16 @@
         },
         {
             "name": "nikolaposa/version",
-            "version": "4.2.0",
+            "version": "4.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikolaposa/version.git",
-                "reference": "003fefa14f47cd44917546285e39d196af062a95"
+                "reference": "2b9ee2f0b09333b6ce00bd6b63132cdf1d7a1428"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikolaposa/version/zipball/003fefa14f47cd44917546285e39d196af062a95",
-                "reference": "003fefa14f47cd44917546285e39d196af062a95",
+                "url": "https://api.github.com/repos/nikolaposa/version/zipball/2b9ee2f0b09333b6ce00bd6b63132cdf1d7a1428",
+                "reference": "2b9ee2f0b09333b6ce00bd6b63132cdf1d7a1428",
                 "shasum": ""
             },
             "require": {
@@ -1011,9 +1011,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikolaposa/version/issues",
-                "source": "https://github.com/nikolaposa/version/tree/4.2.0"
+                "source": "https://github.com/nikolaposa/version/tree/4.2.1"
             },
-            "time": "2023-12-29T22:07:54+00:00"
+            "time": "2025-03-24T19:12:02+00:00"
         },
         {
             "name": "ocramius/package-versions",
