@@ -30,7 +30,7 @@ use PSR7Sessions\Storageless\Http\ClientFingerprint\SourceMissing;
 #[CoversClass(SourceMissing::class)]
 final class RemoteAddrTest extends TestCase
 {
-    private const SERVER_PARAM_NAME = 'REMOTE_ADDR';
+    private const string SERVER_PARAM_NAME = 'REMOTE_ADDR';
     private RemoteAddr $source;
 
     protected function setUp(): void

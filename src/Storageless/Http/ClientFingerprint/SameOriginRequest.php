@@ -26,7 +26,7 @@ use const JSON_THROW_ON_ERROR;
  */
 final readonly class SameOriginRequest implements Constraint
 {
-    public const CLAIM = 'fp';
+    public const string CLAIM = 'fp';
 
     /** @var list<Source> */
     private array $sources;

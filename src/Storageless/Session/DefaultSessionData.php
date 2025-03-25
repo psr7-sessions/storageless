@@ -32,7 +32,7 @@ use const JSON_THROW_ON_ERROR;
 
 final class DefaultSessionData implements SessionInterface
 {
-    private const DEFAULT_JSON_DECODE_DEPTH = 512;
+    private const int DEFAULT_JSON_DECODE_DEPTH = 512;
 
     /**
      * @param array<string, int|bool|string|float|mixed[]|null> $data
