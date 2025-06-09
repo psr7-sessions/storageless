@@ -157,7 +157,7 @@ final class DefaultSessionDataTest extends TestCase
 
     /** @param int|bool|string|float|mixed[]|object|JsonSerializable|null $nonScalarValue */
     #[DataProvider('storageNonScalarDataProvider')]
-    public function testContainerIsNotChangedWhenNonScalarDataIsSetAndOverwrittenInIt(int|bool|string|float|array|object|null $nonScalarValue): void
+    public function testContainerIsNotChangedWhenNonScalarDataIsSetAndOverwrittenInIt(int|bool|string|float|array|object|null $nonScalarValue, int|bool|string|float|array|null $expectedScalar): void
     {
         $session = DefaultSessionData::fromTokenData(['key' => $nonScalarValue]);
 
