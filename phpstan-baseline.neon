@@ -5,3 +5,9 @@ parameters:
 			identifier: property.uninitializedReadonly
 			count: 1
 			path: src/Storageless/Http/ClientFingerprint/SameOriginRequest.php
+
+		-
+			message: '#^Method PSR7SessionsTest\\Storageless\\Session\\DefaultSessionDataTest\:\:testContainerIsNotChangedWhenNonScalarDataIsSetAndOverwrittenInIt\(\) has parameter \$expectedScalar with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/StoragelessTest/Session/DefaultSessionDataTest.php
