@@ -39,7 +39,7 @@
         "lcobucci/clock": "^3.3.1",
         "phpstan/phpstan": "^2.1.17",
         "phpstan/phpstan-phpunit": "^2.0.6",
-        "phpunit/phpunit": "^12.2.1",
+        "phpunit/phpunit": "^12.2.2",
         "squizlabs/php_codesniffer": "^3.13.1"
     },
     "replace": {
