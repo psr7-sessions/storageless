@@ -101,7 +101,7 @@ jobs:
 
       - name: "Run Infection"
         timeout-minutes: 30
-        run: "vendor/bin/infection --ansi --show-mutations"
+        run: "vendor/bin/infection --ansi --show-mutations --static-analysis-tool=phpstan"
         env:
           INFECTION_DASHBOARD_API_KEY: "${{ secrets.INFECTION_DASHBOARD_API_KEY }}"
           STRYKER_DASHBOARD_API_KEY: "${{ secrets.STRYKER_DASHBOARD_API_KEY }}"

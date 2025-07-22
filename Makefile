@@ -43,7 +43,7 @@ bc-check: vendor ## check for backwards compatibility breaks
 
 .PHONY: coverage
 coverage: vendor ## generate code coverage reports
-	$(DOCKER_PHP_EXEC) vendor/bin/infection --show-mutations $(INFECTION_ARGS)
+	$(DOCKER_PHP_EXEC) vendor/bin/infection --show-mutations --static-analysis-tool=phpstan $(INFECTION_ARGS)
 
 .PHONY: clean
 clean:
