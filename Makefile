@@ -32,7 +32,7 @@ cs: vendor ## verify code style rules
 
 .PHONY: static-analysis
 static-analysis: vendor ## verify that no static analysis issues were introduced
-	$(DOCKER_PHP_EXEC) vendor/bin/phpstan $(PHPSTAN_ARGS)
+	$(DOCKER_PHP_EXEC) vendor/bin/phpstan --memory-limit=256M $(PHPSTAN_ARGS)
 
 .PHONY: bc-check
 bc-check: vendor ## check for backwards compatibility breaks
