@@ -55,7 +55,7 @@ jobs:
           ini-values: "${{ env.INI_VALUES }}"
       - uses: "ramsey/composer-install@3.1.1"
 
-      - run: "vendor/bin/phpstan"
+      - run: "vendor/bin/phpstan  --memory-limit=256M"
 
   tests:
     name: "Tests"
