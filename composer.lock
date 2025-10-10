@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "304b36204c724c8cbe09bf442ce01d63",
+    "content-hash": "7b208aa90c74e5261ecc999436748094",
     "packages": [
         {
             "name": "dflydev/fig-cookies",
@@ -982,16 +982,16 @@
         },
         {
             "name": "infection/infection",
-            "version": "0.31.4",
+            "version": "0.31.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/infection/infection.git",
-                "reference": "fb06b33a6b0c22efc004d0ad369b18f984b77bb6"
+                "reference": "f6fdf9177c170fdfaecb847c1625674a0a7c4ccc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/infection/infection/zipball/fb06b33a6b0c22efc004d0ad369b18f984b77bb6",
-                "reference": "fb06b33a6b0c22efc004d0ad369b18f984b77bb6",
+                "url": "https://api.github.com/repos/infection/infection/zipball/f6fdf9177c170fdfaecb847c1625674a0a7c4ccc",
+                "reference": "f6fdf9177c170fdfaecb847c1625674a0a7c4ccc",
                 "shasum": ""
             },
             "require": {
@@ -1097,7 +1097,7 @@
             ],
             "support": {
                 "issues": "https://github.com/infection/infection/issues",
-                "source": "https://github.com/infection/infection/tree/0.31.4"
+                "source": "https://github.com/infection/infection/tree/0.31.6"
             },
             "funding": [
                 {
@@ -1109,7 +1109,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2025-10-07T12:21:52+00:00"
+            "time": "2025-10-10T10:22:48+00:00"
         },
         {
             "name": "infection/mutator",
@@ -1894,11 +1894,11 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "2.1.30",
+            "version": "2.1.31",
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/a4a7f159927983dd4f7c8020ed227d80b7f39d7d",
-                "reference": "a4a7f159927983dd4f7c8020ed227d80b7f39d7d",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/ead89849d879fe203ce9292c6ef5e7e76f867b96",
+                "reference": "ead89849d879fe203ce9292c6ef5e7e76f867b96",
                 "shasum": ""
             },
             "require": {
@@ -1943,7 +1943,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-10-02T16:07:52+00:00"
+            "time": "2025-10-10T14:14:11+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",

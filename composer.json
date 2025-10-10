@@ -33,11 +33,11 @@
     },
     "require-dev": {
         "doctrine/coding-standard": "^14.0.0",
-        "infection/infection": "^0.31.4",
+        "infection/infection": "^0.31.6",
         "laminas/laminas-diactoros": "^3.6.0",
         "laminas/laminas-httphandlerrunner": "^2.12.0",
         "lcobucci/clock": "^3.4.0",
-        "phpstan/phpstan": "^2.1.30",
+        "phpstan/phpstan": "^2.1.31",
         "phpstan/phpstan-phpunit": "^2.0.7",
         "phpunit/phpunit": "^12.4.1"
     },
