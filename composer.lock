@@ -2800,16 +2800,16 @@
         },
         {
             "name": "sanmai/pipeline",
-            "version": "7.3",
+            "version": "7.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sanmai/pipeline.git",
-                "reference": "98b114341fa65d1aefe37e83597fe4b2f2140784"
+                "reference": "6a73545f09b9b475a3735ecdee5e98476a063179"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sanmai/pipeline/zipball/98b114341fa65d1aefe37e83597fe4b2f2140784",
-                "reference": "98b114341fa65d1aefe37e83597fe4b2f2140784",
+                "url": "https://api.github.com/repos/sanmai/pipeline/zipball/6a73545f09b9b475a3735ecdee5e98476a063179",
+                "reference": "6a73545f09b9b475a3735ecdee5e98476a063179",
                 "shasum": ""
             },
             "require": {
@@ -2856,7 +2856,7 @@
             "description": "General-purpose collections pipeline",
             "support": {
                 "issues": "https://github.com/sanmai/pipeline/issues",
-                "source": "https://github.com/sanmai/pipeline/tree/7.3"
+                "source": "https://github.com/sanmai/pipeline/tree/7.4"
             },
             "funding": [
                 {
@@ -2864,7 +2864,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-10-08T02:23:30+00:00"
+            "time": "2025-10-11T07:22:29+00:00"
         },
         {
             "name": "sebastian/cli-parser",
