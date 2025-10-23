@@ -22,7 +22,7 @@
         }
     ],
     "require": {
-        "php": "~8.3.0 || ~8.4.0",
+        "php": "~8.4.0 || ~8.5.0",
         "ext-sodium": "*",
         "dflydev/fig-cookies": "^3.2.0",
         "lcobucci/jwt": "^5.6.0",
@@ -60,7 +60,7 @@
             "infection/extension-installer": true
         },
         "platform": {
-            "php": "8.3.99"
+            "php": "8.4.99"
         },
         "sort-packages": true
     }
