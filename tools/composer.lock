@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "azjezz/psl",
-            "version": "4.0.1",
+            "version": "4.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/azjezz/psl.git",
-                "reference": "a06f6c7effa31552082710d90bdf07ec8f55fafe"
+                "reference": "8b962895814bd665f0eac10b1f53c836fbcecdca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/azjezz/psl/zipball/a06f6c7effa31552082710d90bdf07ec8f55fafe",
-                "reference": "a06f6c7effa31552082710d90bdf07ec8f55fafe",
+                "url": "https://api.github.com/repos/azjezz/psl/zipball/8b962895814bd665f0eac10b1f53c836fbcecdca",
+                "reference": "8b962895814bd665f0eac10b1f53c836fbcecdca",
                 "shasum": ""
             },
             "require": {
@@ -30,7 +30,7 @@
                 "revolt/event-loop": "^1.0.7"
             },
             "require-dev": {
-                "carthage-software/mago": "^1.0.0-beta.27",
+                "carthage-software/mago": "^1.0.0-beta.32",
                 "infection/infection": "^0.31.2",
                 "php-coveralls/php-coveralls": "^2.7.0",
                 "phpbench/phpbench": "^1.4.0",
@@ -68,15 +68,19 @@
             "description": "PHP Standard Library",
             "support": {
                 "issues": "https://github.com/azjezz/psl/issues",
-                "source": "https://github.com/azjezz/psl/tree/4.0.1"
+                "source": "https://github.com/azjezz/psl/tree/4.1.0"
             },
             "funding": [
                 {
                     "url": "https://github.com/azjezz",
                     "type": "github"
+                },
+                {
+                    "url": "https://github.com/veewee",
+                    "type": "github"
                 }
             ],
-            "time": "2025-10-09T11:33:21+00:00"
+            "time": "2025-10-23T11:34:56+00:00"
         },
         {
             "name": "beberlei/assert",
