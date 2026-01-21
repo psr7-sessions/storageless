@@ -776,23 +776,23 @@
         },
         {
             "name": "jetbrains/phpstorm-stubs",
-            "version": "v2024.3",
+            "version": "v2025.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/JetBrains/phpstorm-stubs.git",
-                "reference": "0e82bdfe850c71857ee4ee3501ed82a9fc5d043c"
+                "url": "https://github.com/JetBrains/phpstorm-stubs",
+                "reference": "d1ee5e570343bd4276a3d5959e6e1c2530b006d0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JetBrains/phpstorm-stubs/zipball/0e82bdfe850c71857ee4ee3501ed82a9fc5d043c",
-                "reference": "0e82bdfe850c71857ee4ee3501ed82a9fc5d043c",
+                "url": "https://api.github.com/repos/JetBrains/phpstorm-stubs/zipball/d1ee5e570343bd4276a3d5959e6e1c2530b006d0",
+                "reference": "d1ee5e570343bd4276a3d5959e6e1c2530b006d0",
                 "shasum": ""
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "v3.64.0",
-                "nikic/php-parser": "v5.3.1",
-                "phpdocumentor/reflection-docblock": "5.6.0",
-                "phpunit/phpunit": "11.4.3"
+                "friendsofphp/php-cs-fixer": "^v3.86",
+                "nikic/php-parser": "^v5.6",
+                "phpdocumentor/reflection-docblock": "^5.6",
+                "phpunit/phpunit": "^12.3"
             },
             "type": "library",
             "autoload": {
@@ -816,10 +816,7 @@
                 "stubs",
                 "type"
             ],
-            "support": {
-                "source": "https://github.com/JetBrains/phpstorm-stubs/tree/v2024.3"
-            },
-            "time": "2024-12-14T08:03:12+00:00"
+            "time": "2025-09-18T15:47:24+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
@@ -1475,21 +1472,21 @@
         },
         {
             "name": "roave/better-reflection",
-            "version": "6.67.0",
+            "version": "6.68.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/BetterReflection.git",
-                "reference": "59ed7abcddba98b3a0533cbfbf6d033b9d239fc4"
+                "reference": "065cd70630a023c8328f18691403cb8ea7f9f195"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/BetterReflection/zipball/59ed7abcddba98b3a0533cbfbf6d033b9d239fc4",
-                "reference": "59ed7abcddba98b3a0533cbfbf6d033b9d239fc4",
+                "url": "https://api.github.com/repos/Roave/BetterReflection/zipball/065cd70630a023c8328f18691403cb8ea7f9f195",
+                "reference": "065cd70630a023c8328f18691403cb8ea7f9f195",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "jetbrains/phpstorm-stubs": "2024.3",
+                "jetbrains/phpstorm-stubs": "2025.3",
                 "nikic/php-parser": "^5.7.0",
                 "php": "~8.3.2 || ~8.4.1 || ~8.5.0"
             },
@@ -1498,7 +1495,7 @@
             },
             "require-dev": {
                 "phpbench/phpbench": "^1.4.3",
-                "phpunit/phpunit": "^11.5.46"
+                "phpunit/phpunit": "^11.5.48"
             },
             "suggest": {
                 "composer/composer": "Required to use the ComposerSourceLocator"
@@ -1538,9 +1535,9 @@
             "description": "Better Reflection - an improved code reflection API",
             "support": {
                 "issues": "https://github.com/Roave/BetterReflection/issues",
-                "source": "https://github.com/Roave/BetterReflection/tree/6.67.0"
+                "source": "https://github.com/Roave/BetterReflection/tree/6.68.0"
             },
-            "time": "2026-01-13T16:19:15+00:00"
+            "time": "2026-01-19T15:38:11+00:00"
         },
         {
             "name": "seld/jsonlint",
