@@ -45,7 +45,7 @@ final class LazySessionTest extends TestCase
         $this->wrappedSession = $this->createMock(SessionInterface::class);
         $this->sessionLoader  = $this->createMock(MakeSession::class);
         $this->lazySession    = LazySession::fromContainerBuildingCallback(function (): SessionInterface {
-            return ($this->sessionLoader)();
+            return $this->sessionLoader->__invoke();
         });
     }
 
