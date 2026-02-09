@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2709e1bed29357c45b6c0179bcccf2bd",
+    "content-hash": "39491284864db8ce743a717e0da83463",
     "packages": [
         {
             "name": "azjezz/psl",
@@ -1398,31 +1398,31 @@
         },
         {
             "name": "roave/backward-compatibility-check",
-            "version": "8.17.0",
+            "version": "8.18.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/BackwardCompatibilityCheck.git",
-                "reference": "b3aab0b917d127c3e048b4f96a7f588388e30ac9"
+                "reference": "8bbe2006daad3b0fc8331376ca8c519b21e9bdb8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/BackwardCompatibilityCheck/zipball/b3aab0b917d127c3e048b4f96a7f588388e30ac9",
-                "reference": "b3aab0b917d127c3e048b4f96a7f588388e30ac9",
+                "url": "https://api.github.com/repos/Roave/BackwardCompatibilityCheck/zipball/8bbe2006daad3b0fc8331376ca8c519b21e9bdb8",
+                "reference": "8bbe2006daad3b0fc8331376ca8c519b21e9bdb8",
                 "shasum": ""
             },
             "require": {
-                "azjezz/psl": "^4.2.0",
-                "composer/composer": "^2.9.2",
+                "azjezz/psl": "^4.2.1",
+                "composer/composer": "^2.9.5",
                 "ext-dom": "*",
                 "ext-json": "*",
                 "ext-libxml": "*",
                 "ext-simplexml": "*",
-                "nikic/php-parser": "^5.6.2",
+                "nikic/php-parser": "^5.7.0",
                 "nikolaposa/version": "^4.2.1",
                 "ocramius/package-versions": "^2.11.0",
                 "php": "~8.3.0 || ~8.4.0 || ~8.5.0",
-                "roave/better-reflection": "^6.66.0",
-                "symfony/console": "^7.4.0"
+                "roave/better-reflection": "^6.69.0",
+                "symfony/console": "^7.4.4"
             },
             "conflict": {
                 "marc-mabe/php-enum": "<4.7.2",
@@ -1431,14 +1431,14 @@
             },
             "require-dev": {
                 "doctrine/coding-standard": "^14.0.0",
-                "justinrainbow/json-schema": "^6.6.2",
+                "justinrainbow/json-schema": "^6.6.4",
                 "php-standard-library/psalm-plugin": "^2.3.0",
-                "phpunit/phpunit": "^12.4.4",
+                "phpunit/phpunit": "^12.5.10",
                 "psalm/plugin-phpunit": "^0.19.5",
-                "roave/infection-static-analysis-plugin": "^1.41.0",
+                "roave/infection-static-analysis-plugin": "^1.43.0",
                 "roave/security-advisories": "dev-master",
                 "squizlabs/php_codesniffer": "^4.0.1",
-                "vimeo/psalm": "^6.13.1"
+                "vimeo/psalm": "^6.15.1"
             },
             "bin": [
                 "bin/roave-backward-compatibility-check"
@@ -1466,9 +1466,9 @@
             "description": "Tool to compare two revisions of a public API to check for BC breaks",
             "support": {
                 "issues": "https://github.com/Roave/BackwardCompatibilityCheck/issues",
-                "source": "https://github.com/Roave/BackwardCompatibilityCheck/tree/8.17.0"
+                "source": "https://github.com/Roave/BackwardCompatibilityCheck/tree/8.18.0"
             },
-            "time": "2025-11-29T01:02:22+00:00"
+            "time": "2026-02-09T11:15:47+00:00"
         },
         {
             "name": "roave/better-reflection",
