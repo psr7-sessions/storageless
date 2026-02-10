@@ -38,8 +38,8 @@
         "laminas/laminas-httphandlerrunner": "^2.13.0",
         "lcobucci/clock": "^3.5.0",
         "phpstan/phpstan": "^2.1.38",
-        "phpstan/phpstan-phpunit": "^2.0.13",
-        "phpunit/phpunit": "^13.0.1"
+        "phpstan/phpstan-phpunit": "^2.0.14",
+        "phpunit/phpunit": "^13.0.2"
     },
     "replace": {
         "ocramius/psr7-session": "self.version"
