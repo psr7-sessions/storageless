@@ -177,7 +177,7 @@ final class SessionMiddlewareTest extends TestCase
 
     public function testWillIgnoreRequestsWithNonPlainTokens(): void
     {
-        $unknownTokenType = $this->createMock(Token::class);
+        $unknownTokenType = self::createStub(Token::class);
         $fakeParser       = $this->createMock(ParserInterface::class);
         $jwtConfiguration = JwtConfig::forSymmetricSigner(
             new Sha256(),

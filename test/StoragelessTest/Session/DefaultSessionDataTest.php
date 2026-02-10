@@ -182,8 +182,10 @@ final class DefaultSessionDataTest extends TestCase
     #[DataProvider('storageScalarDataProvider')]
     public function testContainerBuiltWithStdClassContainsData(string $key, int|bool|string|float|array|object|null $value): void
     {
-        if ($key === "\0" || $value === "\0" || $key === '') {
-            self::markTestSkipped('Null bytes or empty keys are not supported by PHP\'s stdClass');
+        if ($key === "\0") {
+            self::assertTrue(true, 'Null bytes keys are not supported by PHP\'s stdClass');
+
+            return;
         }
 
         $session = DefaultSessionData::fromDecodedTokenData((object) [$key => $value]);

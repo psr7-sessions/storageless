@@ -41,7 +41,7 @@ final class ConfigurationTest extends TestCase
 
     public function testCustomSourcesFactory(): void
     {
-        $source = $this->createMock(Source::class);
+        $source = self::createStub(Source::class);
 
         $configuration = Configuration::forSources($source);
 
