@@ -51,6 +51,7 @@ final class LazySessionTest extends TestCase
 
     public function testLazyNonInitializedSessionIsAlwaysNotChanged(): void
     {
+        $this->wrappedSession->expects(self::never())->method(self::anything());
         $this->sessionLoader->expects(self::never())->method('__invoke');
 
         self::assertFalse($this->lazySession->hasChanged());

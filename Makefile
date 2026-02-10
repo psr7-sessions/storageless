@@ -23,7 +23,7 @@ vendor: .env docker-compose.yml Dockerfile composer.json
 
 .PHONY: unit
 unit: vendor ## run unit tests
-	$(DOCKER_PHP_EXEC) vendor/bin/phpunit $(PHPUNIT_ARGS)
+	$(DOCKER_PHP_EXEC) vendor/bin/phpunit --coverage-text --only-summary-for-coverage-text $(PHPUNIT_ARGS)
 
 .PHONY: cs
 cs: vendor ## verify code style rules

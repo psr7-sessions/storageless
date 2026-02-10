@@ -81,7 +81,7 @@ final class SameOriginRequestTest extends TestCase
     {
         $constraint = $this->getDisabledConstraint();
 
-        $constraint->assert($this->createMock(Token::class));
+        $constraint->assert(self::createStub(Token::class));
     }
 
     public function testShouldRaiseExceptionWhenTokenIsNotAPlainToken(): void
@@ -89,7 +89,7 @@ final class SameOriginRequestTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('It was expected an Lcobucci\\JWT\\UnencryptedToken');
 
-        $this->constraint->assert($this->createMock(Token::class));
+        $this->constraint->assert(self::createStub(Token::class));
     }
 
     public function testShouldRaiseExceptionWhenClaimIsAbsent(): void
