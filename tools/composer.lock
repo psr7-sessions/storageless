@@ -11,12 +11,12 @@
             "version": "4.3.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/azjezz/psl.git",
+                "url": "https://github.com/php-standard-library/php-standard-library.git",
                 "reference": "74c95be0214eb7ea39146ed00ac4eb71b45d787b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/azjezz/psl/zipball/74c95be0214eb7ea39146ed00ac4eb71b45d787b",
+                "url": "https://api.github.com/repos/php-standard-library/php-standard-library/zipball/74c95be0214eb7ea39146ed00ac4eb71b45d787b",
                 "reference": "74c95be0214eb7ea39146ed00ac4eb71b45d787b",
                 "shasum": ""
             },
@@ -67,8 +67,8 @@
             ],
             "description": "PHP Standard Library",
             "support": {
-                "issues": "https://github.com/azjezz/psl/issues",
-                "source": "https://github.com/azjezz/psl/tree/4.3.0"
+                "issues": "https://github.com/php-standard-library/php-standard-library/issues",
+                "source": "https://github.com/php-standard-library/php-standard-library/tree/4.3.0"
             },
             "funding": [
                 {
@@ -80,6 +80,7 @@
                     "type": "github"
                 }
             ],
+            "abandoned": "php-standard-library/php-standard-library",
             "time": "2026-02-24T01:58:53+00:00"
         },
         {
