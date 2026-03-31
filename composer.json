@@ -39,7 +39,7 @@
         "lcobucci/clock": "^3.5.0",
         "phpstan/phpstan": "^2.1.45",
         "phpstan/phpstan-phpunit": "^2.0.16",
-        "phpunit/phpunit": "^13.0.5"
+        "phpunit/phpunit": "^13.0.6"
     },
     "replace": {
         "ocramius/psr7-session": "self.version"
