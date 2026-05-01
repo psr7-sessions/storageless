@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ca9ab1442b1e759a9abbf6fc4bea0593",
+    "content-hash": "2df3d1406de1a45ccad777839f964b98",
     "packages": [
         {
             "name": "dflydev/fig-cookies",
@@ -2393,16 +2393,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "13.1.7",
+            "version": "13.1.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "ddd6401641861cdef94b922ef10d484f436e8dcd"
+                "reference": "f49a2b5e51ffb33421745368cc099cf66830d71b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/ddd6401641861cdef94b922ef10d484f436e8dcd",
-                "reference": "ddd6401641861cdef94b922ef10d484f436e8dcd",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/f49a2b5e51ffb33421745368cc099cf66830d71b",
+                "reference": "f49a2b5e51ffb33421745368cc099cf66830d71b",
                 "shasum": ""
             },
             "require": {
@@ -2416,7 +2416,7 @@
                 "phar-io/manifest": "^2.0.4",
                 "phar-io/version": "^3.2.1",
                 "php": ">=8.4.1",
-                "phpunit/php-code-coverage": "^14.1.3",
+                "phpunit/php-code-coverage": "^14.1.6",
                 "phpunit/php-file-iterator": "^7.0.0",
                 "phpunit/php-invoker": "^7.0.0",
                 "phpunit/php-text-template": "^6.0.0",
@@ -2472,7 +2472,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/13.1.7"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/13.1.8"
             },
             "funding": [
                 {
@@ -2480,7 +2480,7 @@
                     "type": "other"
                 }
             ],
-            "time": "2026-04-18T06:14:52+00:00"
+            "time": "2026-05-01T04:22:45+00:00"
         },
         {
             "name": "psr/container",
