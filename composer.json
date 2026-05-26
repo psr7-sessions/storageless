@@ -37,7 +37,7 @@
         "laminas/laminas-diactoros": "^3.8.0",
         "laminas/laminas-httphandlerrunner": "^2.13.0",
         "lcobucci/clock": "^3.6.0",
-        "phpstan/phpstan": "^2.1.55",
+        "phpstan/phpstan": "^2.1.56",
         "phpstan/phpstan-phpunit": "^2.0.16",
         "phpunit/phpunit": "^13.1.12"
     },
