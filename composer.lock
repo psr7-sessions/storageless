@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "46f9526455d693048de919c0ce8fd945",
+    "content-hash": "f0e0de85d3f54ae26d03fbc76b76ed98",
     "packages": [
         {
             "name": "dflydev/fig-cookies",
@@ -2406,16 +2406,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "13.1.13",
+            "version": "13.1.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "ddf7f25d9ee9652b464475d7f3bacde2613e355e"
+                "reference": "cdd419c33c040c6b570e51dba8ecbe81d399da53"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/ddf7f25d9ee9652b464475d7f3bacde2613e355e",
-                "reference": "ddf7f25d9ee9652b464475d7f3bacde2613e355e",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/cdd419c33c040c6b570e51dba8ecbe81d399da53",
+                "reference": "cdd419c33c040c6b570e51dba8ecbe81d399da53",
                 "shasum": ""
             },
             "require": {
@@ -2429,7 +2429,7 @@
                 "phar-io/manifest": "^2.0.4",
                 "phar-io/version": "^3.2.1",
                 "php": ">=8.4.1",
-                "phpunit/php-code-coverage": "^14.1.9",
+                "phpunit/php-code-coverage": "^14.1.10",
                 "phpunit/php-file-iterator": "^7.0.0",
                 "phpunit/php-invoker": "^7.0.0",
                 "phpunit/php-text-template": "^6.0.0",
@@ -2440,7 +2440,7 @@
                 "sebastian/environment": "^9.3.2",
                 "sebastian/exporter": "^8.1.0",
                 "sebastian/git-state": "^1.0",
-                "sebastian/global-state": "^9.0.0",
+                "sebastian/global-state": "^9.0.1",
                 "sebastian/object-enumerator": "^8.0.0",
                 "sebastian/recursion-context": "^8.0.0",
                 "sebastian/type": "^7.0.1",
@@ -2485,7 +2485,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/13.1.13"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/13.1.14"
             },
             "funding": [
                 {
@@ -2493,7 +2493,7 @@
                     "type": "other"
                 }
             ],
-            "time": "2026-05-27T14:03:08+00:00"
+            "time": "2026-06-04T06:16:42+00:00"
         },
         {
             "name": "psr/container",
