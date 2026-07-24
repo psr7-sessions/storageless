@@ -14,14 +14,14 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
-      - uses: "actions/checkout@v7"
-      - uses: "shivammathur/setup-php@v2"
+      - uses: "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1" # v7
+      - uses: "shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240" # v2
         with:
           coverage: "pcov"
           php-version: "${{ env.PHP_CURRENT }}"
           ini-values: "${{ env.INI_VALUES }}"
           tools: composer-normalize, composer-require-checker
-      - uses: "ramsey/composer-install@4.0.0"
+      - uses: "ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda" # 4.0.0
 
       - run: "composer validate --strict"
       - run: "composer-normalize --dry-run"
@@ -31,14 +31,14 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
-      - uses: "actions/checkout@v7"
-      - uses: "shivammathur/setup-php@v2"
+      - uses: "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1" # v7
+      - uses: "shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240" # v2
         with:
           coverage: "none"
           php-version: "${{ env.PHP_CURRENT }}"
           ini-values: "${{ env.INI_VALUES }}"
           tools: cs2pr
-      - uses: "ramsey/composer-install@4.0.0"
+      - uses: "ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda" # 4.0.0
 
       - run: "vendor/bin/phpcs -q --report=checkstyle | cs2pr"
 
@@ -47,13 +47,13 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
-      - uses: "actions/checkout@v7"
-      - uses: "shivammathur/setup-php@v2"
+      - uses: "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1" # v7
+      - uses: "shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240" # v2
         with:
           coverage: "none"
           php-version: "${{ env.PHP_CURRENT }}"
           ini-values: "${{ env.INI_VALUES }}"
-      - uses: "ramsey/composer-install@4.0.0"
+      - uses: "ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda" # 4.0.0
 
       - run: "vendor/bin/phpstan  --memory-limit=256M"
 
@@ -72,13 +72,13 @@ jobs:
           - "highest"
 
     steps:
-      - uses: "actions/checkout@v7"
-      - uses: "shivammathur/setup-php@v2"
+      - uses: "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1" # v7
+      - uses: "shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240" # v2
         with:
           coverage: "pcov"
           php-version: "${{ matrix.php-version }}"
           ini-values: "${{ env.INI_VALUES }}"
-      - uses: "ramsey/composer-install@4.0.0"
+      - uses: "ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda" # 4.0.0
         with:
           dependency-versions: "${{ matrix.dependencies }}"
 
@@ -91,13 +91,13 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
-      - uses: "actions/checkout@v7"
-      - uses: "shivammathur/setup-php@v2"
+      - uses: "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1" # v7
+      - uses: "shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240" # v2
         with:
           coverage: "pcov"
           php-version: "${{ env.PHP_CURRENT }}"
           ini-values: "${{ env.INI_VALUES }}"
-      - uses: "ramsey/composer-install@4.0.0"
+      - uses: "ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda" # 4.0.0
 
       - name: "Run Infection"
         timeout-minutes: 30
