@@ -38,7 +38,7 @@
         "laminas/laminas-httphandlerrunner": "^2.14.0",
         "lcobucci/clock": "^3.6.0",
         "phpstan/phpstan": "^2.2.16",
-        "phpstan/phpstan-phpunit": "^2.0.18",
+        "phpstan/phpstan-phpunit": "^2.0.19",
         "phpunit/phpunit": "^13.3.5"
     },
     "replace": {
