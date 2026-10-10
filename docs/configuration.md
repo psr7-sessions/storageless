@@ -101,6 +101,42 @@ By default, `PSR7Sessions\Storageless\Http\Configuration::fromJwtConfiguration()
  * The session expires after `43200` seconds (12 hours) without being re-generated
  * The session is available in the `"session"` request attribute (`SessionMiddleware::SESSION_ATTRIBUTE`)
  * [Client fingerprinting](../README.md#session-hijacking-mitigation) is disabled
+ * Responses using the session are sent with [`nocache` caching headers](#http-caching)
+
+### HTTP caching
+
+A shared cache (CDN, reverse proxy, etc.) storing a response that carries the
+session cookie, or that depends on the session data, would serve it to other
+clients. Like PHP's [`session.cache_limiter`](https://www.php.net/manual/en/function.session-cache-limiter.php),
+the middleware sends caching headers with every response that reads or writes
+the session, or that carries the session cookie (including session refreshes):
+
+| `CacheLimiter`        | Headers                                                                                                                          |
+|-----------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| `NoCache` (default)   | `Expires: Thu, 19 Nov 1981 08:52:00 GMT`<br>`Cache-Control: no-store, no-cache, must-revalidate`<br>`Pragma: no-cache`         |
+| `Private`             | `Expires: Thu, 19 Nov 1981 08:52:00 GMT`<br>`Cache-Control: private, max-age=<cache expire>`                                    |
+| `Public`              | `Expires: <now + cache expire>`<br>`Cache-Control: public, max-age=<cache expire>`                                               |
+| `None`                | none                                                                                                                             |
+
+The cache expire defaults to `10800` seconds (180 minutes), as PHP's `session.cache_expire`:
+
+```php
+use PSR7Sessions\Storageless\Http\CacheLimiter;
+
+$sessionMiddleware = new SessionMiddleware(
+    StoragelessConfig::fromJwtConfiguration(/* ... */)
+        ->withCacheLimiter(CacheLimiter::Private)
+        ->withCacheExpire(600) // in seconds
+);
+```
+
+As with PHP, **headers set by your application are never overwritten**: each of
+the headers above is only added when the response does not contain it already.
+Therefore, if your application explicitly marks a response as cacheable by shared
+caches (for example with `Cache-Control: public`), it must make sure that the
+response does not use the session, nor carry the session cookie: since sessions
+are re-generated on any request after `60` seconds, the session cookie may be
+added to any response. The same applies to the `Public` cache limiter.
 
 ### Local development
 
