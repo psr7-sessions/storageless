@@ -25,6 +25,7 @@ use DateInterval;
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\SetCookie;
 use InvalidArgumentException;
+use Lcobucci\JWT\Encoding\CannotDecodeContent;
 use Lcobucci\JWT\Encoding\ChainedFormatter;
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\UnencryptedToken;
@@ -97,7 +98,7 @@ final readonly class SessionMiddleware implements MiddlewareInterface
         $jwtConfiguration = $this->config->getJwtConfiguration();
         try {
             $token = $jwtConfiguration->parser()->parse($cookie);
-        } catch (InvalidArgumentException) {
+        } catch (InvalidArgumentException | CannotDecodeContent) {
             return null;
         }
 
