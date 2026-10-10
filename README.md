@@ -216,7 +216,8 @@ issues listed above.
 ## Assumptions
 
 * your sessions are fairly small and contain only few identifiers and
-  some CSRF tokens. Small means `< 400` bytes
+  some CSRF tokens. Small means less than `512` bytes, when JSON encoded
+  (see the [limitations documentation](docs/limitations.md))
 * data in your session is `JsonSerializable` or equivalent
 * data in your session is **freely readable by the client**: sessions are
   signed, not encrypted, so they must never contain secrets
