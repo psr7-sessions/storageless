@@ -16,7 +16,7 @@ use PSR7Sessions\Storageless\Http\SessionMiddleware;
 use PSR7Sessions\Storageless\Http\Configuration as StoragelessConfig;
 
 $sessionMiddleware = new SessionMiddleware(
-    new StoragelessConfig(
+    StoragelessConfig::fromJwtConfiguration(
         JwtConfig::forSymmetricSigner(
             new Signer\Hmac\Sha256(),
             InMemory::base64Encoded((string) getenv('SESSION_SIGNING_KEY')),
@@ -41,24 +41,24 @@ documentation:
 
 ### Fine-tuning
 
-Since `PSR7Session` depends on 
-[`lcobucci/jwt`](https://packagist.org/packages/lcobucci/jwt), 
-[`lcobucci/clock`](https://packagist.org/packages/lcobucci/clock), and 
-[`dflydev/fig-cookies`](https://packagist.org/packages/dflydev/fig-cookies),
-you need to require them as well, since with this sort of setup you are explicitly using
-those components:
+Since the configuration API makes you use
+[`lcobucci/jwt`](https://packagist.org/packages/lcobucci/jwt) and, when customizing the cookie,
+[`dflydev/fig-cookies`](https://packagist.org/packages/dflydev/fig-cookies)
+directly, you should require them explicitly in your own project:
 
 ```sh
-composer require "lcobucci/jwt:^5.0"
-composer require "lcobucci/clock:^3.0"
-composer require "dflydev/fig-cookies:^3.0"
+composer require "lcobucci/jwt:^5.6.1"
+composer require "dflydev/fig-cookies:^3.2.0"
 ```
+
+If you replace the default clock via `withClock()`, you also need a
+[PSR-20](https://www.php-fig.org/psr/psr-20/) clock implementation, such as
+[`lcobucci/clock`](https://packagist.org/packages/lcobucci/clock).
 
 If you want to fine-tune more settings of `PSR7Session`, then simply use the
 `PSR7Sessions\Storageless\Http\Configuration` API.
 
 ```php
-use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Configuration as JwtConfig;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Key\InMemory;
@@ -66,13 +66,13 @@ use PSR7Sessions\Storageless\Http\SessionMiddleware;
 use PSR7Sessions\Storageless\Http\Configuration as StoragelessConfig;
 
 $sessionMiddleware = new SessionMiddleware(
-    (new StoragelessConfig(
+    StoragelessConfig::fromJwtConfiguration(
         JwtConfig::forAsymmetricSigner(
             new Signer\Eddsa(),
             InMemory::base64Encoded((string) getenv('SESSION_SIGNING_PRIVATE_KEY')),
             InMemory::base64Encoded((string) getenv('SESSION_SIGNING_PUBLIC_KEY'))
         )
-    ))
+    )
         ->withIdleTimeout(1200) // in seconds
         ->withRefreshTime(60) // in seconds
 );
@@ -86,7 +86,7 @@ php -r '$k = sodium_crypto_sign_keypair(); echo "private: ", base64_encode(sodiu
 
 ### Defaults
 
-By default, sessions generated via the `SessionMiddleware` factory methods use following parameters:
+By default, `PSR7Sessions\Storageless\Http\Configuration::fromJwtConfiguration()` uses the following parameters:
 
  * `"__Secure-slsession"` is the name of the cookie where the session is stored, [`__Secure-`](https://tools.ietf.org/html/draft-ietf-httpbis-cookie-prefixes)
  prefix is intentional
@@ -98,6 +98,9 @@ By default, sessions generated via the `SessionMiddleware` factory methods use f
  * The JWT token in the `"__Secure-slsession"` is signed, but **unencrypted**
  * The JWT token in the `"__Secure-slsession"` has an [`iat` claim](https://self-issued.info/docs/draft-ietf-oauth-json-web-token.html#rfc.section.4.1.6)
  * The session is re-generated only after `60` seconds, and **not** at every user-agent interaction
+ * The session expires after `43200` seconds (12 hours) without being re-generated
+ * The session is available in the `"session"` request attribute (`SessionMiddleware::SESSION_ATTRIBUTE`)
+ * [Client fingerprinting](../README.md#session-hijacking-mitigation) is disabled
 
 ### Local development
 
@@ -110,9 +113,13 @@ When running applications locally on `http://localhost`, some settings may need 
 
 **The example below is completely insecure. It should only be used for local development.**
 
+Note that `withCookie()` replaces the whole default cookie: any attribute not set
+on the given `SetCookie` (`Secure`, `HttpOnly`, `SameSite`, `Path`) is lost, so
+always set all of them explicitly.
+
 ```php
+use Dflydev\FigCookies\Modifier\SameSite;
 use Dflydev\FigCookies\SetCookie;
-use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Configuration as JwtConfig;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Key\InMemory;
@@ -120,18 +127,19 @@ use PSR7Sessions\Storageless\Http\SessionMiddleware;
 use PSR7Sessions\Storageless\Http\Configuration as StoragelessConfig;
 
 return new SessionMiddleware(
-    (new StoragelessConfig(
+    StoragelessConfig::fromJwtConfiguration(
         JwtConfig::forSymmetricSigner(
             new Signer\Hmac\Sha256(),
             InMemory::base64Encoded((string) getenv('SESSION_SIGNING_KEY')),
         )
-    ))
+    )
         // Override the default `__Secure-slsession` which only works on HTTPS
         ->withCookie(
             SetCookie::create('slsession')
                 // Disable mandatory HTTPS
                 ->withSecure(false)
                 ->withHttpOnly(true)
+                ->withSameSite(SameSite::lax())
                 ->withPath('/')
         )
 );

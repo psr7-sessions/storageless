@@ -18,6 +18,7 @@
 
 declare(strict_types=1);
 
+use Dflydev\FigCookies\Modifier\SameSite;
 use Dflydev\FigCookies\SetCookie;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ServerRequestFactory;
@@ -58,6 +59,7 @@ $sessionMiddleware = new SessionMiddleware(
         SetCookie::create('an-example-cookie-name')
             ->withSecure(false) // false on purpose, unless you have https locally
             ->withHttpOnly(true)
+            ->withSameSite(SameSite::lax())
             ->withPath('/'),
     )->withIdleTimeout(1200), // 20 minutes
 );
