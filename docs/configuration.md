@@ -19,10 +19,18 @@ $sessionMiddleware = new SessionMiddleware(
     new StoragelessConfig(
         JwtConfig::forSymmetricSigner(
             new Signer\Hmac\Sha256(),
-            InMemory::base64Encoded('OpcMuKmoxkhzW0Y1iESpjWwL/D3UBdDauJOe742BJ5Q='), // replace this with a key of your own (see below)
+            InMemory::base64Encoded((string) getenv('SESSION_SIGNING_KEY')),
         )
     )
 );
+```
+
+The key must be kept secret and generated using a cryptographically secure
+pseudo-random number generator (CSPRNG). **Never use a key found in documentation
+or examples.** For the `Sha256` signer above, you can generate a key with:
+
+```sh
+php -r 'echo base64_encode(random_bytes(32)), PHP_EOL;'
 ```
 
 More information on the JWT signature can be found in [`lcobucci/jwt`](https://packagist.org/packages/lcobucci/jwt)
@@ -61,13 +69,19 @@ $sessionMiddleware = new SessionMiddleware(
     (new StoragelessConfig(
         JwtConfig::forAsymmetricSigner(
             new Signer\Eddsa(),
-            InMemory::base64Encoded('dv6B60wqqFVDpt8+TnW7T6NtRpVQjiQP/PoqonDWBZkVboQttTfzXux+WnZeacJDcklMgyKFHVFy1C7tVDvcWA=='),
-            InMemory::base64Encoded('FW6ELbU3817sflp2XmnCQ3JJTIMihR1RctQu7VQ73Fg=')
+            InMemory::base64Encoded((string) getenv('SESSION_SIGNING_PRIVATE_KEY')),
+            InMemory::base64Encoded((string) getenv('SESSION_SIGNING_PUBLIC_KEY'))
         )
     ))
         ->withIdleTimeout(1200) // in seconds
         ->withRefreshTime(60) // in seconds
 );
+```
+
+For the `Eddsa` signer above, you can generate a key pair with:
+
+```sh
+php -r '$k = sodium_crypto_sign_keypair(); echo "private: ", base64_encode(sodium_crypto_sign_secretkey($k)), PHP_EOL, "public:  ", base64_encode(sodium_crypto_sign_publickey($k)), PHP_EOL;'
 ```
 
 ### Defaults
@@ -105,12 +119,11 @@ use Lcobucci\JWT\Signer\Key\InMemory;
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
 use PSR7Sessions\Storageless\Http\Configuration as StoragelessConfig;
 
-$key = '<random key>';
 return new SessionMiddleware(
     (new StoragelessConfig(
         JwtConfig::forSymmetricSigner(
             new Signer\Hmac\Sha256(),
-            InMemory::base64Encoded($key),
+            InMemory::base64Encoded((string) getenv('SESSION_SIGNING_KEY')),
         )
     ))
         // Override the default `__Secure-slsession` which only works on HTTPS

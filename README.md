@@ -40,7 +40,7 @@ $app->pipe(new SessionMiddleware(
     StoragelessConfig::fromJwtConfiguration(
         JwtConfig::forSymmetricSigner(
             new Signer\Hmac\Sha256(),
-            InMemory::base64Encoded('OpcMuKmoxkhzW0Y1iESpjWwL/D3UBdDauJOe742BJ5Q='), // replace this with a key of your own (see below)
+            InMemory::base64Encoded((string) getenv('SESSION_SIGNING_KEY')), // see below on how to generate it
         )
     )
 ));
@@ -66,10 +66,18 @@ $app->get('/get', function (ServerRequestInterface $request, ResponseInterface $
 You can do this also in asynchronous contexts and long-running processes,
 since no super-globals nor I/O are involved.
 
-It is recommended that you use a key with lots of entropy, preferably
-generated using a cryptographically secure pseudo-random number generator
-(CSPRNG). You can use the [CryptoKey tool](https://github.com/AndrewCarterUK/CryptoKey)
-to do this for you.
+Anyone knowing the signing key can forge any session, so the key must be
+kept secret, outside of your codebase (for example in an environment variable),
+and generated using a cryptographically secure pseudo-random number generator
+(CSPRNG). **Never use a key found in documentation or examples.**
+For the `Sha256` signer above, you can generate a key with:
+
+```sh
+php -r 'echo base64_encode(random_bytes(32)), PHP_EOL;'
+```
+
+An empty key is rejected, so a missing environment variable makes the
+configuration fail instead of silently using a weak key.
 
 Note that you can also use asymmetric keys; please refer to
 [`lcobucci/jwt`](https://packagist.org/packages/lcobucci/jwt) documentation:
@@ -136,7 +144,7 @@ $app->pipe(new SessionMiddleware(
 Simply browse to the `examples` directory in your console, then run
 
 ```sh
-php -S localhost:9999 index.php
+SESSION_SIGNING_KEY="$(php -r 'echo base64_encode(random_bytes(32));')" php -S localhost:9999 index.php
 ```
 
 Then try accessing `http://localhost:9999`: you should see a counter
