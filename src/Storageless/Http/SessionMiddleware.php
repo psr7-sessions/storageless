@@ -43,14 +43,29 @@ use PSR7Sessions\Storageless\Session\LazySession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
 use stdClass;
 
+use function array_any;
+use function array_column;
+use function array_filter;
+use function array_map;
+use function implode;
+use function in_array;
 use function is_string;
+use function preg_match_all;
 use function sprintf;
+use function strtolower;
+
+use const PREG_SET_ORDER;
 
 /** @psalm-immutable */
 final readonly class SessionMiddleware implements MiddlewareInterface
 {
     public const string SESSION_CLAIM     = 'session-data';
     public const string SESSION_ATTRIBUTE = 'session';
+
+    private const string CACHE_CONTROL_HEADER = 'Cache-Control';
+
+    /** Directives allowing shared caches to store a response, unless overridden by `private` or `no-store` */
+    private const array SHARED_CACHE_DIRECTIVES = ['public', 's-maxage'];
 
     public function __construct(
         private Configuration $config,
@@ -150,10 +165,10 @@ final readonly class SessionMiddleware implements MiddlewareInterface
         $sessionContainerChanged = $sessionContainer->hasChanged();
 
         if ($sessionContainerChanged && $sessionContainer->isEmpty()) {
-            return FigResponseCookies::set($response, $this->getExpirationCookie());
+            return self::withSessionCookie($response, $this->getExpirationCookie());
         }
 
-        if ($sessionContainerChanged || $this->shouldTokenBeRefreshed($token)) {
+        if ($sessionContainerChanged || $this->shouldTokenBeRefreshed($token, $response)) {
             try {
                 $tokenCookie = $this->getTokenCookie($sessionContainer, $sameOriginRequest);
             } catch (SourceMissing) {
@@ -161,15 +176,20 @@ final readonly class SessionMiddleware implements MiddlewareInterface
                 return $response;
             }
 
-            return FigResponseCookies::set($response, $tokenCookie);
+            return self::withSessionCookie($response, $tokenCookie);
         }
 
         return $response;
     }
 
-    private function shouldTokenBeRefreshed(Token|null $token): bool
+    private function shouldTokenBeRefreshed(Token|null $token, Response $response): bool
     {
         if ($token === null) {
+            return false;
+        }
+
+        // refreshing is optional: skip it, rather than making private a response meant for shared caches
+        if (self::isExplicitlyStorableBySharedCaches(self::cacheControlDirectives($response))) {
             return false;
         }
 
@@ -207,6 +227,76 @@ final readonly class SessionMiddleware implements MiddlewareInterface
                     ->toString(),
             )
             ->withExpires($expiresAt);
+    }
+
+    /**
+     * Adds the session cookie to the response, preventing shared caches (CDNs, reverse proxies, etc.) from storing it:
+     * they would serve the session to other clients
+     */
+    private static function withSessionCookie(Response $response, SetCookie $cookie): Response
+    {
+        $response   = FigResponseCookies::set($response, $cookie);
+        $directives = self::cacheControlDirectives($response);
+
+        if (self::isNotStorableBySharedCaches($directives)) {
+            return $response;
+        }
+
+        $keptDirectives = array_column(
+            array_filter(
+                $directives,
+                static fn (array $directive): bool => $directive['name'] !== 'private'
+                    && ! in_array($directive['name'], self::SHARED_CACHE_DIRECTIVES, true),
+            ),
+            'directive',
+        );
+
+        return $response->withHeader(self::CACHE_CONTROL_HEADER, implode(', ', ['private', ...$keptDirectives]));
+    }
+
+    /** @param list<array{name: lowercase-string, directive: string, qualified: bool}> $directives */
+    private static function isExplicitlyStorableBySharedCaches(array $directives): bool
+    {
+        return ! self::isNotStorableBySharedCaches($directives)
+            && array_any(
+                $directives,
+                static fn (array $directive): bool => in_array($directive['name'], self::SHARED_CACHE_DIRECTIVES, true),
+            );
+    }
+
+    /**
+     * A qualified `private="Header-Name"` directive still allows shared caches to store the response
+     *
+     * @param list<array{name: lowercase-string, directive: string, qualified: bool}> $directives
+     */
+    private static function isNotStorableBySharedCaches(array $directives): bool
+    {
+        return array_any(
+            $directives,
+            static fn (array $directive): bool => $directive['name'] === 'no-store'
+                || ($directive['name'] === 'private' && ! $directive['qualified']),
+        );
+    }
+
+    /** @return list<array{name: lowercase-string, directive: string, qualified: bool}> */
+    private static function cacheControlDirectives(Response $response): array
+    {
+        // directive names, optionally followed by a token or a quoted string, which may contain commas
+        preg_match_all(
+            '/(?<name>[^\s,="]+)(?<value>\s*=\s*(?:"(?:[^"\\\\]|\\\\.)*"|[^\s,"]*))?/',
+            $response->getHeaderLine(self::CACHE_CONTROL_HEADER),
+            $matches,
+            PREG_SET_ORDER,
+        );
+
+        return array_map(
+            static fn (array $match): array => [
+                'name'      => strtolower($match['name']),
+                'directive' => $match[0],
+                'qualified' => isset($match['value']),
+            ],
+            $matches,
+        );
     }
 
     private function getExpirationCookie(): SetCookie
