@@ -37,6 +37,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\Configuration;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\SameOriginRequest;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\Source;
+use PSR7Sessions\Storageless\Http\ClientFingerprint\SourceMissing;
 use RuntimeException;
 
 use function strlen;
@@ -108,6 +109,39 @@ final class SameOriginRequestTest extends TestCase
         $this->expectExceptionMessage('"Client Fingerprint" does not match');
 
         $this->constraint->assert($token);
+    }
+
+    public function testSourcesAreNotEvaluatedUntilTheFingerprintIsNeeded(): void
+    {
+        $source = $this->createMock(Source::class);
+        $source->expects(self::never())->method('extractFrom');
+
+        $constraint = new SameOriginRequest(Configuration::forSources($source), $this->request);
+
+        $this->expectException(ConstraintViolation::class);
+        $this->expectExceptionMessage('"Client Fingerprint" claim missing');
+
+        $constraint->assert($this->buildToken());
+    }
+
+    public function testShouldRaiseConstraintViolationWhenASourceIsMissing(): void
+    {
+        $token = $this->buildToken([SameOriginRequest::CLAIM => self::SOURCE_DATA]);
+
+        $this->expectException(ConstraintViolation::class);
+        $this->expectExceptionMessage('"Client Fingerprint" cannot be computed: The request lacks a valid missing-source parameter');
+
+        $this->getConstraintWithMissingSource()->assert($token);
+    }
+
+    public function testShouldRaiseSourceMissingWhenConfiguringABuilderWithAMissingSource(): void
+    {
+        $constraint = $this->getConstraintWithMissingSource();
+
+        $this->expectException(SourceMissing::class);
+        $this->expectExceptionMessage('The request lacks a valid missing-source parameter');
+
+        $constraint->configure($this->builder);
     }
 
     public function testWhenDisabledItDoesntAddAnyAdditionalClaim(): void
@@ -204,6 +238,19 @@ final class SameOriginRequestTest extends TestCase
             new DataSet([], ''),
             new DataSet($claims, ''),
             new Signature('sig+hash', 'sig+encoded'),
+        );
+    }
+
+    private function getConstraintWithMissingSource(): SameOriginRequest
+    {
+        return new SameOriginRequest(
+            Configuration::forSources(new class implements Source {
+                public function extractFrom(ServerRequestInterface $request): string
+                {
+                    throw SourceMissing::for('missing-source');
+                }
+            }),
+            $this->request,
         );
     }
 

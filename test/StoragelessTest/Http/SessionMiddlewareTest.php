@@ -47,6 +47,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\Configuration as FingerprintConfig;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\SameOriginRequest;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\Source;
+use PSR7Sessions\Storageless\Http\ClientFingerprint\UserAgent;
 use PSR7Sessions\Storageless\Http\Configuration;
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
 use PSR7Sessions\Storageless\Session\DefaultSessionData;
@@ -656,6 +657,62 @@ final class SessionMiddlewareTest extends TestCase
         $middleware->process(
             $invalidNewRequest,
             $this->emptyValidationMiddleware(),
+        );
+    }
+
+    public function testClientFingerprintIsNotComputedWhenNoSessionCookieIsReceivedNorSent(): void
+    {
+        $source = $this->createMock(Source::class);
+        $source->expects(self::never())->method('extractFrom');
+
+        $this->ensureSameResponse(
+            new SessionMiddleware(
+                $this->config->withClientFingerprintConfiguration(FingerprintConfig::forSources($source)),
+            ),
+            new ServerRequest(),
+            $this->emptyValidationMiddleware(),
+        );
+    }
+
+    public function testSessionCookieIsIgnoredWhenAClientFingerprintSourceIsMissing(): void
+    {
+        $middleware = new SessionMiddleware(
+            $this->config->withClientFingerprintConfiguration(FingerprintConfig::forSources(new UserAgent())),
+        );
+
+        $token = $this->getCookie($middleware->process(
+            (new ServerRequest())->withHeader('User-Agent', 'browser'),
+            $this->writingMiddleware(),
+        ))->getValue();
+
+        self::assertIsString($token);
+
+        $requestWithToken = (new ServerRequest())
+            ->withCookieParams([$this->config->getCookie()->getName() => $token]);
+
+        $middleware->process(
+            $requestWithToken->withHeader('User-Agent', 'browser'),
+            $this->fakeDelegate(static function (ServerRequestInterface $request) {
+                $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                assert($session instanceof SessionInterface);
+
+                self::assertSame('bar', $session->get('foo'));
+
+                return new Response();
+            }),
+        );
+
+        $this->ensureSameResponse($middleware, $requestWithToken, $this->emptyValidationMiddleware());
+    }
+
+    public function testSessionCookieIsNotSentWhenAClientFingerprintSourceIsMissing(): void
+    {
+        $this->ensureSameResponse(
+            new SessionMiddleware(
+                $this->config->withClientFingerprintConfiguration(FingerprintConfig::forSources(new UserAgent())),
+            ),
+            new ServerRequest(),
+            $this->writingMiddleware(),
         );
     }
 
