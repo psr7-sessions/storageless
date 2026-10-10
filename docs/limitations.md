@@ -64,14 +64,19 @@ Legitimate client can send previous (old) cookies within the cookie lifetime per
 #### Limit on the amount of data stored in a session
 
 PSR7Session Storageless session size limitations are directly related with the
-[size of the cookies](http://www.ietf.org/rfc/rfc2965.txt) allowed on the
+[size of the cookies](https://www.rfc-editor.org/rfc/rfc6265#section-6.1) allowed on the
 user-agent.
-While RFC2965 encourages allowing arbitrary-length cookies, this sadly
-isn't true for every implementation of it.
+RFC 6265 only requires user-agents to support cookies of at least 4096 bytes,
+and most user-agents reject larger ones.
 
 Therefore keep session data limited, with a good rule of thumb of less than
 512 bytes in it (when JSON encoded).
 
-The limit of 512bytes is much lower than the usually accepted 4096 bytes in
+The limit of 512 bytes is much lower than the usually accepted 4096 bytes in
 most user-agents, but you have to consider that JWT tokens are base64 encoded
-and also include additional data, such as the signature and more claims
+and also include additional data, such as the signature and more claims.
+
+PSR7Session Storageless does not check the size of the cookie it sends: a
+user-agent receiving a cookie that is too large silently discards it, and keeps
+sending the previous session cookie, if any. Changes to such a session are lost
+without any error.

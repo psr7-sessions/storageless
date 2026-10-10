@@ -40,7 +40,7 @@ $app->pipe(new SessionMiddleware(
     StoragelessConfig::fromJwtConfiguration(
         JwtConfig::forSymmetricSigner(
             new Signer\Hmac\Sha256(),
-            InMemory::base64Encoded('OpcMuKmoxkhzW0Y1iESpjWwL/D3UBdDauJOe742BJ5Q='), // replace this with a key of your own (see below)
+            InMemory::base64Encoded((string) getenv('SESSION_SIGNING_KEY')), // see below on how to generate it
         )
     )
 ));
@@ -66,10 +66,18 @@ $app->get('/get', function (ServerRequestInterface $request, ResponseInterface $
 You can do this also in asynchronous contexts and long-running processes,
 since no super-globals nor I/O are involved.
 
-It is recommended that you use a key with lots of entropy, preferably
-generated using a cryptographically secure pseudo-random number generator
-(CSPRNG). You can use the [CryptoKey tool](https://github.com/AndrewCarterUK/CryptoKey)
-to do this for you.
+Anyone knowing the signing key can forge any session, so the key must be
+kept secret, outside of your codebase (for example in an environment variable),
+and generated using a cryptographically secure pseudo-random number generator
+(CSPRNG). **Never use a key found in documentation or examples.**
+For the `Sha256` signer above, you can generate a key with:
+
+```sh
+php -r 'echo base64_encode(random_bytes(32)), PHP_EOL;'
+```
+
+An empty key is rejected, so a missing environment variable makes the
+configuration fail instead of silently using a weak key.
 
 Note that you can also use asymmetric keys; please refer to
 [`lcobucci/jwt`](https://packagist.org/packages/lcobucci/jwt) documentation:
@@ -107,7 +115,13 @@ sources, such as `$_SERVER['REMOTE_ADDR']`.
 
 If your PHP service is behind a reverse proxy of yours, [you may need to retrieve the client IP from a different source of truth](https://adam-p.ca/blog/2022/03/x-forwarded-for/).
 In such cases you can extract the information you need by writing a custom
-`\PSR7Sessions\Storageless\Http\ClientFingerprint\Source` implementation:
+`\PSR7Sessions\Storageless\Http\ClientFingerprint\Source` implementation.
+
+Headers such as `X-Real-IP` or `X-Forwarded-For` are sent by the client as well:
+only trust them when the request comes from your own reverse proxy, and make sure
+that the proxy overwrites them instead of appending to the values sent by the client.
+Otherwise, an attacker that stole a session cookie can simply send the header with
+the victim's IP:
 
 ```php
 use Psr\Http\Message\ServerRequestInterface;
@@ -115,18 +129,48 @@ use PSR7Sessions\Storageless\Http\SessionMiddleware;
 use PSR7Sessions\Storageless\Http\Configuration as StoragelessConfig;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\Configuration as FingerprintConfig;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\Source;
+use PSR7Sessions\Storageless\Http\ClientFingerprint\SourceMissing;
+use PSR7Sessions\Storageless\Http\ClientFingerprint\UserAgent;
+
+final class ClientIpBehindTrustedProxy implements Source
+{
+    /** @param list<non-empty-string> $trustedProxies IPs of your own reverse proxies */
+    public function __construct(private readonly array $trustedProxies)
+    {
+    }
+
+    public function extractFrom(ServerRequestInterface $request): string
+    {
+        $remoteAddr = $request->getServerParams()['REMOTE_ADDR'] ?? '';
+
+        if (! is_string($remoteAddr) || $remoteAddr === '') {
+            throw SourceMissing::for('REMOTE_ADDR');
+        }
+
+        if (! in_array($remoteAddr, $this->trustedProxies, true)) {
+            // not coming from your proxy: the peer itself is the client
+            return $remoteAddr;
+        }
+
+        $clientIp = $request->getHeaderLine('X-Real-IP');
+
+        if ($clientIp === '') {
+            throw SourceMissing::for('X-Real-IP');
+        }
+
+        return $clientIp;
+    }
+}
 
 $app = new \Mezzio\Application(/* ... */);
 
 $app->pipe(new SessionMiddleware(
     StoragelessConfig::fromJwtConfiguration(/* ... */)
         ->withClientFingerprintConfiguration(
-            FingerprintConfig::forSources(new class implements Source{
-                 public function extractFrom(ServerRequestInterface $request): string
-                 {
-                     return $request->getHeaderLine('X-Real-IP');
-                 }
-            })
+            FingerprintConfig::forSources(
+                new ClientIpBehindTrustedProxy(['10.0.0.10']),
+                new UserAgent(),
+            )
         )
 ));
 ```
@@ -136,7 +180,7 @@ $app->pipe(new SessionMiddleware(
 Simply browse to the `examples` directory in your console, then run
 
 ```sh
-php -S localhost:9999 index.php
+SESSION_SIGNING_KEY="$(php -r 'echo base64_encode(random_bytes(32));')" php -S localhost:9999 index.php
 ```
 
 Then try accessing `http://localhost:9999`: you should see a counter
@@ -172,9 +216,12 @@ issues listed above.
 ## Assumptions
 
 * your sessions are fairly small and contain only few identifiers and
-  some CSRF tokens. Small means `< 400` bytes
+  some CSRF tokens. Small means less than `512` bytes, when JSON encoded
+  (see the [limitations documentation](docs/limitations.md))
 * data in your session is `JsonSerializable` or equivalent
-* data in your session is **freely readable by the client**
+* data in your session is **freely readable by the client**: sessions are
+  signed, not encrypted, so they must never contain secrets
+  (see the [limitations documentation](docs/limitations.md))
 
 ## How does it work?
 
@@ -201,8 +248,6 @@ tokens.
 * can transmit cleartext information to the client, allowing it to share
   some information with the server (a standard example is about sharing the
   "username" or "user-id" in a given session)
-* can transmit encrypted information to the client, allowing server-only
-  consumption of the information
 * not affected by PHP serialization RCE attacks
 * not limited to PHP process scope: can have many sessions per process
 * no reliance on global state

@@ -18,6 +18,7 @@
 
 declare(strict_types=1);
 
+use Dflydev\FigCookies\Modifier\SameSite;
 use Dflydev\FigCookies\SetCookie;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ServerRequestFactory;
@@ -35,22 +36,30 @@ use PSR7Sessions\Storageless\Session\SessionInterface;
 require_once __DIR__ . '/../vendor/autoload.php';
 
 // the example uses a symmetric key, but asymmetric keys can also be used.
-// $privateKey = new Key('file://private_key.pem');
-// $publicKey = new Key('file://public_key.pem');
+// $privateKey = InMemory::file('/path/to/private_key.pem');
+// $publicKey = InMemory::file('/path/to/public_key.pem');
 
-// simply run `php -S localhost:9999 index.php`
+// simply run `SESSION_SIGNING_KEY="$(php -r 'echo base64_encode(random_bytes(32));')" php -S localhost:9999 index.php`
 // then point your browser at `http://localhost:9999/`
+
+// signature key: never hardcode it
+$signingKey = getenv('SESSION_SIGNING_KEY');
+
+if (! is_string($signingKey) || $signingKey === '') {
+    throw new RuntimeException('The SESSION_SIGNING_KEY environment variable must contain a base64 encoded key');
+}
 
 $sessionMiddleware = new SessionMiddleware(
     Configuration::fromJwtConfiguration(
         JwtConfig::forSymmetricSigner(
             new Sha256(),
-            InMemory::plainText('c9UA8QKLSmDEn4DhNeJIad/4JugZd/HvrjyKrS0jOes='), // // signature key (important: change this to your own)
+            InMemory::base64Encoded($signingKey),
         ),
     )->withCookie(
         SetCookie::create('an-example-cookie-name')
             ->withSecure(false) // false on purpose, unless you have https locally
             ->withHttpOnly(true)
+            ->withSameSite(SameSite::lax())
             ->withPath('/'),
     )->withIdleTimeout(1200), // 20 minutes
 );
