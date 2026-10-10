@@ -25,6 +25,7 @@ use DateInterval;
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\SetCookie;
 use InvalidArgumentException;
+use Lcobucci\JWT\Encoding\CannotDecodeContent;
 use Lcobucci\JWT\Encoding\ChainedFormatter;
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\UnencryptedToken;
@@ -41,6 +42,7 @@ use PSR7Sessions\Storageless\Session\LazySession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
 use stdClass;
 
+use function is_string;
 use function sprintf;
 
 /** @psalm-immutable */
@@ -81,7 +83,6 @@ final readonly class SessionMiddleware implements MiddlewareInterface
      */
     private function parseToken(Request $request, SameOriginRequest $sameOriginRequest): UnencryptedToken|null
     {
-        /** @var array<string, string> $cookies */
         $cookies    = $request->getCookieParams();
         $cookieName = $this->config->getCookie()->getName();
 
@@ -90,14 +91,14 @@ final readonly class SessionMiddleware implements MiddlewareInterface
         }
 
         $cookie = $cookies[$cookieName];
-        if ($cookie === '') {
+        if (! is_string($cookie) || $cookie === '') {
             return null;
         }
 
         $jwtConfiguration = $this->config->getJwtConfiguration();
         try {
             $token = $jwtConfiguration->parser()->parse($cookie);
-        } catch (InvalidArgumentException) {
+        } catch (InvalidArgumentException | CannotDecodeContent) {
             return null;
         }
 

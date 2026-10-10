@@ -38,6 +38,7 @@ use Lcobucci\JWT\Token\Plain;
 use Lcobucci\JWT\Token\RegisteredClaims;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -260,6 +261,30 @@ final class SessionMiddlewareTest extends TestCase
         $this->ensureSameResponse($this->middleware, $expiredToken, $this->emptyValidationMiddleware());
     }
 
+    /** @param array<array-key, mixed> $cookie */
+    #[DataProvider('arrayCookieProvider')]
+    public function testWillIgnoreRequestsWithArrayCookie(array $cookie): void
+    {
+        $request = (new ServerRequest())
+            ->withCookieParams([$this->config->getCookie()->getName() => $cookie]);
+
+        $this->ensureSameResponse($this->middleware, $request, $this->emptyValidationMiddleware());
+    }
+
+    /**
+     * Shapes produced by PHP when parsing cookie names containing brackets, such as `name[]=value`
+     *
+     * @return array<non-empty-string, array{array<array-key, mixed>}>
+     */
+    public static function arrayCookieProvider(): array
+    {
+        return [
+            'list'        => [['value']],
+            'map'         => [['key' => 'value']],
+            'nested map'  => [['key' => ['nested' => 'value']]],
+        ];
+    }
+
     public function testWillRefreshTokenWithIssuedAtExactlyAtTokenRefreshTimeThreshold(): void
     {
         // forcing ourselves to think of time as a mutable value:
@@ -363,6 +388,29 @@ final class SessionMiddlewareTest extends TestCase
             (new ServerRequest())->withCookieParams([$this->config->getCookie()->getName() => 'malformed content']),
             $this->emptyValidationMiddleware(),
         );
+    }
+
+    #[DataProvider('undecodableTokenProvider')]
+    public function testWillIgnoreUndecodableTokens(string $undecodableToken): void
+    {
+        $this->ensureSameResponse(
+            $this->middleware,
+            (new ServerRequest())->withCookieParams([$this->config->getCookie()->getName() => $undecodableToken]),
+            $this->emptyValidationMiddleware(),
+        );
+    }
+
+    /** @return array<non-empty-string, array{non-empty-string}> */
+    public static function undecodableTokenProvider(): array
+    {
+        $encoder = new JoseEncoder();
+
+        return [
+            'invalid base64 header' => ['eyJ.eyJ.x'],
+            'invalid base64 claims' => [$encoder->base64UrlEncode('{}') . '.%%%.x'],
+            'invalid JSON header'   => [$encoder->base64UrlEncode('{') . '.' . $encoder->base64UrlEncode('{}') . '.x'],
+            'invalid JSON claims'   => [$encoder->base64UrlEncode('{}') . '.' . $encoder->base64UrlEncode('{') . '.x'],
+        ];
     }
 
     public function testRejectsTokensWithInvalidSignature(): void
