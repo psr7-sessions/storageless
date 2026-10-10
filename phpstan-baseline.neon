@@ -1,12 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Class PSR7Sessions\\Storageless\\Http\\ClientFingerprint\\SameOriginRequest has an uninitialized readonly property \$currentRequestFingerprint\. Assign it in the constructor\.$#'
-			identifier: property.uninitializedReadonly
-			count: 1
-			path: src/Storageless/Http/ClientFingerprint/SameOriginRequest.php
-
-		-
 			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true and ''Null bytes keys are…'' will always evaluate to true\.$#'
 			identifier: staticMethod.alreadyNarrowedType
 			count: 1
