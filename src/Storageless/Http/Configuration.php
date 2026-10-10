@@ -34,6 +34,9 @@ final readonly class Configuration
     public const int DEFAULT_REFRESH_TIME   = 60;
     public const string DEFAULT_COOKIE_NAME = '__Secure-slsession';
 
+    /** Same as PHP's default `session.cache_expire` (180 minutes) */
+    public const int DEFAULT_CACHE_EXPIRE = 10800;
+
     private JwtConfig $jwtConfiguration;
     private SetCookie $cookie;
     private FingerprintConfig $clientFingerprintConfiguration;
@@ -42,6 +45,7 @@ final readonly class Configuration
      * @param positive-int   $idleTimeout
      * @param positive-int   $refreshTime
      * @param literal-string $sessionAttribute
+     * @param positive-int   $cacheExpire
      */
     private function __construct(
         JwtConfig $jwtConfiguration,
@@ -51,6 +55,8 @@ final readonly class Configuration
         private int $refreshTime,
         private string $sessionAttribute,
         FingerprintConfig $clientFingerprintConfiguration,
+        private CacheLimiter $cacheLimiter,
+        private int $cacheExpire,
     ) {
         $this->jwtConfiguration               = clone $jwtConfiguration;
         $this->cookie                         = clone $cookie;
@@ -77,6 +83,8 @@ final readonly class Configuration
             self::DEFAULT_REFRESH_TIME,
             SessionMiddleware::SESSION_ATTRIBUTE,
             FingerprintConfig::disabled(),
+            CacheLimiter::NoCache,
+            self::DEFAULT_CACHE_EXPIRE,
         );
     }
 
@@ -118,6 +126,17 @@ final readonly class Configuration
         return $this->clientFingerprintConfiguration;
     }
 
+    public function getCacheLimiter(): CacheLimiter
+    {
+        return $this->cacheLimiter;
+    }
+
+    /** @return positive-int */
+    public function getCacheExpire(): int
+    {
+        return $this->cacheExpire;
+    }
+
     public function withJwtConfiguration(JwtConfig $jwtConfiguration): self
     {
         return new self(
@@ -128,6 +147,8 @@ final readonly class Configuration
             $this->refreshTime,
             $this->sessionAttribute,
             $this->clientFingerprintConfiguration,
+            $this->cacheLimiter,
+            $this->cacheExpire,
         );
     }
 
@@ -141,6 +162,8 @@ final readonly class Configuration
             $this->refreshTime,
             $this->sessionAttribute,
             $this->clientFingerprintConfiguration,
+            $this->cacheLimiter,
+            $this->cacheExpire,
         );
     }
 
@@ -154,6 +177,8 @@ final readonly class Configuration
             $this->refreshTime,
             $this->sessionAttribute,
             $this->clientFingerprintConfiguration,
+            $this->cacheLimiter,
+            $this->cacheExpire,
         );
     }
 
@@ -168,6 +193,8 @@ final readonly class Configuration
             $this->refreshTime,
             $this->sessionAttribute,
             $this->clientFingerprintConfiguration,
+            $this->cacheLimiter,
+            $this->cacheExpire,
         );
     }
 
@@ -182,6 +209,8 @@ final readonly class Configuration
             $refreshTime,
             $this->sessionAttribute,
             $this->clientFingerprintConfiguration,
+            $this->cacheLimiter,
+            $this->cacheExpire,
         );
     }
 
@@ -196,6 +225,8 @@ final readonly class Configuration
             $this->refreshTime,
             $sessionAttribute,
             $this->clientFingerprintConfiguration,
+            $this->cacheLimiter,
+            $this->cacheExpire,
         );
     }
 
@@ -209,6 +240,39 @@ final readonly class Configuration
             $this->refreshTime,
             $this->sessionAttribute,
             $clientFingerprintConfiguration,
+            $this->cacheLimiter,
+            $this->cacheExpire,
+        );
+    }
+
+    public function withCacheLimiter(CacheLimiter $cacheLimiter): self
+    {
+        return new self(
+            $this->jwtConfiguration,
+            $this->clock,
+            $this->cookie,
+            $this->idleTimeout,
+            $this->refreshTime,
+            $this->sessionAttribute,
+            $this->clientFingerprintConfiguration,
+            $cacheLimiter,
+            $this->cacheExpire,
+        );
+    }
+
+    /** @param positive-int $cacheExpire time, in seconds, a response may be cached for, with the private and public limiters */
+    public function withCacheExpire(int $cacheExpire): self
+    {
+        return new self(
+            $this->jwtConfiguration,
+            $this->clock,
+            $this->cookie,
+            $this->idleTimeout,
+            $this->refreshTime,
+            $this->sessionAttribute,
+            $this->clientFingerprintConfiguration,
+            $this->cacheLimiter,
+            $cacheExpire,
         );
     }
 }

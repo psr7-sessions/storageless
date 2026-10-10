@@ -22,6 +22,7 @@ namespace PSR7SessionsTest\Storageless\Http;
 
 use DateTime;
 use DateTimeImmutable;
+use DateTimeZone;
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\SetCookie;
 use Laminas\Diactoros\Response;
@@ -44,6 +45,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use PSR7Sessions\Storageless\Http\CacheLimiter;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\Configuration as FingerprintConfig;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\SameOriginRequest;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\Source;
@@ -68,10 +70,11 @@ final class SessionMiddlewareTest extends TestCase
 
     protected function setUp(): void
     {
+        // most tests verify the session cookie only: the cache limiter is tested separately
         $this->config     = Configuration::fromJwtConfiguration(JwtConfig::forSymmetricSigner(
             new Sha256(),
             $this->makeRandomSymmetricKey(),
-        ));
+        ))->withCacheLimiter(CacheLimiter::None);
         $this->middleware = new SessionMiddleware($this->config);
     }
 
@@ -862,6 +865,57 @@ final class SessionMiddlewareTest extends TestCase
                     'Pragma'        => 'foo',
                 ],
             ],
+        ];
+    }
+
+    /** @param array<non-empty-string, non-empty-string> $expectedHeaders */
+    #[DataProvider('cacheLimiterProvider')]
+    public function testCacheLimiterDeterminesTheCachingHeaders(CacheLimiter $cacheLimiter, array $expectedHeaders): void
+    {
+        $now        = new DateTimeImmutable('2026-10-10 12:00:00', new DateTimeZone('Europe/Rome'));
+        $middleware = new SessionMiddleware(
+            $this->config
+                ->withClock(new FrozenClock($now))
+                ->withCacheLimiter($cacheLimiter)
+                ->withCacheExpire(600),
+        );
+
+        $response = $middleware->process(new ServerRequest(), $this->writingMiddleware());
+
+        self::assertNotEmpty($this->getCookie($response)->getValue());
+
+        foreach (['Cache-Control', 'Expires', 'Pragma'] as $name) {
+            self::assertSame($expectedHeaders[$name] ?? '', $response->getHeaderLine($name), $name);
+        }
+    }
+
+    /** @return array<non-empty-string, array{CacheLimiter, array<non-empty-string, non-empty-string>}> */
+    public static function cacheLimiterProvider(): array
+    {
+        return [
+            'nocache' => [
+                CacheLimiter::NoCache,
+                [
+                    'Cache-Control' => 'no-store, no-cache, must-revalidate',
+                    'Expires'       => 'Thu, 19 Nov 1981 08:52:00 GMT',
+                    'Pragma'        => 'no-cache',
+                ],
+            ],
+            'private' => [
+                CacheLimiter::Private,
+                [
+                    'Cache-Control' => 'private, max-age=600',
+                    'Expires'       => 'Thu, 19 Nov 1981 08:52:00 GMT',
+                ],
+            ],
+            'public' => [
+                CacheLimiter::Public,
+                [
+                    'Cache-Control' => 'public, max-age=600',
+                    'Expires'       => 'Sat, 10 Oct 2026 10:10:00 GMT',
+                ],
+            ],
+            'none' => [CacheLimiter::None, []],
         ];
     }
 
