@@ -182,7 +182,9 @@ issues listed above.
 * your sessions are fairly small and contain only few identifiers and
   some CSRF tokens. Small means `< 400` bytes
 * data in your session is `JsonSerializable` or equivalent
-* data in your session is **freely readable by the client**
+* data in your session is **freely readable by the client**: sessions are
+  signed, not encrypted, so they must never contain secrets
+  (see the [limitations documentation](docs/limitations.md))
 
 ## How does it work?
 
@@ -209,8 +211,6 @@ tokens.
 * can transmit cleartext information to the client, allowing it to share
   some information with the server (a standard example is about sharing the
   "username" or "user-id" in a given session)
-* can transmit encrypted information to the client, allowing server-only
-  consumption of the information
 * not affected by PHP serialization RCE attacks
 * not limited to PHP process scope: can have many sessions per process
 * no reliance on global state
