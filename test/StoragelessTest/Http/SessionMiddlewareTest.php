@@ -261,6 +261,30 @@ final class SessionMiddlewareTest extends TestCase
         $this->ensureSameResponse($this->middleware, $expiredToken, $this->emptyValidationMiddleware());
     }
 
+    /** @param array<array-key, mixed> $cookie */
+    #[DataProvider('arrayCookieProvider')]
+    public function testWillIgnoreRequestsWithArrayCookie(array $cookie): void
+    {
+        $request = (new ServerRequest())
+            ->withCookieParams([$this->config->getCookie()->getName() => $cookie]);
+
+        $this->ensureSameResponse($this->middleware, $request, $this->emptyValidationMiddleware());
+    }
+
+    /**
+     * Shapes produced by PHP when parsing cookie names containing brackets, such as `name[]=value`
+     *
+     * @return array<non-empty-string, array{array<array-key, mixed>}>
+     */
+    public static function arrayCookieProvider(): array
+    {
+        return [
+            'list'        => [['value']],
+            'map'         => [['key' => 'value']],
+            'nested map'  => [['key' => ['nested' => 'value']]],
+        ];
+    }
+
     public function testWillRefreshTokenWithIssuedAtExactlyAtTokenRefreshTimeThreshold(): void
     {
         // forcing ourselves to think of time as a mutable value:
