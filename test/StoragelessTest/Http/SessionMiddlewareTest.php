@@ -716,6 +716,142 @@ final class SessionMiddlewareTest extends TestCase
         );
     }
 
+    /** @param list<string> $cacheControl */
+    #[DataProvider('cacheControlOfResponsesSettingTheSessionCookieProvider')]
+    public function testResponseSettingTheSessionCookieCannotBeStoredBySharedCaches(
+        array $cacheControl,
+        string $expectedCacheControl,
+    ): void {
+        $response = $this->middleware->process(
+            new ServerRequest(),
+            $this->fakeDelegate(static function (ServerRequestInterface $request) use ($cacheControl) {
+                $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                assert($session instanceof SessionInterface);
+                $session->set('foo', 'bar');
+
+                return self::responseWithCacheControl($cacheControl);
+            }),
+        );
+
+        self::assertNotEmpty($this->getCookie($response)->getValue());
+        self::assertSame($expectedCacheControl, $response->getHeaderLine('Cache-Control'));
+    }
+
+    /** @return array<non-empty-string, array{list<string>, string}> */
+    public static function cacheControlOfResponsesSettingTheSessionCookieProvider(): array
+    {
+        return [
+            'no directives'                   => [[], 'private'],
+            'empty header'                    => [[''], 'private'],
+            'public'                          => [['public, max-age=3600'], 'private, max-age=3600'],
+            'shared max age'                  => [['s-maxage=600, max-age=60'], 'private, max-age=60'],
+            'case insensitive directives'     => [['PUBLIC, S-MAXAGE=600, Max-Age=60'], 'private, Max-Age=60'],
+            'whitespace around directives'    => [['  public ,max-age=60  '], 'private, max-age=60'],
+            'multiple header lines'           => [['public', 'max-age=3600'], 'private, max-age=3600'],
+            'qualified private'               => [['private="X-Foo", max-age=60'], 'private, max-age=60'],
+            'quoted values containing commas' => [
+                ['public, no-cache="Set-Cookie, X-Foo"'],
+                'private, no-cache="Set-Cookie, X-Foo"',
+            ],
+            'already private'                 => [['private, s-maxage=600'], 'private, s-maxage=600'],
+            'already not storable'            => [['no-store, public'], 'no-store, public'],
+        ];
+    }
+
+    public function testResponseExpiringTheSessionCookieCannotBeStoredBySharedCaches(): void
+    {
+        $response = $this->ensureClearsSessionCookie(
+            $this->middleware,
+            $this->requestWithResponseCookies(
+                $this->middleware->process(new ServerRequest(), $this->writingMiddleware()),
+            ),
+            $this->fakeDelegate(
+                static function (ServerRequestInterface $request) {
+                    $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                    assert($session instanceof SessionInterface);
+
+                    $session->clear();
+
+                    return self::responseWithCacheControl(['public, max-age=3600']);
+                },
+            ),
+        );
+
+        self::assertSame('private, max-age=3600', $response->getHeaderLine('Cache-Control'));
+    }
+
+    /** @param list<string> $cacheControl */
+    #[DataProvider('cacheControlOfResponsesNotExplicitlySharedProvider')]
+    public function testResponseRefreshingTheSessionCookieCannotBeStoredBySharedCaches(
+        array $cacheControl,
+        string $expectedCacheControl,
+    ): void {
+        $response = $this->middleware->process(
+            $this->requestWithTokenDueForRefresh(),
+            $this->fakeDelegate(static fn (): ResponseInterface => self::responseWithCacheControl($cacheControl)),
+        );
+
+        self::assertNotEmpty($this->getCookie($response)->getValue());
+        self::assertSame($expectedCacheControl, $response->getHeaderLine('Cache-Control'));
+    }
+
+    /** @return array<non-empty-string, array{list<string>, string}> */
+    public static function cacheControlOfResponsesNotExplicitlySharedProvider(): array
+    {
+        return [
+            'no directives'        => [[], 'private'],
+            'browser caching only' => [['max-age=60'], 'private, max-age=60'],
+            'already private'      => [['private, s-maxage=600'], 'private, s-maxage=600'],
+            'already not storable' => [['public, no-store'], 'public, no-store'],
+        ];
+    }
+
+    /** @param list<string> $cacheControl */
+    #[DataProvider('cacheControlOfExplicitlySharedResponsesProvider')]
+    public function testSessionCookieIsNotRefreshedOnResponsesExplicitlySharedByCaches(array $cacheControl): void
+    {
+        $this->ensureSameResponse(
+            $this->middleware,
+            $this->requestWithTokenDueForRefresh(),
+            $this->fakeDelegate(static fn (): ResponseInterface => self::responseWithCacheControl($cacheControl)),
+        );
+    }
+
+    /** @return array<non-empty-string, array{list<string>}> */
+    public static function cacheControlOfExplicitlySharedResponsesProvider(): array
+    {
+        return [
+            'public'                      => [['public, max-age=3600']],
+            'shared max age'              => [['s-maxage=600']],
+            'case insensitive directives' => [['PUBLIC']],
+            'qualified private'           => [['public, private="X-Foo"']],
+            'multiple header lines'       => [['max-age=60', 's-maxage=600']],
+        ];
+    }
+
+    private function requestWithTokenDueForRefresh(): ServerRequestInterface
+    {
+        return (new ServerRequest())->withCookieParams([
+            $this->config->getCookie()->getName() => $this->createToken(
+                $this->config,
+                new DateTimeImmutable('-800 second'),
+                new DateTimeImmutable('+200 second'),
+            ),
+        ]);
+    }
+
+    /** @param list<string> $cacheControl */
+    private static function responseWithCacheControl(array $cacheControl): ResponseInterface
+    {
+        $response = new Response();
+
+        if ($cacheControl === []) {
+            return $response;
+        }
+
+        return $response->withHeader('Cache-Control', $cacheControl);
+    }
+
     private function ensureSameResponse(
         SessionMiddleware $middleware,
         ServerRequestInterface $request,
