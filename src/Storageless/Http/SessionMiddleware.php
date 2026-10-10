@@ -42,6 +42,7 @@ use PSR7Sessions\Storageless\Session\LazySession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
 use stdClass;
 
+use function is_string;
 use function sprintf;
 
 /** @psalm-immutable */
@@ -82,7 +83,6 @@ final readonly class SessionMiddleware implements MiddlewareInterface
      */
     private function parseToken(Request $request, SameOriginRequest $sameOriginRequest): UnencryptedToken|null
     {
-        /** @var array<string, string> $cookies */
         $cookies    = $request->getCookieParams();
         $cookieName = $this->config->getCookie()->getName();
 
@@ -91,7 +91,7 @@ final readonly class SessionMiddleware implements MiddlewareInterface
         }
 
         $cookie = $cookies[$cookieName];
-        if ($cookie === '') {
+        if (! is_string($cookie) || $cookie === '') {
             return null;
         }
 
