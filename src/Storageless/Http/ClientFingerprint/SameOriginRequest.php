@@ -30,19 +30,12 @@ final readonly class SameOriginRequest implements Constraint
 
     /** @var list<Source> */
     private array $sources;
-    /** @var non-empty-string */
-    private string $currentRequestFingerprint;
 
     public function __construct(
         private Configuration $configuration,
-        ServerRequestInterface $serverRequest,
+        private ServerRequestInterface $serverRequest,
     ) {
         $this->sources = $this->configuration->sources();
-        if ($this->sources === []) {
-            return;
-        }
-
-        $this->currentRequestFingerprint = self::getCurrentFingerprint($this->sources, $serverRequest);
     }
 
     public function assert(Token $token): void
@@ -63,24 +56,36 @@ final readonly class SameOriginRequest implements Constraint
             throw ConstraintViolation::error('"Client Fingerprint" claim missing', $this);
         }
 
-        if ($token->claims()->get(self::CLAIM) !== $this->currentRequestFingerprint) {
+        try {
+            $currentRequestFingerprint = self::getCurrentFingerprint($this->sources, $this->serverRequest);
+        } catch (SourceMissing $sourceMissing) {
+            throw ConstraintViolation::error(
+                '"Client Fingerprint" cannot be computed: ' . $sourceMissing->getMessage(),
+                $this,
+            );
+        }
+
+        if ($token->claims()->get(self::CLAIM) !== $currentRequestFingerprint) {
             throw ConstraintViolation::error('"Client Fingerprint" does not match', $this);
         }
     }
 
+    /** @throws SourceMissing */
     public function configure(Builder $builder): Builder
     {
         if ($this->sources === []) {
             return $builder;
         }
 
-        return $builder->withClaim(self::CLAIM, $this->currentRequestFingerprint);
+        return $builder->withClaim(self::CLAIM, self::getCurrentFingerprint($this->sources, $this->serverRequest));
     }
 
     /**
      * @param non-empty-list<Source> $sources
      *
      * @return non-empty-string
+     *
+     * @throws SourceMissing
      */
     private static function getCurrentFingerprint(array $sources, ServerRequestInterface $serverRequest): string
     {

@@ -99,6 +99,12 @@ $app->pipe(new SessionMiddleware(
 ));
 ```
 
+When a request lacks any of the fingerprint sources (for example, it has no
+`User-Agent` header), its session cookie is ignored and no session cookie is
+sent back to it: such a client is served an empty session that is never persisted.
+If no session ever persists, check that your server provides all the configured
+sources, such as `$_SERVER['REMOTE_ADDR']`.
+
 If your PHP service is behind a reverse proxy of yours, [you may need to retrieve the client IP from a different source of truth](https://adam-p.ca/blog/2022/03/x-forwarded-for/).
 In such cases you can extract the information you need by writing a custom
 `\PSR7Sessions\Storageless\Http\ClientFingerprint\Source` implementation:

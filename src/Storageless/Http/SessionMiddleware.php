@@ -37,6 +37,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\SameOriginRequest;
+use PSR7Sessions\Storageless\Http\ClientFingerprint\SourceMissing;
 use PSR7Sessions\Storageless\Session\DefaultSessionData;
 use PSR7Sessions\Storageless\Session\LazySession;
 use PSR7Sessions\Storageless\Session\SessionInterface;
@@ -153,7 +154,14 @@ final readonly class SessionMiddleware implements MiddlewareInterface
         }
 
         if ($sessionContainerChanged || $this->shouldTokenBeRefreshed($token)) {
-            return FigResponseCookies::set($response, $this->getTokenCookie($sessionContainer, $sameOriginRequest));
+            try {
+                $tokenCookie = $this->getTokenCookie($sessionContainer, $sameOriginRequest);
+            } catch (SourceMissing) {
+                // a session that cannot be bound to the client fingerprint must not be sent
+                return $response;
+            }
+
+            return FigResponseCookies::set($response, $tokenCookie);
         }
 
         return $response;
@@ -172,7 +180,10 @@ final readonly class SessionMiddleware implements MiddlewareInterface
         );
     }
 
-    /** @throws BadMethodCallException */
+    /**
+     * @throws BadMethodCallException
+     * @throws SourceMissing
+     */
     private function getTokenCookie(SessionInterface $sessionContainer, SameOriginRequest $sameOriginRequest): SetCookie
     {
         $now       = $this->config->getClock()->now();
