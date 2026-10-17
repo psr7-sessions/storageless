@@ -3204,22 +3204,22 @@
         },
         {
             "name": "roave/better-reflection",
-            "version": "6.73.0",
+            "version": "6.74.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/BetterReflection.git",
-                "reference": "a6a93a3bd7681627f2750bfa8f41e586d32dc67d"
+                "reference": "76b224f120578ed156a211f04d59a5f418a2b3c0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/BetterReflection/zipball/a6a93a3bd7681627f2750bfa8f41e586d32dc67d",
-                "reference": "a6a93a3bd7681627f2750bfa8f41e586d32dc67d",
+                "url": "https://api.github.com/repos/Roave/BetterReflection/zipball/76b224f120578ed156a211f04d59a5f418a2b3c0",
+                "reference": "76b224f120578ed156a211f04d59a5f418a2b3c0",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "jetbrains/phpstorm-stubs": "2026.2",
-                "nikic/php-parser": "^5.8.0",
+                "nikic/php-parser": "^5.9.0",
                 "php": "~8.4.1 || ~8.5.0"
             },
             "conflict": {
@@ -3227,7 +3227,7 @@
             },
             "require-dev": {
                 "phpbench/phpbench": "^1.7.0",
-                "phpunit/phpunit": "^13.3.2"
+                "phpunit/phpunit": "^13.4.3"
             },
             "suggest": {
                 "composer/composer": "Required to use the ComposerSourceLocator"
@@ -3267,9 +3267,9 @@
             "description": "Better Reflection - an improved code reflection API",
             "support": {
                 "issues": "https://github.com/Roave/BetterReflection/issues",
-                "source": "https://github.com/Roave/BetterReflection/tree/6.73.0"
+                "source": "https://github.com/Roave/BetterReflection/tree/6.74.0"
             },
-            "time": "2026-09-09T19:57:09+00:00"
+            "time": "2026-10-16T22:44:45+00:00"
         },
         {
             "name": "seld/jsonlint",
