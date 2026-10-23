@@ -28,6 +28,7 @@ use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use PSR7Sessions\Storageless\Http\CacheLimiter;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\Configuration as FingerprintConfig;
 use PSR7Sessions\Storageless\Http\Configuration;
 
@@ -87,6 +88,15 @@ final class ConfigurationTest extends TestCase
         self::assertEquals(FingerprintConfig::disabled(), $config->getClientFingerprintConfiguration());
     }
 
+    /** @see https://www.php.net/manual/en/session.configuration.php#ini.session.cache-limiter */
+    public function testProvidePhpSessionCacheLimiterDefaults(): void
+    {
+        $config = Configuration::fromJwtConfiguration($this->jwtConfig);
+
+        self::assertSame(CacheLimiter::NoCache, $config->getCacheLimiter());
+        self::assertSame(10800, $config->getCacheExpire());
+    }
+
     public function testImmutability(): void
     {
         $leftConfig = Configuration::fromJwtConfiguration($this->jwtConfig);
@@ -127,5 +137,15 @@ final class ConfigurationTest extends TestCase
         self::assertNotSame($leftConfig, $rightConfig);
         self::assertNotSame($clientFingerprintConfiguration, $leftConfig->getClientFingerprintConfiguration());
         self::assertSame($clientFingerprintConfiguration->sources(), $leftConfig->getClientFingerprintConfiguration()->sources());
+
+        $rightConfig = $leftConfig->withCacheLimiter(CacheLimiter::Private);
+        self::assertNotSame($leftConfig, $rightConfig);
+        self::assertSame(CacheLimiter::Private, $rightConfig->getCacheLimiter());
+
+        $cacheExpire = $rightConfig->getCacheExpire() + 1;
+        $leftConfig  = $rightConfig->withCacheExpire($cacheExpire);
+        self::assertNotSame($leftConfig, $rightConfig);
+        self::assertSame($cacheExpire, $leftConfig->getCacheExpire());
+        self::assertSame(CacheLimiter::Private, $leftConfig->getCacheLimiter());
     }
 }

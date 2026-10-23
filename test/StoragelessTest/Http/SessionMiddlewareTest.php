@@ -22,6 +22,7 @@ namespace PSR7SessionsTest\Storageless\Http;
 
 use DateTime;
 use DateTimeImmutable;
+use DateTimeZone;
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\SetCookie;
 use Laminas\Diactoros\Response;
@@ -44,6 +45,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use PSR7Sessions\Storageless\Http\CacheLimiter;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\Configuration as FingerprintConfig;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\SameOriginRequest;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\Source;
@@ -68,10 +70,11 @@ final class SessionMiddlewareTest extends TestCase
 
     protected function setUp(): void
     {
+        // most tests verify the session cookie only: the cache limiter is tested separately
         $this->config     = Configuration::fromJwtConfiguration(JwtConfig::forSymmetricSigner(
             new Sha256(),
             $this->makeRandomSymmetricKey(),
-        ));
+        ))->withCacheLimiter(CacheLimiter::None);
         $this->middleware = new SessionMiddleware($this->config);
     }
 
@@ -714,6 +717,230 @@ final class SessionMiddlewareTest extends TestCase
             new ServerRequest(),
             $this->writingMiddleware(),
         );
+    }
+
+    public function testResponseIsNotCacheableByDefaultWhenTheSessionIsRead(): void
+    {
+        $response = $this->middlewareWithDefaultConfiguration()->process(
+            new ServerRequest(),
+            $this->fakeDelegate(static function (ServerRequestInterface $request) {
+                $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                assert($session instanceof SessionInterface);
+                $session->get('foo');
+
+                return new Response();
+            }),
+        );
+
+        self::assertFalse($response->hasHeader('Set-Cookie'));
+        self::assertNotCacheable($response);
+    }
+
+    public function testResponseIsNotCacheableByDefaultWhenTheSessionCookieIsSet(): void
+    {
+        $response = $this->middlewareWithDefaultConfiguration()->process(
+            new ServerRequest(),
+            $this->writingMiddleware(),
+        );
+
+        self::assertNotEmpty($this->getCookie($response)->getValue());
+        self::assertNotCacheable($response);
+    }
+
+    public function testResponseIsNotCacheableByDefaultWhenTheSessionCookieIsRefreshed(): void
+    {
+        $response = $this->middlewareWithDefaultConfiguration()->process(
+            $this->requestWithToken(new DateTimeImmutable('-800 second')),
+            $this->fakeDelegate(static fn (): ResponseInterface => new Response()),
+        );
+
+        self::assertNotEmpty($this->getCookie($response)->getValue());
+        self::assertNotCacheable($response);
+    }
+
+    public function testResponseIsNotCacheableByDefaultWhenTheSessionCookieIsExpired(): void
+    {
+        $middleware = $this->middlewareWithDefaultConfiguration();
+
+        $response = $this->ensureClearsSessionCookie(
+            $middleware,
+            $this->requestWithResponseCookies($middleware->process(new ServerRequest(), $this->writingMiddleware())),
+            $this->fakeDelegate(
+                static function (ServerRequestInterface $request) {
+                    $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                    assert($session instanceof SessionInterface);
+
+                    $session->clear();
+
+                    return new Response();
+                },
+            ),
+        );
+
+        self::assertNotCacheable($response);
+    }
+
+    public function testResponseIsLeftUntouchedWhenTheSessionIsNotUsed(): void
+    {
+        $this->ensureSameResponse(
+            $this->middlewareWithDefaultConfiguration(),
+            $this->requestWithToken(new DateTimeImmutable()),
+            $this->fakeDelegate(static fn (): ResponseInterface => new Response()),
+        );
+    }
+
+    /**
+     * @param array<non-empty-string, non-empty-string> $applicationHeaders
+     * @param array<non-empty-string, non-empty-string> $expectedHeaders
+     */
+    #[DataProvider('cacheHeadersSetByTheApplicationProvider')]
+    public function testCacheHeadersSetByTheApplicationAreKept(array $applicationHeaders, array $expectedHeaders): void
+    {
+        $response = $this->middlewareWithDefaultConfiguration()->process(
+            new ServerRequest(),
+            $this->fakeDelegate(static function (ServerRequestInterface $request) use ($applicationHeaders) {
+                $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                assert($session instanceof SessionInterface);
+                $session->set('foo', 'bar');
+
+                $response = new Response();
+
+                foreach ($applicationHeaders as $name => $value) {
+                    $response = $response->withHeader($name, $value);
+                }
+
+                return $response;
+            }),
+        );
+
+        self::assertNotEmpty($this->getCookie($response)->getValue());
+
+        foreach ($expectedHeaders as $name => $value) {
+            self::assertSame($value, $response->getHeaderLine($name), $name);
+        }
+    }
+
+    /**
+     * @return array<
+     *     non-empty-string,
+     *     array{array<non-empty-string, non-empty-string>, array<non-empty-string, non-empty-string>}
+     * >
+     */
+    public static function cacheHeadersSetByTheApplicationProvider(): array
+    {
+        return [
+            'Cache-Control' => [
+                ['Cache-Control' => 'public, max-age=60'],
+                [
+                    'Cache-Control' => 'public, max-age=60',
+                    'Expires'       => 'Thu, 19 Nov 1981 08:52:00 GMT',
+                    'Pragma'        => 'no-cache',
+                ],
+            ],
+            'Expires' => [
+                ['Expires' => 'Wed, 21 Oct 2026 07:28:00 GMT'],
+                [
+                    'Cache-Control' => 'no-store, no-cache, must-revalidate',
+                    'Expires'       => 'Wed, 21 Oct 2026 07:28:00 GMT',
+                    'Pragma'        => 'no-cache',
+                ],
+            ],
+            'Pragma' => [
+                ['Pragma' => 'foo'],
+                [
+                    'Cache-Control' => 'no-store, no-cache, must-revalidate',
+                    'Expires'       => 'Thu, 19 Nov 1981 08:52:00 GMT',
+                    'Pragma'        => 'foo',
+                ],
+            ],
+            'all of them' => [
+                [
+                    'Cache-Control' => 'private, max-age=60',
+                    'Expires'       => 'Wed, 21 Oct 2026 07:28:00 GMT',
+                    'Pragma'        => 'foo',
+                ],
+                [
+                    'Cache-Control' => 'private, max-age=60',
+                    'Expires'       => 'Wed, 21 Oct 2026 07:28:00 GMT',
+                    'Pragma'        => 'foo',
+                ],
+            ],
+        ];
+    }
+
+    /** @param array<non-empty-string, non-empty-string> $expectedHeaders */
+    #[DataProvider('cacheLimiterProvider')]
+    public function testCacheLimiterDeterminesTheCachingHeaders(CacheLimiter $cacheLimiter, array $expectedHeaders): void
+    {
+        $now        = new DateTimeImmutable('2026-10-10 12:00:00', new DateTimeZone('Europe/Rome'));
+        $middleware = new SessionMiddleware(
+            $this->config
+                ->withClock(new FrozenClock($now))
+                ->withCacheLimiter($cacheLimiter)
+                ->withCacheExpire(600),
+        );
+
+        $response = $middleware->process(new ServerRequest(), $this->writingMiddleware());
+
+        self::assertNotEmpty($this->getCookie($response)->getValue());
+
+        foreach (['Cache-Control', 'Expires', 'Pragma'] as $name) {
+            self::assertSame($expectedHeaders[$name] ?? '', $response->getHeaderLine($name), $name);
+        }
+    }
+
+    /** @return array<non-empty-string, array{CacheLimiter, array<non-empty-string, non-empty-string>}> */
+    public static function cacheLimiterProvider(): array
+    {
+        return [
+            'nocache' => [
+                CacheLimiter::NoCache,
+                [
+                    'Cache-Control' => 'no-store, no-cache, must-revalidate',
+                    'Expires'       => 'Thu, 19 Nov 1981 08:52:00 GMT',
+                    'Pragma'        => 'no-cache',
+                ],
+            ],
+            'private' => [
+                CacheLimiter::Private,
+                [
+                    'Cache-Control' => 'private, max-age=600',
+                    'Expires'       => 'Thu, 19 Nov 1981 08:52:00 GMT',
+                ],
+            ],
+            'public' => [
+                CacheLimiter::Public,
+                [
+                    'Cache-Control' => 'public, max-age=600',
+                    'Expires'       => 'Sat, 10 Oct 2026 10:10:00 GMT',
+                ],
+            ],
+            'none' => [CacheLimiter::None, []],
+        ];
+    }
+
+    private function middlewareWithDefaultConfiguration(): SessionMiddleware
+    {
+        return new SessionMiddleware(Configuration::fromJwtConfiguration($this->config->getJwtConfiguration()));
+    }
+
+    private function requestWithToken(DateTimeImmutable $issuedAt): ServerRequestInterface
+    {
+        return (new ServerRequest())->withCookieParams([
+            $this->config->getCookie()->getName() => $this->createToken(
+                $this->config,
+                $issuedAt,
+                new DateTimeImmutable('+200 second'),
+            ),
+        ]);
+    }
+
+    /** Same headers sent by PHP's `session.cache_limiter=nocache` */
+    private static function assertNotCacheable(ResponseInterface $response): void
+    {
+        self::assertSame('no-store, no-cache, must-revalidate', $response->getHeaderLine('Cache-Control'));
+        self::assertSame('Thu, 19 Nov 1981 08:52:00 GMT', $response->getHeaderLine('Expires'));
+        self::assertSame('no-cache', $response->getHeaderLine('Pragma'));
     }
 
     private function ensureSameResponse(
