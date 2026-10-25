@@ -102,6 +102,22 @@ By default, `PSR7Sessions\Storageless\Http\Configuration::fromJwtConfiguration()
  * The session is available in the `"session"` request attribute (`SessionMiddleware::SESSION_ATTRIBUTE`)
  * [Client fingerprinting](../README.md#session-hijacking-mitigation) is disabled
 
+### HTTP caching
+
+A shared cache (CDN, reverse proxy, etc.) storing a response that carries the
+session cookie would serve that session to other clients. Therefore:
+
+ * responses carrying the session cookie are marked as `Cache-Control: private`:
+   the `public` and `s-maxage` directives are dropped, while other directives,
+   such as `max-age`, are kept. Responses already marked as `private` or `no-store`
+   are left untouched
+ * the session is **not** re-generated on responses marked as `public` or with a
+   `s-maxage` directive, so that they stay cacheable. The session is still
+   written on those responses when its contents change
+
+Note that the session data may also affect the response contents: preventing
+responses that depend on the session from being cached is up to your application.
+
 ### Local development
 
 When running applications locally on `http://localhost`, some settings may need to be changed to work without HTTPS support.
