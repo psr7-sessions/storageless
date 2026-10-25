@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1232a95455b7b7ad00ee6bc4fd9e0727",
+    "content-hash": "33da610fcd8aa56bf0658be8888bf371",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -3116,16 +3116,16 @@
         },
         {
             "name": "roave/backward-compatibility-check",
-            "version": "8.23.0",
+            "version": "8.25.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/BackwardCompatibilityCheck.git",
-                "reference": "f7573e3d1e3d012096f04aa7fe4de99b42aaf01d"
+                "reference": "1024887d5335226cecae91dc3342248c42712914"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/BackwardCompatibilityCheck/zipball/f7573e3d1e3d012096f04aa7fe4de99b42aaf01d",
-                "reference": "f7573e3d1e3d012096f04aa7fe4de99b42aaf01d",
+                "url": "https://api.github.com/repos/Roave/BackwardCompatibilityCheck/zipball/1024887d5335226cecae91dc3342248c42712914",
+                "reference": "1024887d5335226cecae91dc3342248c42712914",
                 "shasum": ""
             },
             "require": {
@@ -3198,9 +3198,9 @@
             "description": "Tool to compare two revisions of a public API to check for BC breaks",
             "support": {
                 "issues": "https://github.com/Roave/BackwardCompatibilityCheck/issues",
-                "source": "https://github.com/Roave/BackwardCompatibilityCheck/tree/8.23.0"
+                "source": "https://github.com/Roave/BackwardCompatibilityCheck/tree/8.25.0"
             },
-            "time": "2026-09-30T20:43:24+00:00"
+            "time": "2026-10-24T21:23:26+00:00"
         },
         {
             "name": "roave/better-reflection",
