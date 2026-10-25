@@ -1,5 +1,5 @@
 {
     "require": {
-        "roave/backward-compatibility-check": "^8.25.0"
+        "roave/backward-compatibility-check": "^8.26.0"
     }
 }
