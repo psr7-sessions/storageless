@@ -3116,16 +3116,16 @@
         },
         {
             "name": "roave/backward-compatibility-check",
-            "version": "8.26.0",
+            "version": "8.27.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/BackwardCompatibilityCheck.git",
-                "reference": "22144b95834b51f33626ef13d77935717b7aec29"
+                "reference": "7ffd8847bcb8b4d6e0c5499d8a98afa017eb1b8d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/BackwardCompatibilityCheck/zipball/22144b95834b51f33626ef13d77935717b7aec29",
-                "reference": "22144b95834b51f33626ef13d77935717b7aec29",
+                "url": "https://api.github.com/repos/Roave/BackwardCompatibilityCheck/zipball/7ffd8847bcb8b4d6e0c5499d8a98afa017eb1b8d",
+                "reference": "7ffd8847bcb8b4d6e0c5499d8a98afa017eb1b8d",
                 "shasum": ""
             },
             "require": {
@@ -3198,9 +3198,9 @@
             "description": "Tool to compare two revisions of a public API to check for BC breaks",
             "support": {
                 "issues": "https://github.com/Roave/BackwardCompatibilityCheck/issues",
-                "source": "https://github.com/Roave/BackwardCompatibilityCheck/tree/8.26.0"
+                "source": "https://github.com/Roave/BackwardCompatibilityCheck/tree/8.27.0"
             },
-            "time": "2026-10-25T12:16:32+00:00"
+            "time": "2026-10-26T22:18:06+00:00"
         },
         {
             "name": "roave/better-reflection",
