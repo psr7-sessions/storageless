@@ -132,11 +132,14 @@ $sessionMiddleware = new SessionMiddleware(
 
 As with PHP, **headers set by your application are never overwritten**: each of
 the headers above is only added when the response does not contain it already.
-Therefore, if your application explicitly marks a response as cacheable by shared
-caches (for example with `Cache-Control: public`), it must make sure that the
-response does not use the session, nor carry the session cookie: since sessions
-are re-generated on any request after `60` seconds, the session cookie may be
-added to any response. The same applies to the `Public` cache limiter.
+
+Since sessions are re-generated on any request after `60` seconds, the session
+cookie could be added to any response, including responses not using the
+session. To prevent shared caches from storing it, the session is **not
+re-generated** on responses that your application explicitly marks as cacheable
+by shared caches, with the `public` or `s-maxage` `Cache-Control` directives.
+Session changes are always sent though: such responses must not change the
+session, nor depend on it. The same applies to the `Public` cache limiter.
 
 ### Local development
 

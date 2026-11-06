@@ -758,6 +758,69 @@ final class SessionMiddlewareTest extends TestCase
         self::assertNotCacheable($response);
     }
 
+    #[DataProvider('cacheableBySharedCachesProvider')]
+    public function testSessionIsNotRefreshedWhenTheResponseIsCacheableBySharedCaches(string $cacheControl): void
+    {
+        $this->ensureSameResponse(
+            $this->middlewareWithDefaultConfiguration(),
+            $this->requestWithToken(new DateTimeImmutable('-800 second')),
+            $this->fakeDelegate(
+                static fn (): ResponseInterface => (new Response())->withHeader('Cache-Control', $cacheControl),
+            ),
+        );
+    }
+
+    /** @return array<non-empty-string, array{non-empty-string}> */
+    public static function cacheableBySharedCachesProvider(): array
+    {
+        return [
+            'public'                => ['public'],
+            'public, max-age'       => ['max-age=60 , public'],
+            'uppercase'             => ['PUBLIC,max-age=60'],
+            's-maxage'              => ['max-age=60, s-maxage=600'],
+        ];
+    }
+
+    #[DataProvider('notCacheableBySharedCachesProvider')]
+    public function testSessionIsRefreshedWhenTheResponseIsNotCacheableBySharedCaches(string $cacheControl): void
+    {
+        $response = $this->middlewareWithDefaultConfiguration()->process(
+            $this->requestWithToken(new DateTimeImmutable('-800 second')),
+            $this->fakeDelegate(
+                static fn (): ResponseInterface => (new Response())->withHeader('Cache-Control', $cacheControl),
+            ),
+        );
+
+        self::assertNotEmpty($this->getCookie($response)->getValue());
+        self::assertSame($cacheControl, $response->getHeaderLine('Cache-Control'));
+    }
+
+    /** @return array<non-empty-string, array{non-empty-string}> */
+    public static function notCacheableBySharedCachesProvider(): array
+    {
+        return [
+            'private'              => ['private, max-age=60'],
+            'max-age'              => ['max-age=60'],
+            'similar directives'   => ['x-public, publicly=1, x-s-maxage=60'],
+        ];
+    }
+
+    public function testSessionChangesAreSentEvenWhenTheResponseIsCacheableBySharedCaches(): void
+    {
+        $response = $this->middlewareWithDefaultConfiguration()->process(
+            $this->requestWithToken(new DateTimeImmutable('-800 second')),
+            $this->fakeDelegate(static function (ServerRequestInterface $request): ResponseInterface {
+                $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+                assert($session instanceof SessionInterface);
+                $session->set('foo', 'baz');
+
+                return (new Response())->withHeader('Cache-Control', 'public');
+            }),
+        );
+
+        self::assertNotEmpty($this->getCookie($response)->getValue());
+    }
+
     public function testResponseIsNotCacheableByDefaultWhenTheSessionCookieIsExpired(): void
     {
         $middleware = $this->middlewareWithDefaultConfiguration();

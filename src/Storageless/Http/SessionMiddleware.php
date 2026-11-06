@@ -45,6 +45,7 @@ use PSR7Sessions\Storageless\Session\SessionInterface;
 use stdClass;
 
 use function is_string;
+use function preg_match;
 use function sprintf;
 
 /** @psalm-immutable */
@@ -82,7 +83,7 @@ final readonly class SessionMiddleware implements MiddlewareInterface
         );
 
         $response      = $handler->handle($request->withAttribute($this->config->getSessionAttribute(), $sessionContainer));
-        $sessionCookie = $this->getSessionCookie($sessionContainer, $token, $sameOriginRequest);
+        $sessionCookie = $this->getSessionCookie($sessionContainer, $token, $sameOriginRequest, $response);
 
         if ($sessionCookie !== null) {
             $response = FigResponseCookies::set($response, $sessionCookie);
@@ -161,6 +162,7 @@ final readonly class SessionMiddleware implements MiddlewareInterface
         SessionInterface $sessionContainer,
         Token|null $token,
         SameOriginRequest $sameOriginRequest,
+        Response $response,
     ): SetCookie|null {
         $sessionContainerChanged = $sessionContainer->hasChanged();
 
@@ -169,6 +171,11 @@ final readonly class SessionMiddleware implements MiddlewareInterface
         }
 
         if (! $sessionContainerChanged && ! $this->shouldTokenBeRefreshed($token)) {
+            return null;
+        }
+
+        // refreshing is optional: a shared cache must not store the session cookie and serve it to other clients
+        if (! $sessionContainerChanged && self::isCacheableBySharedCaches($response)) {
             return null;
         }
 
@@ -222,6 +229,17 @@ final readonly class SessionMiddleware implements MiddlewareInterface
             ],
             CacheLimiter::None => [],
         };
+    }
+
+    /**
+     * Whether the application explicitly allowed shared caches (CDNs, reverse proxies, etc.) to store the response
+     */
+    private static function isCacheableBySharedCaches(Response $response): bool
+    {
+        return preg_match(
+            '/(?:^|,)\s*(?:public|s-maxage)\s*(?:[=,]|$)/i',
+            $response->getHeaderLine('Cache-Control'),
+        ) === 1;
     }
 
     private function shouldTokenBeRefreshed(Token|null $token): bool
