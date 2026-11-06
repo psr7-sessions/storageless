@@ -22,6 +22,7 @@ namespace PSR7Sessions\Storageless\Http;
 
 use BadMethodCallException;
 use DateInterval;
+use DateTimeZone;
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\SetCookie;
 use InvalidArgumentException;
@@ -44,6 +45,7 @@ use PSR7Sessions\Storageless\Session\SessionInterface;
 use stdClass;
 
 use function is_string;
+use function preg_match;
 use function sprintf;
 
 /** @psalm-immutable */
@@ -51,6 +53,10 @@ final readonly class SessionMiddleware implements MiddlewareInterface
 {
     public const string SESSION_CLAIM     = 'session-data';
     public const string SESSION_ATTRIBUTE = 'session';
+
+    /** Same date used by `ext/session` */
+    private const string EXPIRED_DATE     = 'Thu, 19 Nov 1981 08:52:00 GMT';
+    private const string HTTP_DATE_FORMAT = 'D, d M Y H:i:s \G\M\T';
 
     public function __construct(
         private Configuration $config,
@@ -67,16 +73,27 @@ final readonly class SessionMiddleware implements MiddlewareInterface
     {
         $sameOriginRequest = new SameOriginRequest($this->config->getClientFingerprintConfiguration(), $request);
         $token             = $this->parseToken($request, $sameOriginRequest);
-        $sessionContainer  = LazySession::fromContainerBuildingCallback(function () use ($token): SessionInterface {
-            return $this->extractSessionContainer($token);
-        });
+        $sessionLoaded     = false;
+        $sessionContainer  = LazySession::fromContainerBuildingCallback(
+            function () use ($token, &$sessionLoaded): SessionInterface {
+                $sessionLoaded = true;
 
-        return $this->appendToken(
-            $sessionContainer,
-            $handler->handle($request->withAttribute($this->config->getSessionAttribute(), $sessionContainer)),
-            $token,
-            $sameOriginRequest,
+                return $this->extractSessionContainer($token);
+            },
         );
+
+        $response      = $handler->handle($request->withAttribute($this->config->getSessionAttribute(), $sessionContainer));
+        $sessionCookie = $this->getSessionCookie($sessionContainer, $token, $sameOriginRequest, $response);
+
+        if ($sessionCookie !== null) {
+            $response = FigResponseCookies::set($response, $sessionCookie);
+        }
+
+        if (! $sessionLoaded && $sessionCookie === null) {
+            return $response;
+        }
+
+        return $this->withCacheLimiterHeaders($response);
     }
 
     /**
@@ -141,30 +158,88 @@ final readonly class SessionMiddleware implements MiddlewareInterface
      * @throws BadMethodCallException
      * @throws InvalidArgumentException
      */
-    private function appendToken(
+    private function getSessionCookie(
         SessionInterface $sessionContainer,
-        Response $response,
         Token|null $token,
         SameOriginRequest $sameOriginRequest,
-    ): Response {
+        Response $response,
+    ): SetCookie|null {
         $sessionContainerChanged = $sessionContainer->hasChanged();
 
         if ($sessionContainerChanged && $sessionContainer->isEmpty()) {
-            return FigResponseCookies::set($response, $this->getExpirationCookie());
+            return $this->getExpirationCookie();
         }
 
-        if ($sessionContainerChanged || $this->shouldTokenBeRefreshed($token)) {
-            try {
-                $tokenCookie = $this->getTokenCookie($sessionContainer, $sameOriginRequest);
-            } catch (SourceMissing) {
-                // a session that cannot be bound to the client fingerprint must not be sent
-                return $response;
+        if (! $sessionContainerChanged && ! $this->shouldTokenBeRefreshed($token)) {
+            return null;
+        }
+
+        // refreshing is optional: a shared cache must not store the session cookie and serve it to other clients
+        if (! $sessionContainerChanged && self::isCacheableBySharedCaches($response)) {
+            return null;
+        }
+
+        try {
+            return $this->getTokenCookie($sessionContainer, $sameOriginRequest);
+        } catch (SourceMissing) {
+            // a session that cannot be bound to the client fingerprint must not be sent
+            return null;
+        }
+    }
+
+    /**
+     * Prevents caching of responses depending on the session, as `session.cache_limiter` does in `ext/session`
+     */
+    private function withCacheLimiterHeaders(Response $response): Response
+    {
+        foreach ($this->getCacheLimiterHeaders() as $name => $value) {
+            // as with `ext/session`, headers set by the application take precedence
+            if ($response->hasHeader($name)) {
+                continue;
             }
 
-            return FigResponseCookies::set($response, $tokenCookie);
+            $response = $response->withHeader($name, $value);
         }
 
         return $response;
+    }
+
+    /** @return array<non-empty-string, non-empty-string> */
+    private function getCacheLimiterHeaders(): array
+    {
+        $cacheExpire = $this->config->getCacheExpire();
+
+        return match ($this->config->getCacheLimiter()) {
+            CacheLimiter::NoCache => [
+                'Expires'       => self::EXPIRED_DATE,
+                'Cache-Control' => 'no-store, no-cache, must-revalidate',
+                'Pragma'        => 'no-cache',
+            ],
+            CacheLimiter::Private => [
+                'Expires'       => self::EXPIRED_DATE,
+                'Cache-Control' => sprintf('private, max-age=%d', $cacheExpire),
+            ],
+            CacheLimiter::Public => [
+                'Expires'       => $this->config->getClock()
+                    ->now()
+                    ->add(new DateInterval(sprintf('PT%sS', $cacheExpire)))
+                    ->setTimezone(new DateTimeZone('UTC'))
+                    ->format(self::HTTP_DATE_FORMAT),
+                'Cache-Control' => sprintf('public, max-age=%d', $cacheExpire),
+            ],
+            CacheLimiter::None => [],
+        };
+    }
+
+    /**
+     * Whether the application explicitly allowed shared caches (CDNs, reverse proxies, etc.) to store the response
+     */
+    private static function isCacheableBySharedCaches(Response $response): bool
+    {
+        return preg_match(
+            '/(?:^|,)\s*(?:public|s-maxage)\s*(?:[=,]|$)/i',
+            $response->getHeaderLine('Cache-Control'),
+        ) === 1;
     }
 
     private function shouldTokenBeRefreshed(Token|null $token): bool
