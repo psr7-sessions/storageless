@@ -1,6 +1,12 @@
 parameters:
 	ignoreErrors:
 		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertGreaterThan\(\) with 0 and int\<1, max\> will always evaluate to true\.$#'
+			identifier: staticMethod.alreadyNarrowedType
+			count: 2
+			path: test/StoragelessTest/Http/ConfigurationTest.php
+
+		-
 			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true and ''Null bytes keys are…'' will always evaluate to true\.$#'
 			identifier: staticMethod.alreadyNarrowedType
 			count: 1

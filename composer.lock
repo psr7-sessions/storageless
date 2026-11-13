@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cb30af19dc88a5c559bf8e4c6d481b29",
+    "content-hash": "6d03b60acb5c39e9f96ea157f72e5230",
     "packages": [
         {
             "name": "dflydev/fig-cookies",
@@ -1348,30 +1348,31 @@
         },
         {
             "name": "laminas/laminas-httphandlerrunner",
-            "version": "2.14.0",
+            "version": "2.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-httphandlerrunner.git",
-                "reference": "14d5182a4ba180c998dfbba9d19f9a70337c02b4"
+                "reference": "459cf8e2cbf93abb582990f4243c31d42e965472"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-httphandlerrunner/zipball/14d5182a4ba180c998dfbba9d19f9a70337c02b4",
-                "reference": "14d5182a4ba180c998dfbba9d19f9a70337c02b4",
+                "url": "https://api.github.com/repos/laminas/laminas-httphandlerrunner/zipball/459cf8e2cbf93abb582990f4243c31d42e965472",
+                "reference": "459cf8e2cbf93abb582990f4243c31d42e965472",
                 "shasum": ""
             },
             "require": {
-                "php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0",
+                "php": "~8.3.0 || ~8.4.0 || ~8.5.0 || ~8.6.0",
                 "psr/http-message": "^1.0 || ^2.0",
                 "psr/http-message-implementation": "^1.0 || ^2.0",
                 "psr/http-server-handler": "^1.0"
             },
             "require-dev": {
+                "laminas/internal-tooling": "^1.2",
                 "laminas/laminas-coding-standard": "~3.1.0",
-                "laminas/laminas-diactoros": "^3.6.0",
-                "phpunit/phpunit": "^10.5.46",
-                "psalm/plugin-phpunit": "^0.19.5",
-                "vimeo/psalm": "^6.10.3"
+                "laminas/laminas-diactoros": "^3.10.0",
+                "phpunit/phpunit": "^10.5.66",
+                "psalm/plugin-phpunit": "^0.22.2",
+                "vimeo/psalm": "^6.20.11"
             },
             "type": "library",
             "extra": {
@@ -1411,8 +1412,8 @@
                     "type": "custom"
                 }
             ],
-            "time": "2026-09-21T10:14:52+00:00",
-            "published-time": "2026-09-21T10:15:58+00:00"
+            "time": "2026-11-12T14:06:40+00:00",
+            "published-time": "2026-11-12T14:07:18+00:00"
         },
         {
             "name": "lcobucci/clock",
@@ -1986,16 +1987,16 @@
         },
         {
             "name": "phpstan/phpstan-phpunit",
-            "version": "2.1.1",
+            "version": "2.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-phpunit.git",
-                "reference": "8d16b8478e523a47f8c02e83bce8981b5b5a3b03"
+                "reference": "ffff35d4f96c4642d7f41a3515d90afa0f58be62"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/8d16b8478e523a47f8c02e83bce8981b5b5a3b03",
-                "reference": "8d16b8478e523a47f8c02e83bce8981b5b5a3b03",
+                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/ffff35d4f96c4642d7f41a3515d90afa0f58be62",
+                "reference": "ffff35d4f96c4642d7f41a3515d90afa0f58be62",
                 "shasum": ""
             },
             "require": {
@@ -2038,10 +2039,10 @@
             ],
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-phpunit/issues",
-                "source": "https://github.com/phpstan/phpstan-phpunit/tree/2.1.1"
+                "source": "https://github.com/phpstan/phpstan-phpunit/tree/2.1.2"
             },
-            "time": "2026-10-06T18:12:32+00:00",
-            "published-time": "2026-10-07T04:59:27+00:00"
+            "time": "2026-11-12T15:27:53+00:00",
+            "published-time": "2026-11-12T16:07:51+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
