@@ -35,10 +35,10 @@
         "doctrine/coding-standard": "^14.0.0",
         "infection/infection": "^0.35.10",
         "laminas/laminas-diactoros": "^3.10.0",
-        "laminas/laminas-httphandlerrunner": "^2.14.0",
+        "laminas/laminas-httphandlerrunner": "^2.15.0",
         "lcobucci/clock": "^3.7.0",
         "phpstan/phpstan": "^2.3.5",
-        "phpstan/phpstan-phpunit": "^2.1.1",
+        "phpstan/phpstan-phpunit": "^2.1.2",
         "phpunit/phpunit": "^13.4.6"
     },
     "replace": {
